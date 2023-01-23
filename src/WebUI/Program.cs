@@ -1,4 +1,7 @@
+using CheckflixApp.Infrastructure.Localization;
+using System.Globalization;
 using CheckflixApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +33,15 @@ else
 
 app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
+// app.UseStaticFiles();
+// infrastructure
+var options = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(new CultureInfo("en-US"))
+};
+app.UseRequestLocalization(options);
 app.UseStaticFiles();
+app.UseMiddleware<LocalizationMiddleware>();
 
 app.UseSwaggerUi3(settings =>
 {

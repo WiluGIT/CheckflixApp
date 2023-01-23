@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Mappings;
 using CheckflixApp.Application.Common.Models;
+using CheckflixApp.Application.Common.Security;
 using MediatR;
 
 namespace CheckflixApp.Application.TodoItems.Queries.GetTodoItemsWithPagination;

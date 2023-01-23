@@ -87,11 +87,14 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void HandleUnauthorizedAccessException(ExceptionContext context)
     {
+        var exception = (UnauthorizedAccessException)context.Exception;
+
         var details = new ProblemDetails
         {
             Status = StatusCodes.Status401Unauthorized,
             Title = "Unauthorized",
-            Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
+            Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+            Detail = exception.Message
         };
 
         context.Result = new ObjectResult(details)

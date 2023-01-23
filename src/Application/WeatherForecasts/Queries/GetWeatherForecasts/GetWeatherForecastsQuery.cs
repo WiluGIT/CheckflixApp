@@ -1,6 +1,11 @@
-﻿using MediatR;
+﻿using CheckflixApp.Application.Common.Security;
+using System.Data;
+using MediatR;
 
 namespace CheckflixApp.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+
+[Authorize(Roles = "Administrator")]
+[Authorize(Policy = "CanPurge")]
 public record GetWeatherForecastsQuery : IRequest<IEnumerable<WeatherForecast>>;
 
 public class GetWeatherForecastsQueryHandler : RequestHandler<GetWeatherForecastsQuery, IEnumerable<WeatherForecast>>
