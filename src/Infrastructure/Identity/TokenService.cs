@@ -54,7 +54,6 @@ public class TokenService : ITokenService
 
         if (_securitySettings.RequireConfirmedAccount && !user.EmailConfirmed)
         {
-            throw new NotFoundException(nameof(TokenDto));
             throw new UnauthorizedAccessException(_localizer["identity.emailnotconfirmed"]);
         }
 
@@ -105,6 +104,7 @@ public class TokenService : ITokenService
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
                 new(ClaimTypes.Name, user.UserName ?? string.Empty),
+                new("ipAddress", ipAddress ?? string.Empty),
         };
 
     private string GenerateRefreshToken()

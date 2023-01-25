@@ -1,23 +1,17 @@
-using CheckflixApp.Infrastructure.Localization;
-using System.Globalization;
 using CheckflixApp.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddWebUIServices();
+builder.Services
+    .AddApplicationServices()
+    .AddInfrastructureServices(builder.Configuration)
+    .AddWebUIServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
-
-    // Initialise and seed database
     using (var scope = app.Services.CreateScope())
     {
         var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
@@ -27,33 +21,10 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-app.UseHealthChecks("/health");
-app.UseHttpsRedirection();
-// app.UseStaticFiles();
-// infrastructure
-var options = new RequestLocalizationOptions
-{
-    DefaultRequestCulture = new RequestCulture(new CultureInfo("en-US"))
-};
-app.UseRequestLocalization(options);
-app.UseStaticFiles();
-app.UseMiddleware<LocalizationMiddleware>();
-
-app.UseSwaggerUi3(settings =>
-{
-    settings.Path = "/api";
-    settings.DocumentPath = "/api/specification.json";
-});
-
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseIdentityServer();
-app.UseAuthorization();
+app.UseInfrastructure(builder.Configuration);
 
 app.MapControllerRoute(
     name: "default",

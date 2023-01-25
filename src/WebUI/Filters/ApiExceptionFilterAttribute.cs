@@ -49,7 +49,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
         var details = new ValidationProblemDetails(exception.Errors)
         {
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+            Detail = exception.Message
         };
 
         context.Result = new BadRequestObjectResult(details);
@@ -107,11 +108,14 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void HandleForbiddenAccessException(ExceptionContext context)
     {
+        var exception = (ForbiddenAccessException)context.Exception;
+        
         var details = new ProblemDetails
         {
             Status = StatusCodes.Status403Forbidden,
             Title = "Forbidden",
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3"
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+            Detail = exception.Message
         };
 
         context.Result = new ObjectResult(details)
