@@ -1,13 +1,9 @@
-﻿namespace CheckflixApp.Application.Identity.Dtos;
+﻿namespace CheckflixApp.Application.Identity.Common;
 public class UserDetailsDto
 {
-    public Guid Id { get; set; }
+    public string? Id { get; set; }
 
     public string? UserName { get; set; }
-
-    public string? FirstName { get; set; }
-
-    public string? LastName { get; set; }
 
     public string? Email { get; set; }
 

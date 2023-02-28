@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace CheckflixApp.Infrastructure.Auth;
 public class JwtSettings
 {
-    public string? Key { get; set; }
-
-    public int TokenExpirationInMinutes { get; set; }
-
+    public string Secret { get; init; } = null!;
+    public string Issuer { get; init; } = null!;
+    public string Audience { get; init; } = null!;
+    public int ExpiryMinutes { get; init; }
     public int RefreshTokenExpirationInDays { get; set; }
 }

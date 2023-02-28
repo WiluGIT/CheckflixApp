@@ -1,4 +1,4 @@
-﻿using CheckflixApp.Application.Identity.Dtos;
+﻿using CheckflixApp.Application.Identity.Common;
 using MediatR;
 
 namespace CheckflixApp.Application.Identity.Tokens.Queries.GetRefreshToken;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CheckflixApp.Application.Identity.Dtos;
+namespace CheckflixApp.Application.Identity.Common;
 public class UserRoleDto
 {
     public string? RoleId { get; set; }

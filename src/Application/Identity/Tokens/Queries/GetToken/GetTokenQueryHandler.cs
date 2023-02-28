@@ -1,5 +1,5 @@
-﻿using CheckflixApp.Application.Identity.Dtos;
-using CheckflixApp.Application.Identity.Tokens.Interfaces;
+﻿using CheckflixApp.Application.Identity.Common;
+using CheckflixApp.Application.Identity.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 

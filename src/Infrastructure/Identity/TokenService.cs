@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Azure.Core;
-using CheckflixApp.Application.Common.Exceptions;
-using CheckflixApp.Application.Identity.Dtos;
-using CheckflixApp.Application.Identity.Tokens.Interfaces;
+using CheckflixApp.Application.Identity.Common;
+using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetRefreshToken;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetToken;
-using CheckflixApp.Domain.Entities;
 using CheckflixApp.Infrastructure.Auth;
 using CheckflixApp.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
@@ -65,7 +60,7 @@ public class TokenService : ITokenService
         return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
 
-    public async Task<TokenDto> GetRefreshTokenAsync(GetRefreshTokenQuery query, string ipAddress)
+    public async Task<TokenDto> GetRefreshTokenAsync(GetRefreshTokenQuery query, string ipAddress, CancellationToken cancellationToken)
     {
         var userPrincipal = GetPrincipalFromExpiredToken(query.Token);
         string? userEmail = userPrincipal.GetEmail();
@@ -119,15 +114,17 @@ public class TokenService : ITokenService
     {
         var token = new JwtSecurityToken(
            claims: claims,
-           expires: DateTime.UtcNow.AddMinutes(_jwtSettings.TokenExpirationInMinutes),
-           signingCredentials: signingCredentials);
+           expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
+           signingCredentials: signingCredentials,
+           issuer: _jwtSettings.Issuer,
+           audience: _jwtSettings.Audience);
         var tokenHandler = new JwtSecurityTokenHandler();
         return tokenHandler.WriteToken(token);
     }
 
     private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
-        if (string.IsNullOrEmpty(_jwtSettings.Key))
+        if (string.IsNullOrEmpty(_jwtSettings.Secret))
         {
             throw new InvalidOperationException("No Key defined in JwtSettings config.");
         }
@@ -135,7 +132,7 @@ public class TokenService : ITokenService
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret)),
             ValidateIssuer = false,
             ValidateAudience = false,
             RoleClaimType = ClaimTypes.Role,
@@ -157,12 +154,12 @@ public class TokenService : ITokenService
 
     private SigningCredentials GetSigningCredentials()
     {
-        if (string.IsNullOrEmpty(_jwtSettings.Key))
+        if (string.IsNullOrEmpty(_jwtSettings.Secret))
         {
             throw new InvalidOperationException("No Key defined in JwtSettings config.");
         }
 
-        byte[] secret = Encoding.UTF8.GetBytes(_jwtSettings.Key);
+        byte[] secret = Encoding.UTF8.GetBytes(_jwtSettings.Secret);
         return new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using CheckflixApp.Application.Common.Interfaces;
-using CheckflixApp.Application.Identity.Tokens.Interfaces;
+using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Infrastructure.Files;
 using CheckflixApp.Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +13,7 @@ internal static class ServicesExtensions
         services.AddTransient<IDateTime, DateTimeService>();
         services.AddTransient<IIdentityService, IdentityService>();
         services.AddTransient<ITokenService, TokenService>();
+        services.AddTransient<IUserService, UserService>();
         services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
         return services;
