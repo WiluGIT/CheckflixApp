@@ -61,6 +61,7 @@ internal partial class UserService
             user.ObjectId = principal.GetObjectId();
             result = await _userManager.UpdateAsync(user);
 
+            // TODO: check those events
             //await _events.PublishAsync(new ApplicationUserUpdatedEvent(user.Id));
         }
         else
@@ -91,6 +92,11 @@ internal partial class UserService
 
     public async Task<string> CreateAsync(CreateUserCommand command, string origin)
     {
+        if (command.ConfirmPassword != command.Password)
+        {
+            throw new InternalServerException(_localizer["Validation Errors Occurred."]);
+        }
+
         var user = new ApplicationUser
         {
             Email = command.Email,
@@ -105,9 +111,11 @@ internal partial class UserService
             throw new InternalServerException(_localizer["Validation Errors Occurred."]);
         }
 
-        await _userManager.AddToRoleAsync(user, ApplicationRoles.Basic);
+        await _userManager.AddToRoleAsync(user, SystemRoles.Basic);
 
         var messages = new List<string> { string.Format(_localizer["User {0} Registered."], user.UserName) };
+
+        //TODO: Check and refactor user creation
 
         //if (_securitySettings.RequireConfirmedAccount && !string.IsNullOrEmpty(user.Email))
         //{

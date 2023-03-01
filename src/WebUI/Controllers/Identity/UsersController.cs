@@ -11,13 +11,11 @@ namespace WebUI.Controllers.Identity;
 
 public class UsersController : ApiControllerBase
 {
-    // Add endpoint authorization
     [HttpGet]
     [OpenApiOperation("Get list of all users.", "")]
     public async Task<List<UserDetailsDto>> GetListAsync()
         => await Mediator.Send(new GetListQuery());
 
-    // Check if its properly binded from query
     [HttpGet("{id}")]
     [OpenApiOperation("Get a user's details.", "")]
     public async Task<UserDetailsDto> GetByIdAsync([FromRoute] string id)

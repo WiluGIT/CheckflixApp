@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CheckflixApp.Infrastructure.Identity;
-public static class ApplicationRoles
+public static class SystemRoles
 {
-    public const string Admin = nameof(Admin);
+    public const string Administrator = nameof(Administrator);
     public const string Basic = nameof(Basic);
 
     public static IReadOnlyList<string> DefaultRoles { get; } = new ReadOnlyCollection<string>(new[]
     {
-        Admin,
+        Administrator,
         Basic
     });
 

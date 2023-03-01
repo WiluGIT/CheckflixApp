@@ -1228,8 +1228,6 @@ export interface IUserDetailsDto {
 }
 
 export class CreateUserCommand implements ICreateUserCommand {
-    firstName?: string;
-    lastName?: string;
     email?: string;
     userName?: string;
     password?: string;
@@ -1247,8 +1245,6 @@ export class CreateUserCommand implements ICreateUserCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.firstName = _data["firstName"];
-            this.lastName = _data["lastName"];
             this.email = _data["email"];
             this.userName = _data["userName"];
             this.password = _data["password"];
@@ -1266,8 +1262,6 @@ export class CreateUserCommand implements ICreateUserCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
         data["email"] = this.email;
         data["userName"] = this.userName;
         data["password"] = this.password;
@@ -1278,8 +1272,6 @@ export class CreateUserCommand implements ICreateUserCommand {
 }
 
 export interface ICreateUserCommand {
-    firstName?: string;
-    lastName?: string;
     email?: string;
     userName?: string;
     password?: string;

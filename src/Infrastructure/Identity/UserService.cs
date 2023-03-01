@@ -123,7 +123,7 @@ internal partial class UserService : IUserService
 
         _ = user ?? throw new NotFoundException(_localizer["User Not Found."]);
 
-        bool isAdmin = await _userManager.IsInRoleAsync(user, ApplicationRoles.Admin);
+        bool isAdmin = await _userManager.IsInRoleAsync(user, SystemRoles.Administrator);
         if (isAdmin)
         {
             throw new InternalServerException(_localizer["Administrators Profile's Status cannot be toggled"]);
