@@ -22,8 +22,9 @@ public interface IUserService
 
     Task<UserDetailsDto> GetAsync(string userId, CancellationToken cancellationToken);
 
-    //Task<List<UserRoleDto>> GetRolesAsync(string userId, CancellationToken cancellationToken);
-    //Task<string> AssignRolesAsync(string userId, UserRolesRequest request, CancellationToken cancellationToken);
+    Task<List<UserRoleDto>> GetRolesAsync(string userId, CancellationToken cancellationToken);
+    
+    Task<string> AssignRolesAsync(string userId, UserRolesRequest request, CancellationToken cancellationToken);
 
     //Task<List<string>> GetPermissionsAsync(string userId, CancellationToken cancellationToken);
     //Task<bool> HasPermissionAsync(string userId, string permission, CancellationToken cancellationToken = default);

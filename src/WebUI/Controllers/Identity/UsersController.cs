@@ -1,8 +1,11 @@
 ﻿using CheckflixApp.Application.Identity.Common;
+using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Application.Identity.Users.Commands.AssignRolesCommand;
 using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
 using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
 using CheckflixApp.Application.Identity.Users.Queries.GetById;
 using CheckflixApp.Application.Identity.Users.Queries.GetList;
+using CheckflixApp.Application.Identity.Users.Queries.GetUserRoles;
 using CheckflixApp.WebUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -25,6 +28,16 @@ public class UsersController : ApiControllerBase
     [OpenApiOperation("Creates a new user.", "")]
     public async Task<string> CreateAsync(CreateUserCommand command)
         => await Mediator.Send(command);
+
+    [HttpGet("{id}/roles")]
+    [OpenApiOperation("Get a user's roles.", "")]
+    public async Task<List<UserRoleDto>> GetRolesAsync(string id, CancellationToken cancellationToken)
+        => await Mediator.Send(new GetUserRolesQuery(id));
+
+    [HttpPost("{id}/roles")]
+    [OpenApiOperation("Update a user's assigned roles.", "")]
+    public async Task<string> AssignRolesAsync(string id, UserRolesRequest request, CancellationToken cancellationToken)
+        => await Mediator.Send(new AssignRolesCommand(id, request));
 
     [HttpPut("{id}/toggle-status")]
     [OpenApiOperation("Toggle a user's active status.", "")]

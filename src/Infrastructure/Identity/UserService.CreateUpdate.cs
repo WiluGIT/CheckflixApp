@@ -94,7 +94,7 @@ internal partial class UserService
     {
         if (command.ConfirmPassword != command.Password)
         {
-            throw new InternalServerException(_localizer["Validation Errors Occurred."]);
+            throw new InternalServerException(_localizer["Given passwords don't match."]);
         }
 
         var user = new ApplicationUser
