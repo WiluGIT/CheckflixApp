@@ -16,6 +16,7 @@ internal static class ServicesExtensions
         services.AddTransient<IIdentityService, IdentityService>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IUserService, UserService>();
+        services.AddTransient<IRoleService, RoleService>();
         services.AddTransient<IAuditService, AuditService>();
         services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
