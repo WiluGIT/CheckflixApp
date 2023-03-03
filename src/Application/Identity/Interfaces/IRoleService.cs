@@ -1,4 +1,5 @@
 ﻿using CheckflixApp.Application.Identity.Common;
+using CheckflixApp.Application.Identity.Roles.Commands.CreateOrUpdateRole;
 
 namespace CheckflixApp.Application.Identity.Interfaces;
 public interface IRoleService
@@ -11,11 +12,7 @@ public interface IRoleService
 
     Task<RoleDto> GetByIdAsync(string id);
 
-    Task<RoleDto> GetByIdWithPermissionsAsync(string roleId, CancellationToken cancellationToken);
-
-    //Task<string> CreateOrUpdateAsync(CreateOrUpdateRoleRequest request);
-
-    //Task<string> UpdatePermissionsAsync(UpdateRolePermissionsRequest request, CancellationToken cancellationToken);
+    Task<string> CreateOrUpdateAsync(CreateOrUpdateRoleCommand command);
 
     Task<string> DeleteAsync(string id);
 }

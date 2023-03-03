@@ -5,6 +5,7 @@ using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Mappings;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Application.Identity.Roles.Commands.CreateOrUpdateRole;
 using CheckflixApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -56,12 +57,12 @@ internal class RoleService : IRoleService
         => await _db.Roles.SingleOrDefaultAsync(x => x.Id == id) is { } role ? _mapper.Map<RoleDto>(role)
             : throw new NotFoundException(_t["Role Not Found"]);
 
-    public async Task<string> CreateOrUpdateAsync(CreateOrUpdateRoleRequest request)
+    public async Task<string> CreateOrUpdateAsync(CreateOrUpdateRoleCommand command)
     {
-        if (string.IsNullOrEmpty(request.Id))
+        if (string.IsNullOrEmpty(command.Id))
         {
             // Create a new role.
-            var newRole = new IdentityRole(request.Name);
+            var newRole = new IdentityRole(command.Name);
             var createResult = await _roleManager.CreateAsync(newRole);
 
             if (!createResult.Succeeded)
@@ -71,11 +72,11 @@ internal class RoleService : IRoleService
 
             //await _events.PublishAsync(new ApplicationRoleCreatedEvent(role.Id, role.Name));
 
-            return string.Format(_t["Role {0} Created."], request.Name);
+            return string.Format(_t["Role {0} Created."], command.Name);
         }
 
         // Update an existing role.
-        IdentityRole? role = await _roleManager.FindByIdAsync(request.Id);
+        IdentityRole? role = await _roleManager.FindByIdAsync(command.Id);
 
         _ = role ?? throw new NotFoundException(_t["Role Not Found"]);
 
@@ -84,8 +85,8 @@ internal class RoleService : IRoleService
             throw new InternalServerException(string.Format(_t["Not allowed to modify {0} Role."], role.Name));
         }
 
-        role.Name = request.Name;
-        role.NormalizedName = request.Name.ToUpperInvariant();
+        role.Name = command.Name;
+        role.NormalizedName = command.Name.ToUpperInvariant();
         var result = await _roleManager.UpdateAsync(role);
 
         if (!result.Succeeded)
