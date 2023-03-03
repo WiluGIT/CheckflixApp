@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper.Internal;
-using CheckflixApp.Application.Common.Exceptions;
-using CheckflixApp.Application.Identity.Users.Commands.ChangePassword;
+﻿using CheckflixApp.Application.Common.Exceptions;
+using CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
 using CheckflixApp.Application.Identity.Users.Commands.ForgotPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ResetPassword;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace CheckflixApp.Infrastructure.Identity;
 internal partial class UserService
@@ -18,7 +11,6 @@ internal partial class UserService
         var user = await _userManager.FindByEmailAsync(command.Email.Normalize());
         if (user is null || !await _userManager.IsEmailConfirmedAsync(user))
         {
-            // Don't reveal that the user does not exist or is not confirmed
             throw new InternalServerException(_localizer["An Error has occurred!"]);
         }
 
@@ -51,7 +43,7 @@ internal partial class UserService
             : throw new InternalServerException(_localizer["An Error has occurred!"]);
     }
 
-    public async Task ChangePasswordAsync(ChangePasswordCommand command, string userId)
+    public async Task<string> ChangePasswordAsync(ChangePasswordCommand command, string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
 
@@ -63,5 +55,7 @@ internal partial class UserService
         {
             throw new InternalServerException(_localizer["Change password failed"]);
         }
+
+        return _localizer["Change password succeeded"];
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System.Security.Claims;
 using CheckflixApp.Application.Common.Exceptions;
+using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
-using CheckflixApp.Application.Identity.Users.Commands.UpdateUser;
-using CheckflixApp.Domain.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -140,7 +139,7 @@ internal partial class UserService
         return string.Join(Environment.NewLine, messages);
     }
 
-    public async Task UpdateAsync(UpdateUserCommand command, string userId)
+    public async Task<string> UpdateAsync(UpdateUserCommand command, string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         _ = user ?? throw new NotFoundException(_localizer["User Not Found."]);
@@ -173,5 +172,7 @@ internal partial class UserService
         {
             throw new InternalServerException(_localizer["Update profile failed"]);
         }
+
+        return _localizer["Update profile succeeded"];
     }
 }

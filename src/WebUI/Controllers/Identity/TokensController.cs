@@ -2,7 +2,6 @@
 using CheckflixApp.Application.Identity.Tokens.Queries.GetRefreshToken;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetToken;
 using CheckflixApp.WebUI.Controllers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 

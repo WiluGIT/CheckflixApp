@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CheckflixApp.Application.Common.FileStorage;
+using CheckflixApp.Application.Common.Security;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Localization;
 
-namespace CheckflixApp.Application.Identity.Users.Commands.ChangePassword;
+namespace CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
+
+[Authorize]
 public class ChangePasswordCommand : IRequest<string>
 {
     public string Password { get; set; } = default!;
@@ -14,9 +14,9 @@ public class ChangePasswordCommand : IRequest<string>
     public string ConfirmNewPassword { get; set; } = default!;
 }
 
-public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand>
+public class ChangePasswordRequestValidator : AbstractValidator<ChangePasswordCommand>
 {
-    public ChangePasswordCommandValidator()
+    public ChangePasswordRequestValidator(IStringLocalizer<ChangePasswordRequestValidator> T)
     {
         RuleFor(p => p.Password)
             .NotEmpty();
@@ -26,6 +26,6 @@ public class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCo
 
         RuleFor(p => p.ConfirmNewPassword)
             .Equal(p => p.NewPassword)
-                .WithMessage("Passwords do not match.");
+                .WithMessage(T["Passwords do not match."]);
     }
 }

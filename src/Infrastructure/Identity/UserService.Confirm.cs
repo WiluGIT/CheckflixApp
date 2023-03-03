@@ -19,7 +19,7 @@ internal partial class UserService
         return verificationUri;
     }
 
-    public async Task<string> ConfirmEmailAsync(string userId, string code, string tenant, CancellationToken cancellationToken)
+    public async Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken)
     {
         var user = await _userManager.Users
             .Where(u => u.Id == userId && !u.EmailConfirmed)

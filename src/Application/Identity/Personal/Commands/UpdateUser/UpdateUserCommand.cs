@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CheckflixApp.Application.Common.FileStorage;
+﻿using CheckflixApp.Application.Common.FileStorage;
+using CheckflixApp.Application.Common.Security;
 using MediatR;
 
-namespace CheckflixApp.Application.Identity.Users.Commands.UpdateUser;
+namespace CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
+
+[Authorize]
 public class UpdateUserCommand : IRequest<string>
 {
     public string Id { get; set; } = default!;

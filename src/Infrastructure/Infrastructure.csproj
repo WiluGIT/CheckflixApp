@@ -9,6 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Mappings\**" />
+      <EmbeddedResource Remove="Mappings\**" />
+      <None Remove="Mappings\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="6.1.0" />
         <PackageReference Include="CsvHelper" Version="15.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.0-rc.2.22476.2" />
@@ -22,10 +28,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Mappings\" />
     </ItemGroup>
 
 </Project>
