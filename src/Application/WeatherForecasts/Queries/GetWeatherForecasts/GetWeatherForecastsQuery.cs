@@ -8,15 +8,17 @@ namespace CheckflixApp.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 [Authorize(Policy = "CanPurge")]
 public record GetWeatherForecastsQuery : IRequest<IEnumerable<WeatherForecast>>;
 
-public class GetWeatherForecastsQueryHandler : RequestHandler<GetWeatherForecastsQuery, IEnumerable<WeatherForecast>>
+public class GetWeatherForecastsQueryHandler : IRequestHandler<GetWeatherForecastsQuery, IEnumerable<WeatherForecast>>
 {
     private static readonly string[] Summaries = new[]
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    protected override IEnumerable<WeatherForecast> Handle(GetWeatherForecastsQuery request)
+    public async Task<IEnumerable<WeatherForecast>> Handle(GetWeatherForecastsQuery request, CancellationToken cancellationToken)
     {
+        await Task.CompletedTask;
+
         var rng = new Random();
 
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast

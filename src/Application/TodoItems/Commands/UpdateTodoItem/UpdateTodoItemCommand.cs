@@ -4,7 +4,7 @@ using CheckflixApp.Domain.Entities;
 using MediatR;
 
 namespace CheckflixApp.Application.TodoItems.Commands.UpdateTodoItem;
-public record UpdateTodoItemCommand : IRequest
+public record UpdateTodoItemCommand : IRequest<Unit>
 {
     public int Id { get; init; }
 
@@ -13,7 +13,7 @@ public record UpdateTodoItemCommand : IRequest
     public bool Done { get; init; }
 }
 
-public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemCommand>
+public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemCommand, Unit>
 {
     private readonly IApplicationDbContext _context;
 

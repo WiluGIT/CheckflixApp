@@ -5,9 +5,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CheckflixApp.Application.TodoLists.Commands.DeleteTodoList;
-public record DeleteTodoListCommand(int Id) : IRequest;
+public record DeleteTodoListCommand(int Id) : IRequest<Unit>;
 
-public class DeleteTodoListCommandHandler : IRequestHandler<DeleteTodoListCommand>
+public class DeleteTodoListCommandHandler : IRequestHandler<DeleteTodoListCommand, Unit>
 {
     private readonly IApplicationDbContext _context;
 

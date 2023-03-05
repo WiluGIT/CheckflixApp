@@ -4,14 +4,14 @@ using CheckflixApp.Domain.Entities;
 using MediatR;
 
 namespace CheckflixApp.Application.TodoLists.Commands.UpdateTodoList;
-public record UpdateTodoListCommand : IRequest
+public record UpdateTodoListCommand : IRequest<Unit>
 {
     public int Id { get; init; }
 
     public string? Title { get; init; }
 }
 
-public class UpdateTodoListCommandHandler : IRequestHandler<UpdateTodoListCommand>
+public class UpdateTodoListCommandHandler : IRequestHandler<UpdateTodoListCommand, Unit>
 {
     private readonly IApplicationDbContext _context;
 

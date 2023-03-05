@@ -3,11 +3,12 @@ using CheckflixApp.Application.Common.Security;
 using MediatR;
 
 namespace CheckflixApp.Application.TodoLists.Commands.PurgeTodoLists;
+
 [Authorize(Roles = "Administrator")]
 [Authorize(Policy = "CanPurge")]
-public record PurgeTodoListsCommand : IRequest;
+public record PurgeTodoListsCommand : IRequest<Unit>;
 
-public class PurgeTodoListsCommandHandler : IRequestHandler<PurgeTodoListsCommand>
+public class PurgeTodoListsCommandHandler : IRequestHandler<PurgeTodoListsCommand, Unit>
 {
     private readonly IApplicationDbContext _context;
 

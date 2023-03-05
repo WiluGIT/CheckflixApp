@@ -1237,10 +1237,6 @@
           "name": {
             "type": "string"
           },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
           "permissions": {
             "type": "array",
             "nullable": true,
@@ -1260,10 +1256,6 @@
           },
           "name": {
             "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
           }
         }
       },
