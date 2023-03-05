@@ -5,9 +5,9 @@ using CheckflixApp.Domain.Events;
 using MediatR;
 
 namespace CheckflixApp.Application.TodoItems.Commands.DeleteTodoItem;
-public record DeleteTodoItemCommand(int Id) : IRequest;
+public record DeleteTodoItemCommand(int Id) : IRequest<Unit>;
 
-public class DeleteTodoItemCommandHandler : IRequestHandler<DeleteTodoItemCommand>
+public class DeleteTodoItemCommandHandler : IRequestHandler<DeleteTodoItemCommand, Unit>
 {
     private readonly IApplicationDbContext _context;
 

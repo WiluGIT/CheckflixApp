@@ -5,7 +5,7 @@ using CheckflixApp.Domain.Enums;
 using MediatR;
 
 namespace CheckflixApp.Application.TodoItems.Commands.UpdateTodoItemDetail;
-public record UpdateTodoItemDetailCommand : IRequest
+public record UpdateTodoItemDetailCommand : IRequest<Unit>
 {
     public int Id { get; init; }
 
@@ -16,7 +16,7 @@ public record UpdateTodoItemDetailCommand : IRequest
     public string? Note { get; init; }
 }
 
-public class UpdateTodoItemDetailCommandHandler : IRequestHandler<UpdateTodoItemDetailCommand>
+public class UpdateTodoItemDetailCommandHandler : IRequestHandler<UpdateTodoItemDetailCommand, Unit>
 {
     private readonly IApplicationDbContext _context;
 

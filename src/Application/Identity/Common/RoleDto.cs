@@ -1,4 +1,6 @@
-﻿namespace CheckflixApp.Application.Identity.Common;
+﻿using CheckflixApp.Application.Common.Mappings;
+
+namespace CheckflixApp.Application.Identity.Common;
 public class RoleDto
 {
     public string Id { get; set; } = default!;
