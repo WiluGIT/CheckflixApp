@@ -12,7 +12,6 @@ public class CreateOrUpdateRoleCommand : IRequest<string>
 {
     public string? Id { get; set; }
     public string Name { get; set; } = default!;
-    public string? Description { get; set; }
 }
 
 public class CreateOrUpdateRoleCommandValidator : AbstractValidator<CreateOrUpdateRoleCommand>

@@ -2244,7 +2244,6 @@ export interface IAuditDto {
 export class RoleDto implements IRoleDto {
     id?: string;
     name?: string;
-    description?: string | undefined;
     permissions?: string[] | undefined;
 
     constructor(data?: IRoleDto) {
@@ -2260,7 +2259,6 @@ export class RoleDto implements IRoleDto {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.description = _data["description"];
             if (Array.isArray(_data["permissions"])) {
                 this.permissions = [] as any;
                 for (let item of _data["permissions"])
@@ -2280,7 +2278,6 @@ export class RoleDto implements IRoleDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["description"] = this.description;
         if (Array.isArray(this.permissions)) {
             data["permissions"] = [];
             for (let item of this.permissions)
@@ -2293,14 +2290,12 @@ export class RoleDto implements IRoleDto {
 export interface IRoleDto {
     id?: string;
     name?: string;
-    description?: string | undefined;
     permissions?: string[] | undefined;
 }
 
 export class CreateOrUpdateRoleCommand implements ICreateOrUpdateRoleCommand {
     id?: string | undefined;
     name?: string;
-    description?: string | undefined;
 
     constructor(data?: ICreateOrUpdateRoleCommand) {
         if (data) {
@@ -2315,7 +2310,6 @@ export class CreateOrUpdateRoleCommand implements ICreateOrUpdateRoleCommand {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.description = _data["description"];
         }
     }
 
@@ -2330,7 +2324,6 @@ export class CreateOrUpdateRoleCommand implements ICreateOrUpdateRoleCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["description"] = this.description;
         return data;
     }
 }
@@ -2338,7 +2331,6 @@ export class CreateOrUpdateRoleCommand implements ICreateOrUpdateRoleCommand {
 export interface ICreateOrUpdateRoleCommand {
     id?: string | undefined;
     name?: string;
-    description?: string | undefined;
 }
 
 export class TokenDto implements ITokenDto {
