@@ -3,11 +3,13 @@ using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CheckflixApp.Application.Common.Exceptions;
+using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Models;
 using CheckflixApp.Application.Common.Specification;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
+using CheckflixApp.Application.Mailing;
 using CheckflixApp.Infrastructure.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +24,9 @@ internal partial class UserService : IUserService
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IStringLocalizer<UserService> _localizer;
     private readonly SecuritySettings _securitySettings;
+    private readonly IMailService _mailService;
+    private readonly IJobService _jobService;
+    private readonly IEmailTemplateService _templateService;
     //private readonly IFileStorageService _fileStorage;
     private readonly IMapper _mapper;
 
@@ -31,7 +36,10 @@ internal partial class UserService : IUserService
         IStringLocalizer<UserService> localizer,
         RoleManager<IdentityRole> roleManager,
         IOptions<SecuritySettings> securitySettings,
-        SignInManager<ApplicationUser> signInManager
+        SignInManager<ApplicationUser> signInManager,
+        IMailService mailService,
+        IJobService jobService,
+        IEmailTemplateService templateService
         //IFileStorageService fileStorage
         )
     {
@@ -41,6 +49,9 @@ internal partial class UserService : IUserService
         _roleManager = roleManager;
         _securitySettings = securitySettings.Value;
         _signInManager = signInManager;
+        _mailService = mailService;
+        _jobService = jobService;
+        _templateService = templateService;
         //fileStorage = fileStorage;
     }
 

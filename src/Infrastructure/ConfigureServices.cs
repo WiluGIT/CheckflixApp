@@ -1,6 +1,8 @@
 ﻿using CheckflixApp.Infrastructure.Auth;
+using CheckflixApp.Infrastructure.BackgroundJobs;
 using CheckflixApp.Infrastructure.Identity;
 using CheckflixApp.Infrastructure.Localization;
+using CheckflixApp.Infrastructure.Mailing;
 using CheckflixApp.Infrastructure.Persistence;
 using CheckflixApp.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +15,7 @@ public static class ConfigureServices
         => services
             .AddPersistance(configuration)
             .AddAuth(configuration)
+            .AddBackgroundJobs(configuration)
             .AddInternalServices(configuration)
             .AddConfigurations(configuration)
             .AddInternalLocalization(configuration)
@@ -31,6 +34,7 @@ public static class ConfigureServices
             })
             .UseRouting()
             .UseAuthentication()
+            .UseHangfireDashboard(config)
             //.UseIdentityServer()
             .UseAuthorization();
 
@@ -38,6 +42,7 @@ public static class ConfigureServices
     {
         services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.Configure<SecuritySettings>(configuration.GetSection(nameof(SecuritySettings)));
+        services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
 
         return services;
     }

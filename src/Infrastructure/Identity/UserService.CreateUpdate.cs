@@ -2,6 +2,7 @@
 using CheckflixApp.Application.Common.Exceptions;
 using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
+using CheckflixApp.Application.Mailing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -114,25 +115,25 @@ internal partial class UserService
 
         var messages = new List<string> { string.Format(_localizer["User {0} Registered."], user.UserName) };
 
-        //TODO: Check and refactor user creation
 
-        //if (_securitySettings.RequireConfirmedAccount && !string.IsNullOrEmpty(user.Email))
-        //{
-        //    // send verification email
-        //    string emailVerificationUri = await GetEmailVerificationUriAsync(user, origin);
-        //    RegisterUserEmailModel eMailModel = new RegisterUserEmailModel()
-        //    {
-        //        Email = user.Email,
-        //        UserName = user.UserName,
-        //        Url = emailVerificationUri
-        //    };
-        //    var mailRequest = new MailRequest(
-        //        new List<string> { user.Email },
-        //        _localizer["Confirm Registration"],
-        //        _templateService.GenerateEmailTemplate("email-confirmation", eMailModel));
-        //    _jobService.Enqueue(() => _mailService.SendAsync(mailRequest));
-        //    messages.Add(_localizer[$"Please check {user.Email} to verify your account!"]);
-        //}
+        if (_securitySettings.RequireConfirmedAccount && !string.IsNullOrEmpty(user.Email))
+        {
+            // send verification email
+            string emailVerificationUri = await GetEmailVerificationUriAsync(user, origin);
+            RegisterUserEmailModel eMailModel = new RegisterUserEmailModel()
+            {
+                Email = user.Email,
+                UserName = user.UserName,
+                Url = emailVerificationUri
+            };
+
+            var mailRequest = new MailRequest(
+                new List<string> { user.Email },
+                _localizer["Confirm Registration"],
+                _templateService.GenerateEmailTemplate("email-confirmation", eMailModel));
+            _jobService.Enqueue(() => _mailService.SendAsync(mailRequest, CancellationToken.None));
+            messages.Add(_localizer[$"Please check {user.Email} to verify your account!"]);
+        }
 
         //await _events.PublishAsync(new ApplicationUserCreatedEvent(user.Id));
 
