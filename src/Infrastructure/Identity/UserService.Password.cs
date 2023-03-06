@@ -2,6 +2,8 @@
 using CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
 using CheckflixApp.Application.Identity.Users.Commands.ForgotPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ResetPassword;
+using CheckflixApp.Application.Mailing;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace CheckflixApp.Infrastructure.Identity;
 internal partial class UserService
@@ -16,15 +18,17 @@ internal partial class UserService
 
         // For more information on how to enable account confirmation and password reset please
         // visit https://go.microsoft.com/fwlink/?LinkID=532713
-        //string code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        //const string route = "account/reset-password";
-        //var endpointUri = new Uri(string.Concat($"{origin}/", route));
-        //string passwordResetUrl = QueryHelpers.AddQueryString(endpointUri.ToString(), "Token", code);
-        //var mailRequest = new MailRequest(
-        //    new List<string> { command.Email },
-        //    _localizer["Reset Password"],
-        //    _localizer[$"Your Password Reset Token is '{code}'. You can reset your password using the {endpointUri} Endpoint."]);
-        //_jobService.Enqueue(() => _mailService.SendAsync(mailRequest));
+        string code = await _userManager.GeneratePasswordResetTokenAsync(user);
+        const string route = "account/reset-password";
+        var endpointUri = new Uri(string.Concat($"{origin}/", route));
+        string passwordResetUrl = QueryHelpers.AddQueryString(endpointUri.ToString(), "Token", code);
+
+        var mailRequest = new MailRequest(
+            new List<string> { command.Email },
+            _localizer["Reset Password"],
+            _localizer[$"Your Password Reset Token is '{code}'. You can reset your password using the {endpointUri} Endpoint."]);
+
+        _jobService.Enqueue(() => _mailService.SendAsync(mailRequest, CancellationToken.None));
 
         return _localizer["Password Reset Mail has been sent to your authorized Email."];
     }
