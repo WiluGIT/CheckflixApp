@@ -3,6 +3,7 @@ using CheckflixApp.Application.Common.Exceptions;
 using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
 using CheckflixApp.Application.Mailing;
+using CheckflixApp.Domain.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -148,11 +149,11 @@ internal partial class UserService
         string currentImage = user.ImageUrl ?? string.Empty;
         if (command.Image != null || command.DeleteCurrentImage)
         {
-            //user.ImageUrl = await _fileStorage.UploadAsync<ApplicationUser>(command.Image, FileType.Image);
+            user.ImageUrl = await _fileStorage.UploadAsync<ApplicationUser>(command.Image, FileType.Image);
             if (command.DeleteCurrentImage && !string.IsNullOrEmpty(currentImage))
             {
-                string root = Directory.GetCurrentDirectory();
-                //_fileStorage.Remove(Path.Combine(root, currentImage));
+                string root = AppDomain.CurrentDomain.BaseDirectory;
+                _fileStorage.Remove(Path.Combine(root, currentImage));
             }
         }
 

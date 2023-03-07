@@ -33,16 +33,31 @@
         "summary": "Update profile details of currently logged in user.",
         "operationId": "Personal_UpdateProfile",
         "requestBody": {
-          "x-name": "command",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateUserCommand"
+                "type": "object",
+                "properties": {
+                  "PhoneNumber": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "Email": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "Image": {
+                    "type": "string",
+                    "format": "binary",
+                    "nullable": true
+                  },
+                  "DeleteCurrentImage": {
+                    "type": "boolean"
+                  }
+                }
               }
             }
-          },
-          "required": true,
-          "x-position": 1
+          }
         },
         "responses": {
           "200": {
@@ -1116,57 +1131,6 @@
           "imageUrl": {
             "type": "string",
             "nullable": true
-          }
-        }
-      },
-      "UpdateUserCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "firstName": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastName": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "image": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/FileUploadCommand"
-              }
-            ]
-          },
-          "deleteCurrentImage": {
-            "type": "boolean"
-          }
-        }
-      },
-      "FileUploadCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "extension": {
-            "type": "string"
-          },
-          "data": {
-            "type": "string"
           }
         }
       },

@@ -21,7 +21,7 @@ public class PersonalController : ApiControllerBase
 
     [HttpPut("profile")]
     [OpenApiOperation("Update profile details of currently logged in user.", "")]
-    public async Task<ActionResult<string>> UpdateProfileAsync(UpdateUserCommand command)
+    public async Task<ActionResult<string>> UpdateProfileAsync([FromForm]UpdateUserCommand command)
         => await Mediator.Send(command);
 
     [HttpPut("change-password")]
