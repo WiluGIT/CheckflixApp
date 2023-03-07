@@ -22,8 +22,12 @@ export interface IPersonalClient {
     getProfile(): Observable<UserDetailsDto>;
     /**
      * Update profile details of currently logged in user.
+     * @param phoneNumber (optional) 
+     * @param email (optional) 
+     * @param image (optional) 
+     * @param deleteCurrentImage (optional) 
      */
-    updateProfile(command: UpdateUserCommand): Observable<string>;
+    updateProfile(phoneNumber: string | null | undefined, email: string | null | undefined, image: FileParameter | null | undefined, deleteCurrentImage: boolean | undefined): Observable<string>;
     /**
      * Change password of currently logged in user.
      */
@@ -100,19 +104,32 @@ export class PersonalClient implements IPersonalClient {
 
     /**
      * Update profile details of currently logged in user.
+     * @param phoneNumber (optional) 
+     * @param email (optional) 
+     * @param image (optional) 
+     * @param deleteCurrentImage (optional) 
      */
-    updateProfile(command: UpdateUserCommand): Observable<string> {
+    updateProfile(phoneNumber: string | null | undefined, email: string | null | undefined, image: FileParameter | null | undefined, deleteCurrentImage: boolean | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/Personal/profile";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(command);
+        const content_ = new FormData();
+        if (phoneNumber !== null && phoneNumber !== undefined)
+            content_.append("PhoneNumber", phoneNumber.toString());
+        if (email !== null && email !== undefined)
+            content_.append("Email", email.toString());
+        if (image !== null && image !== undefined)
+            content_.append("Image", image.data, image.fileName ? image.fileName : "Image");
+        if (deleteCurrentImage === null || deleteCurrentImage === undefined)
+            throw new Error("The parameter 'deleteCurrentImage' cannot be null.");
+        else
+            content_.append("DeleteCurrentImage", deleteCurrentImage.toString());
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -2025,110 +2042,6 @@ export interface IUserDetailsDto {
     imageUrl?: string | undefined;
 }
 
-export class UpdateUserCommand implements IUpdateUserCommand {
-    id?: string;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    phoneNumber?: string | undefined;
-    email?: string | undefined;
-    image?: FileUploadCommand | undefined;
-    deleteCurrentImage?: boolean;
-
-    constructor(data?: IUpdateUserCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.firstName = _data["firstName"];
-            this.lastName = _data["lastName"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.email = _data["email"];
-            this.image = _data["image"] ? FileUploadCommand.fromJS(_data["image"]) : <any>undefined;
-            this.deleteCurrentImage = _data["deleteCurrentImage"];
-        }
-    }
-
-    static fromJS(data: any): UpdateUserCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateUserCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
-        data["phoneNumber"] = this.phoneNumber;
-        data["email"] = this.email;
-        data["image"] = this.image ? this.image.toJSON() : <any>undefined;
-        data["deleteCurrentImage"] = this.deleteCurrentImage;
-        return data;
-    }
-}
-
-export interface IUpdateUserCommand {
-    id?: string;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    phoneNumber?: string | undefined;
-    email?: string | undefined;
-    image?: FileUploadCommand | undefined;
-    deleteCurrentImage?: boolean;
-}
-
-export class FileUploadCommand implements IFileUploadCommand {
-    name?: string;
-    extension?: string;
-    data?: string;
-
-    constructor(data?: IFileUploadCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.extension = _data["extension"];
-            this.data = _data["data"];
-        }
-    }
-
-    static fromJS(data: any): FileUploadCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new FileUploadCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["extension"] = this.extension;
-        data["data"] = this.data;
-        return data;
-    }
-}
-
-export interface IFileUploadCommand {
-    name?: string;
-    extension?: string;
-    data?: string;
-}
-
 export class ChangePasswordCommand implements IChangePasswordCommand {
     password?: string;
     newPassword?: string;
@@ -3258,6 +3171,11 @@ export interface IWeatherForecast {
     temperatureC?: number;
     temperatureF?: number;
     summary?: string | undefined;
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
 }
 
 export interface FileResponse {

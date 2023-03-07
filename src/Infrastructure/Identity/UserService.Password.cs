@@ -18,6 +18,7 @@ internal partial class UserService
 
         // For more information on how to enable account confirmation and password reset please
         // visit https://go.microsoft.com/fwlink/?LinkID=532713
+        // To change code expiry date use DataProtectionTokenProviderOptions in startup
         string code = await _userManager.GeneratePasswordResetTokenAsync(user);
         const string route = "account/reset-password";
         var endpointUri = new Uri(string.Concat($"{origin}/", route));

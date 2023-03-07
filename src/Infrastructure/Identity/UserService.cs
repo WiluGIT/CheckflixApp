@@ -3,6 +3,7 @@ using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CheckflixApp.Application.Common.Exceptions;
+using CheckflixApp.Application.Common.FileStorage;
 using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Models;
 using CheckflixApp.Application.Common.Specification;
@@ -27,7 +28,7 @@ internal partial class UserService : IUserService
     private readonly IMailService _mailService;
     private readonly IJobService _jobService;
     private readonly IEmailTemplateService _templateService;
-    //private readonly IFileStorageService _fileStorage;
+    private readonly IFileStorageService _fileStorage;
     private readonly IMapper _mapper;
 
     public UserService(
@@ -39,8 +40,8 @@ internal partial class UserService : IUserService
         SignInManager<ApplicationUser> signInManager,
         IMailService mailService,
         IJobService jobService,
-        IEmailTemplateService templateService
-        //IFileStorageService fileStorage
+        IEmailTemplateService templateService,
+        IFileStorageService fileStorage
         )
     {
         _userManager = userManager;
@@ -52,7 +53,7 @@ internal partial class UserService : IUserService
         _mailService = mailService;
         _jobService = jobService;
         _templateService = templateService;
-        //fileStorage = fileStorage;
+        _fileStorage = fileStorage;
     }
 
     public async Task<int> GetCountAsync(CancellationToken cancellationToken) =>

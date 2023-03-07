@@ -1,10 +1,12 @@
 ﻿using CheckflixApp.Application.Auditing.Interfaces;
+using CheckflixApp.Application.Common.FileStorage;
 using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Mailing;
 using CheckflixApp.Infrastructure.Auditing;
 using CheckflixApp.Infrastructure.BackgroundJobs;
 using CheckflixApp.Infrastructure.Files;
+using CheckflixApp.Infrastructure.FileStorage;
 using CheckflixApp.Infrastructure.Identity;
 using CheckflixApp.Infrastructure.Mailing;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +25,7 @@ internal static class ServicesExtensions
         services.AddTransient<IMailService, SmtpMailService>();
         services.AddTransient<IEmailTemplateService, EmailTemplateService>();
         services.AddTransient<IJobService, HangfireService>();
+        services.AddTransient<IFileStorageService, LocalFileStorageService>();
         services.AddTransient<IAuditService, AuditService>();
         services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
