@@ -85,6 +85,13 @@ internal partial class UserService : IUserService
 
     public async Task<UserDetailsDto> GetAsync(string userId, CancellationToken cancellationToken)
     {
+        var test = await _userManager.Users
+    .AsNoTracking()
+    .Include(x => x.Followers)
+    .Include(x => x.Following)
+    .Where(u => u.Id == userId)
+    .FirstOrDefaultAsync(cancellationToken);
+
         var userDetailsDto = await _userManager.Users
             .AsNoTracking()
             .Where(u => u.Id == userId)
