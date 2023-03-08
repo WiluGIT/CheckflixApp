@@ -1,5 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Net;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using CheckflixApp.Application.Common.FileStorage;
 using CheckflixApp.Domain.Common;
@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 namespace CheckflixApp.Infrastructure.FileStorage;
 public class LocalFileStorageService : IFileStorageService
 {
+    private const string NumberPattern = "-{0}";
+
     public async Task<string> UploadAsync<T>(IFormFile? formFile, FileType supportedFileType, CancellationToken cancellationToken = default) where T : class
     {
         if (formFile == null || formFile.Length <= 0)
@@ -41,6 +43,7 @@ public class LocalFileStorageService : IFileStorageService
         string fileName = formFile.FileName.Trim('"');
         fileName = RemoveSpecialCharacters(fileName);
         fileName = fileName.ReplaceWhitespace("-");
+        fileName = WebUtility.HtmlEncode(fileName);
         string fullPath = Path.Combine(pathToSave, fileName);
         string dbPath = Path.Combine(folderName, fileName);
         if (File.Exists(fullPath))
@@ -67,15 +70,8 @@ public class LocalFileStorageService : IFileStorageService
         }
     }
 
-    private const string NumberPattern = "-{0}";
-
     private static string NextAvailableFilename(string path)
     {
-        if (!File.Exists(path))
-        {
-            return path;
-        }
-
         if (Path.HasExtension(path))
         {
             return GetNextFilename(path.Insert(path.LastIndexOf(Path.GetExtension(path), StringComparison.Ordinal), NumberPattern));
