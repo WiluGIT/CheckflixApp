@@ -16,7 +16,18 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IFollowingsClient {
+    /**
+     * Follow user with given userId.
+     */
     followUser(userId: string | null): Observable<string>;
+    /**
+     * Unfollow user with given userId.
+     */
+    unfollowUser(userId: string | null): Observable<string>;
+    /**
+     * Get logged in user followings count.
+     */
+    getUserFollowings(): Observable<UserFollowingsCountDto>;
 }
 
 @Injectable({
@@ -32,6 +43,9 @@ export class FollowingsClient implements IFollowingsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
+    /**
+     * Follow user with given userId.
+     */
     followUser(userId: string | null): Observable<string> {
         let url_ = this.baseUrl + "/api/Followings/{userId}/follow";
         if (userId === undefined || userId === null)
@@ -74,6 +88,112 @@ export class FollowingsClient implements IFollowingsClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 result200 = resultData200 !== undefined ? resultData200 : <any>null;
     
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Unfollow user with given userId.
+     */
+    unfollowUser(userId: string | null): Observable<string> {
+        let url_ = this.baseUrl + "/api/Followings/{userId}/follow";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUnfollowUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUnfollowUser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<string>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<string>;
+        }));
+    }
+
+    protected processUnfollowUser(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Get logged in user followings count.
+     */
+    getUserFollowings(): Observable<UserFollowingsCountDto> {
+        let url_ = this.baseUrl + "/api/Followings/follow-count";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserFollowings(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserFollowings(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserFollowingsCountDto>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserFollowingsCountDto>;
+        }));
+    }
+
+    protected processGetUserFollowings(response: HttpResponseBase): Observable<UserFollowingsCountDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserFollowingsCountDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -2050,6 +2170,46 @@ export class WeatherForecastClient implements IWeatherForecastClient {
         }
         return _observableOf(null as any);
     }
+}
+
+export class UserFollowingsCountDto implements IUserFollowingsCountDto {
+    followerCount?: number;
+    followingCount?: number;
+
+    constructor(data?: IUserFollowingsCountDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.followerCount = _data["followerCount"];
+            this.followingCount = _data["followingCount"];
+        }
+    }
+
+    static fromJS(data: any): UserFollowingsCountDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserFollowingsCountDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["followerCount"] = this.followerCount;
+        data["followingCount"] = this.followingCount;
+        return data;
+    }
+}
+
+export interface IUserFollowingsCountDto {
+    followerCount?: number;
+    followingCount?: number;
 }
 
 export class UserDetailsDto implements IUserDetailsDto {

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using CheckflixApp.Application.Common.Models;
+using CheckflixApp.Application.Followings.Common;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
 using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
@@ -17,6 +18,7 @@ public interface IUserService
     Task<bool> ExistsWithPhoneNumberAsync(string phoneNumber, string? exceptId = null);
     Task<List<UserDetailsDto>> GetListAsync(CancellationToken cancellationToken);
     Task<int> GetCountAsync(CancellationToken cancellationToken);
+    Task<UserFollowingsCountDto> GetFollowingCountAsync(string userId, CancellationToken cancellationToken);
     Task<UserDetailsDto> GetAsync(string userId, CancellationToken cancellationToken);
     Task<List<UserRoleDto>> GetRolesAsync(string userId, CancellationToken cancellationToken);    
     Task<string> AssignRolesAsync(string userId, UserRolesRequest request, CancellationToken cancellationToken);
