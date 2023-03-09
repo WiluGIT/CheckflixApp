@@ -7,6 +7,7 @@ using CheckflixApp.Application.Common.FileStorage;
 using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Models;
 using CheckflixApp.Application.Common.Specification;
+using CheckflixApp.Application.Followings.Common;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
@@ -83,8 +84,34 @@ internal partial class UserService : IUserService
                 })
                 .ToListAsync();
 
+    public async Task<UserFollowingsCountDto> GetFollowingCountAsync(string userId, CancellationToken cancellationToken)
+    {
+        var userFollowingsCountDto = await _userManager.Users
+            .Include(x => x.Followers)
+            .Include(x => x.Following)
+            .AsNoTracking()
+            .Where(x => x.Id == userId)
+            .Select(x => new UserFollowingsCountDto
+            {
+                FollowerCount = x.Followers.Count(),
+                FollowingCount = x.Following.Count()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        _ = userFollowingsCountDto ?? throw new NotFoundException(_localizer["User Followings Not Found"]);
+
+        return userFollowingsCountDto;
+    }
+
     public async Task<UserDetailsDto> GetAsync(string userId, CancellationToken cancellationToken)
     {
+        var test = await _userManager.Users
+    .AsNoTracking()
+    .Include(x => x.Followers)
+    .Include(x => x.Following)
+    .Where(u => u.Id == userId)
+    .FirstOrDefaultAsync(cancellationToken);
+
         var userDetailsDto = await _userManager.Users
             .AsNoTracking()
             .Where(u => u.Id == userId)

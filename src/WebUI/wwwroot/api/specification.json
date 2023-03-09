@@ -6,6 +6,91 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Followings/{userId}/follow": {
+      "post": {
+        "tags": [
+          "Followings"
+        ],
+        "summary": "Follow user with given userId.",
+        "operationId": "Followings_FollowUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Followings"
+        ],
+        "summary": "Unfollow user with given userId.",
+        "operationId": "Followings_UnfollowUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Followings/follow-count": {
+      "get": {
+        "tags": [
+          "Followings"
+        ],
+        "summary": "Get logged in user followings count.",
+        "operationId": "Followings_GetUserFollowings",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserFollowingsCountDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Personal/profile": {
       "get": {
         "tags": [
@@ -1102,6 +1187,20 @@
   },
   "components": {
     "schemas": {
+      "UserFollowingsCountDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "followerCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "followingCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "UserDetailsDto": {
         "type": "object",
         "additionalProperties": false,

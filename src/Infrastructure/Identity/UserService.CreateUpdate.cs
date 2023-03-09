@@ -158,7 +158,7 @@ internal partial class UserService
         }
 
         user.PhoneNumber = command.PhoneNumber;
-        string phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+        string? phoneNumber = await _userManager.GetPhoneNumberAsync(user);
         if (command.PhoneNumber != phoneNumber)
         {
             await _userManager.SetPhoneNumberAsync(user, command.PhoneNumber);
