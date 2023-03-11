@@ -29,7 +29,7 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, strin
 
         var target = await _userService.GetAsync(command.UserId, cancellationToken);
 
-        if (target == null)
+        if (target == null || target.Id == null)
         {
             throw new NotFoundException(_localizer["User Not Found."]);
         }
@@ -47,11 +47,7 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, strin
             throw new InternalServerException(_localizer["U are already following this user"]);
         }
 
-        followedPeople = new FollowedPeople()
-        {
-            ObserverId = userId,
-            TargetId = target.Id
-        };
+        followedPeople = FollowedPeople.Create(userId, target.Id);
 
         await _context.FollowedPeople.AddAsync(followedPeople, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);

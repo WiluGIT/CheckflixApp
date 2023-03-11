@@ -22,6 +22,96 @@ namespace CheckflixApp.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ApplicationUserGenre", b =>
+                {
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ApplicationUserId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("ApplicationUserGenres", (string)null);
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ApplicationUserNotification", b =>
+                {
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("NotificationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ApplicationUserId", "NotificationId");
+
+                    b.HasIndex("NotificationId");
+
+                    b.ToTable("ApplicationUserNotifications", (string)null);
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ApplicationUserProduction", b =>
+                {
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ProductionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Favourites")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("ToWatch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Watched")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ApplicationUserId", "ProductionId");
+
+                    b.HasIndex("ProductionId");
+
+                    b.ToTable("ApplicationUserProductions", (string)null);
+                });
+
             modelBuilder.Entity("CheckflixApp.Domain.Entities.FollowedPeople", b =>
                 {
                     b.Property<string>("ObserverId")
@@ -47,6 +137,143 @@ namespace CheckflixApp.Infrastructure.Persistence.Migrations
                     b.HasIndex("TargetId");
 
                     b.ToTable("FollowedPeople", (string)null);
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Genres", (string)null);
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications", (string)null);
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.Production", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Director")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImdbId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Keywords")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Overview")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TmdbId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Productions", (string)null);
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ProductionGenre", b =>
+                {
+                    b.Property<int>("ProductionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductionId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("ProductionGenres", (string)null);
                 });
 
             modelBuilder.Entity("CheckflixApp.Domain.Entities.TodoItem", b =>
@@ -484,6 +711,51 @@ namespace CheckflixApp.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ApplicationUserGenre", b =>
+                {
+                    b.HasOne("CheckflixApp.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("ApplicationUserGenres")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CheckflixApp.Domain.Entities.Genre", null)
+                        .WithMany("ApplicationUserGenres")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ApplicationUserNotification", b =>
+                {
+                    b.HasOne("CheckflixApp.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("ApplicationUserNotifications")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CheckflixApp.Domain.Entities.Notification", null)
+                        .WithMany("ApplicationUserNotifications")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ApplicationUserProduction", b =>
+                {
+                    b.HasOne("CheckflixApp.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany("ApplicationUserProductions")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CheckflixApp.Domain.Entities.Production", null)
+                        .WithMany("ApplicationUserProductions")
+                        .HasForeignKey("ProductionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CheckflixApp.Domain.Entities.FollowedPeople", b =>
                 {
                     b.HasOne("CheckflixApp.Infrastructure.Identity.ApplicationUser", null)
@@ -495,6 +767,21 @@ namespace CheckflixApp.Infrastructure.Persistence.Migrations
                     b.HasOne("CheckflixApp.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany("Followers")
                         .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.ProductionGenre", b =>
+                {
+                    b.HasOne("CheckflixApp.Domain.Entities.Genre", null)
+                        .WithMany("ProductionGenres")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CheckflixApp.Domain.Entities.Production", null)
+                        .WithMany("ProductionGenres")
+                        .HasForeignKey("ProductionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
@@ -584,6 +871,25 @@ namespace CheckflixApp.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.Genre", b =>
+                {
+                    b.Navigation("ApplicationUserGenres");
+
+                    b.Navigation("ProductionGenres");
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.Notification", b =>
+                {
+                    b.Navigation("ApplicationUserNotifications");
+                });
+
+            modelBuilder.Entity("CheckflixApp.Domain.Entities.Production", b =>
+                {
+                    b.Navigation("ApplicationUserProductions");
+
+                    b.Navigation("ProductionGenres");
+                });
+
             modelBuilder.Entity("CheckflixApp.Domain.Entities.TodoList", b =>
                 {
                     b.Navigation("Items");
@@ -591,6 +897,12 @@ namespace CheckflixApp.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("CheckflixApp.Infrastructure.Identity.ApplicationUser", b =>
                 {
+                    b.Navigation("ApplicationUserGenres");
+
+                    b.Navigation("ApplicationUserNotifications");
+
+                    b.Navigation("ApplicationUserProductions");
+
                     b.Navigation("Followers");
 
                     b.Navigation("Following");
