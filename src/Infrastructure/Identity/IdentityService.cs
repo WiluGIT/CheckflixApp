@@ -1,8 +1,10 @@
 ﻿using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Models;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace CheckflixApp.Infrastructure.Identity;
 public class IdentityService : IIdentityService
@@ -30,11 +32,11 @@ public class IdentityService : IIdentityService
 
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
     {
-        var user = new ApplicationUser
-        {
-            UserName = userName,
-            Email = userName,
-        };
+        var user = ApplicationUser.Create(
+            username: userName,
+            email: userName,
+            isActive: true,
+            emailConfirmed: false);
 
         var result = await _userManager.CreateAsync(user, password);
 

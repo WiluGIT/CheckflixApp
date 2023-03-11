@@ -7,6 +7,7 @@ using CheckflixApp.Domain.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CheckflixApp.Infrastructure.Identity;
 internal partial class UserService
@@ -67,17 +68,13 @@ internal partial class UserService
         }
         else
         {
-            user = new ApplicationUser
-            {
-                ObjectId = principal.GetObjectId(),
-                Email = email,
-                NormalizedEmail = email.ToUpperInvariant(),
-                UserName = username,
-                NormalizedUserName = username.ToUpperInvariant(),
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true,
-                IsActive = true
-            };
+            user = ApplicationUser.Create(
+                username: username,
+                email: email,
+                isActive: true,
+                emailConfirmed: false,
+                objectId: principal.GetObjectId());
+
             result = await _userManager.CreateAsync(user);
 
             //await _events.PublishAsync(new ApplicationUserCreatedEvent(user.Id));
@@ -98,13 +95,11 @@ internal partial class UserService
             throw new InternalServerException(_localizer["Given passwords don't match."]);
         }
 
-        var user = new ApplicationUser
-        {
-            Email = command.Email,
-            UserName = command.UserName,
-            PhoneNumber = command.PhoneNumber,
-            IsActive = true
-        };
+        var user = ApplicationUser.Create(
+            username: command.UserName,
+            email: command.Email,
+            isActive: true,
+            emailConfirmed: false);
 
         var result = await _userManager.CreateAsync(user, command.Password);
         if (!result.Succeeded)

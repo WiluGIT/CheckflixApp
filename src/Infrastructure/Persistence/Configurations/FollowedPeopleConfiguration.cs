@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CheckflixApp.Domain.Entities;
+﻿using CheckflixApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using CheckflixApp.Infrastructure.Identity;
-using System.Reflection.Emit;
 
 namespace CheckflixApp.Infrastructure.Persistence.Configurations;
 
@@ -22,6 +16,14 @@ public class FollowedPeopleConfiguration : IEntityTypeConfiguration<FollowedPeop
         builder.HasKey(fp => new { fp.ObserverId, fp.TargetId });
 
         builder.Ignore(x => x.Id);
+
+        builder.Metadata
+            .FindNavigation(nameof(ApplicationUser.Followers))
+            ?.SetPropertyAccessMode(PropertyAccessMode.Field);
+
+        builder.Metadata
+            .FindNavigation(nameof(ApplicationUser.Following))
+            ?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
         builder.HasOne<ApplicationUser>()
             .WithMany(x => x.Following)
