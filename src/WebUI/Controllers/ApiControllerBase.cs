@@ -1,5 +1,5 @@
 ﻿using CheckflixApp.Domain.Common.Errors;
-using CheckflixApp.Domain.Common.Primitives;
+using FluentResults;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,6 @@
-﻿namespace CheckflixApp.Domain.Common.Primitives;
+﻿using FluentResults;
+
+namespace CheckflixApp.Domain.Common.Primitives;
 
 /// <summary>
 /// Represents a concrete domain error.

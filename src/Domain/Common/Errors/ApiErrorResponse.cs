@@ -1,4 +1,4 @@
-﻿using CheckflixApp.Domain.Common.Primitives;
+﻿using FluentResults;
 
 namespace CheckflixApp.Domain.Common.Errors;
 

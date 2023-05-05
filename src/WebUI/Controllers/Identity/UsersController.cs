@@ -35,11 +35,18 @@ public class UsersController : ApiControllerBase
     [OpenApiOperation("Creates a new user.", "")]
     [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result<string>), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateAsync(CreateUserCommand command) =>
-        await Result.Create(command, DomainErrors.General.UnProcessableRequest)
-            .Bind(command => Mediator.Send(command))
-            .Match(Ok, BadRequest);
-                     
+    //public async Task<IActionResult> CreateAsync(CreateUserCommand command) =>
+    //    await Result.Create(command, DomainErrors.General.UnProcessableRequest)
+    //        .Bind(command => Mediator.Send(command))
+    //        .Match(Ok, BadRequest);
+    public async Task<IActionResult> CreateAsync(CreateUserCommand command)
+    {
+        var res = await Mediator.Send(command);
+
+
+        return BadRequest(res.ToResult());
+    }
+
     [HttpGet("{id}/roles")]
     [OpenApiOperation("Get a user's roles.", "")]
     public async Task<List<UserRoleDto>> GetRolesAsync([FromRoute] string id)
