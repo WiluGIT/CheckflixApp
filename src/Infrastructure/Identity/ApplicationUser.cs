@@ -23,13 +23,6 @@ public class ApplicationUser : IdentityUser
     public IReadOnlyList<ApplicationUserNotification> ApplicationUserNotifications => _applicationUserNotifications.AsReadOnly();
     public IReadOnlyList<ApplicationUserProduction> ApplicationUserProductions => _applicationUserProductions.AsReadOnly();
 
-
-    public void Mapping(Profile profile)
-    {
-        profile.CreateMap<UserDetailsDto, ApplicationUser>()
-        .ReverseMap();
-    }
-
     private ApplicationUser(
         string email,
         string username,

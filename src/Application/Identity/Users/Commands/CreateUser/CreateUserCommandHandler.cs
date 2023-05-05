@@ -1,33 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CheckflixApp.Application.Common.Interfaces;
-using CheckflixApp.Application.Identity.Interfaces;
-using CheckflixApp.Application.TodoItems.Commands.CreateTodoItem;
-using CheckflixApp.Domain.Entities;
-using CheckflixApp.Domain.Events;
+﻿using CheckflixApp.Application.Common.Interfaces;
+using CheckflixApp.Domain.Common.Errors;
+using CheckflixApp.Domain.Common.Primitives.Result;
+using CheckflixApp.Domain.ValueObjects;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace CheckflixApp.Application.Identity.Users.Commands.CreateUser;
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<string>>
 {
-    private readonly IUserService _userService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    public CreateUserCommandHandler(IUserService userService, IHttpContextAccessor httpContextAccessor)
+    private readonly IIdentityService _identityService;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IStringLocalizer<CreateUserCommandHandler> _localizer;
+
+    public CreateUserCommandHandler(IIdentityService identityService, IUnitOfWork unitOfWork, IStringLocalizer<CreateUserCommandHandler> localizer)
     {
-        _userService = userService;
-        _httpContextAccessor = httpContextAccessor;
+        _identityService = identityService;
+        _unitOfWork = unitOfWork;
+        _localizer = localizer;
     }
 
-    public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
-        return await _userService.CreateAsync(request, GetOriginFromRequest());
-    }
+        Result<UserName> userNameResult = UserName.Create(command.UserName);
+        Result<Email> emailResult = Email.Create(command.Email);
+        Result<Password> passwordResult = Password.Create(command.Password);
 
-    private string GetOriginFromRequest() => $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}{_httpContextAccessor.HttpContext.Request.PathBase.Value}";
+        Result firstFailureOrSuccess = Result.FirstFailureOrSuccess(userNameResult, emailResult, passwordResult);
+
+        if (firstFailureOrSuccess.IsFailure)
+        {
+            return Result.Failure<string>(firstFailureOrSuccess.Error);
+        }
+        string xd = emailResult.Value.Value;
+        var ds = emailResult.Value;
+        if (!await _identityService.IsEmailUniqueAsync(emailResult.Value))
+        {
+            return Result.Failure<string>(DomainErrors.User.DuplicateEmail);
+        }
+
+        var (result, id) = await _identityService.CreateUserAsync(userNameResult.Value, passwordResult.Value);
+        if (result.IsFailure)
+        {
+            return Result.Failure<string>(DomainErrors.User.PasswordValidationError);
+        }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        //Add domain 
+        return Result.Success(string.Format(_localizer["User {@UserName} Registered."], userNameResult.Value));
+    }
 }
 

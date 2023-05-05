@@ -1,4 +1,6 @@
-﻿namespace CheckflixApp.Domain.ValueObjects;
+﻿using CheckflixApp.Domain.Common.Primitives;
+
+namespace CheckflixApp.Domain.ValueObjects;
 
 public class Colour : ValueObject
 {

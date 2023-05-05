@@ -8,6 +8,7 @@ using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
 using CheckflixApp.Application.Identity.Users.Commands.ForgotPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ResetPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
+using CheckflixApp.Domain.Common.Primitives.Result;
 
 namespace CheckflixApp.Application.Identity.Interfaces;
 public interface IUserService
@@ -24,7 +25,7 @@ public interface IUserService
     Task<string> AssignRolesAsync(string userId, UserRolesRequest request, CancellationToken cancellationToken);
     Task ToggleUserStatusAsync(ToggleUserStatusCommand command, CancellationToken cancellationToken);
     Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal);
-    Task<string> CreateAsync(CreateUserCommand command, string origin);
+    Task<Result<string>> CreateAsync(CreateUserCommand command, string origin);
     Task<string> UpdateAsync(UpdateUserCommand command, string userId);
     Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken);
     Task<string> ConfirmPhoneNumberAsync(string userId, string code);

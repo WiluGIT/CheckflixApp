@@ -30,6 +30,7 @@ internal partial class UserService : IUserService
     private readonly IJobService _jobService;
     private readonly IEmailTemplateService _templateService;
     private readonly IFileStorageService _fileStorage;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public UserService(
@@ -42,8 +43,8 @@ internal partial class UserService : IUserService
         IMailService mailService,
         IJobService jobService,
         IEmailTemplateService templateService,
-        IFileStorageService fileStorage
-        )
+        IFileStorageService fileStorage,
+        IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -55,6 +56,7 @@ internal partial class UserService : IUserService
         _jobService = jobService;
         _templateService = templateService;
         _fileStorage = fileStorage;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<int> GetCountAsync(CancellationToken cancellationToken) =>

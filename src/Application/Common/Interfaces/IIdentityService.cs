@@ -1,4 +1,4 @@
-﻿using CheckflixApp.Application.Common.Models;
+﻿using CheckflixApp.Domain.Common.Primitives.Result;
 
 namespace CheckflixApp.Application.Common.Interfaces;
 public interface IIdentityService
@@ -12,4 +12,6 @@ public interface IIdentityService
     Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
     Task<Result> DeleteUserAsync(string userId);
+
+    Task<bool> IsEmailUniqueAsync(string email);
 }

@@ -7,10 +7,11 @@ using Duende.IdentityServer.EntityFramework.Options;
 using MediatR;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
 
 namespace CheckflixApp.Infrastructure.Persistence;
-public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
+public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext, IUnitOfWork
 {
     private readonly IMediator _mediator;
     private readonly AuditableEntitySaveChangesInterceptor _auditableEntitySaveChangesInterceptor;
@@ -48,4 +49,8 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
         return await base.SaveChangesAsync(cancellationToken);
     }
+
+    /// <inheritdoc />
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        => Database.BeginTransactionAsync(cancellationToken);
 }

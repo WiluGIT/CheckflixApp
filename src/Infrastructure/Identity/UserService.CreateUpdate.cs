@@ -2,12 +2,13 @@
 using CheckflixApp.Application.Common.Exceptions;
 using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
-using CheckflixApp.Application.Mailing;
 using CheckflixApp.Domain.Common;
+using CheckflixApp.Domain.Common.Errors;
+using CheckflixApp.Domain.Common.Primitives.Result;
+using CheckflixApp.Domain.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CheckflixApp.Infrastructure.Identity;
 internal partial class UserService
@@ -88,52 +89,84 @@ internal partial class UserService
         return user;
     }
 
-    public async Task<string> CreateAsync(CreateUserCommand command, string origin)
+    public async Task<Result<string>> CreateAsync(CreateUserCommand command, string origin)
     {
-        if (command.ConfirmPassword != command.Password)
-        {
-            throw new InternalServerException(_localizer["Given passwords don't match."]);
-        }
+        //Result<UserName> userName = UserName.Create(command.UserName);
+        //Result<Email> emailResult = Email.Create(command.Email);
+        //Result<Password> passwordResult = Password.Create(command.Password);
 
-        var user = ApplicationUser.Create(
-            username: command.UserName,
-            email: command.Email,
-            isActive: true,
-            emailConfirmed: false);
+        //Result firstFailureOrSuccess = Result.FirstFailureOrSuccess(userName, emailResult, passwordResult);
 
-        var result = await _userManager.CreateAsync(user, command.Password);
-        if (!result.Succeeded)
-        {
-            throw new InternalServerException(_localizer["Validation Errors Occurred."]);
-        }
+        //if (firstFailureOrSuccess.IsFailure)
+        //{
+        //    return Result.Failure<string>(firstFailureOrSuccess.Error);
+        //}
 
-        await _userManager.AddToRoleAsync(user, SystemRoles.Basic);
+        //if (!await _userRepository.IsEmailUniqueAsync(emailResult.Value))
+        //{
+        //    return Result.Failure<string>(DomainErrors.User.DuplicateEmail);
+        //}
 
-        var messages = new List<string> { string.Format(_localizer["User {0} Registered."], user.UserName) };
+        //var user = ApplicationUser.Create(
+        //    username: command.UserName,
+        //    email: command.Email,
+        //    isActive: true,
+        //    emailConfirmed: false);
+
+        //var result = await _userManager.CreateAsync(user, command.Password);
+        //if (!result.Succeeded)
+        //{
+        //    return Result.Failure<string>(DomainErrors.User.PasswordValidationError);
+        //}
+
+        //await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        //return Result.Success(string.Format(_localizer["User {@UserName} Registered."], user.UserName));
+
+        //if (command.ConfirmPassword != command.Password)
+        //{
+        //    throw new InternalServerException(_localizer["Given passwords don't match."]);
+        //}
+
+        //var user = ApplicationUser.Create(
+        //    username: command.UserName,
+        //    email: command.Email,
+        //    isActive: true,
+        //    emailConfirmed: false);
+
+        //var result = await _userManager.CreateAsync(user, command.Password);
+        //if (!result.Succeeded)
+        //{
+        //    throw new InternalServerException(_localizer["Validation Errors Occurred."]);
+        //}
+
+        //await _userManager.AddToRoleAsync(user, SystemRoles.Basic);
+
+        //var messages = new List<string> { string.Format(_localizer["User {0} Registered."], user.UserName) };
 
 
-        if (_securitySettings.RequireConfirmedAccount && !string.IsNullOrEmpty(user.Email))
-        {
-            // send verification email
-            string emailVerificationUri = await GetEmailVerificationUriAsync(user, origin);
-            RegisterUserEmailModel eMailModel = new RegisterUserEmailModel()
-            {
-                Email = user.Email,
-                UserName = user.UserName,
-                Url = emailVerificationUri
-            };
+        //if (_securitySettings.RequireConfirmedAccount && !string.IsNullOrEmpty(user.Email))
+        //{
+        //    // send verification email
+        //    string emailVerificationUri = await GetEmailVerificationUriAsync(user, origin);
+        //    RegisterUserEmailModel eMailModel = new RegisterUserEmailModel()
+        //    {
+        //        Email = user.Email,
+        //        UserName = user.UserName,
+        //        Url = emailVerificationUri
+        //    };
 
-            var mailRequest = new MailRequest(
-                new List<string> { user.Email },
-                _localizer["Confirm Registration"],
-                _templateService.GenerateEmailTemplate("email-confirmation", eMailModel));
-            _jobService.Enqueue(() => _mailService.SendAsync(mailRequest, CancellationToken.None));
-            messages.Add(_localizer[$"Please check {user.Email} to verify your account!"]);
-        }
+        //    var mailRequest = new MailRequest(
+        //        new List<string> { user.Email },
+        //        _localizer["Confirm Registration"],
+        //        _templateService.GenerateEmailTemplate("email-confirmation", eMailModel));
+        //    _jobService.Enqueue(() => _mailService.SendAsync(mailRequest, CancellationToken.None));
+        //    messages.Add(_localizer[$"Please check {user.Email} to verify your account!"]);
+        //}
 
-        //await _events.PublishAsync(new ApplicationUserCreatedEvent(user.Id));
+        ////await _events.PublishAsync(new ApplicationUserCreatedEvent(user.Id));
 
-        return string.Join(Environment.NewLine, messages);
+        return string.Join(Environment.NewLine, "dsad");
     }
 
     public async Task<string> UpdateAsync(UpdateUserCommand command, string userId)

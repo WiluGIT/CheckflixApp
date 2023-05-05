@@ -875,7 +875,7 @@ export interface IUsersClient {
     /**
      * Creates a new user.
      */
-    create(command: CreateUserCommand): Observable<string>;
+    create(command: CreateUserCommand): Observable<ResultOfString>;
     /**
      * Get a user's details.
      */
@@ -988,7 +988,7 @@ export class UsersClient implements IUsersClient {
     /**
      * Creates a new user.
      */
-    create(command: CreateUserCommand): Observable<string> {
+    create(command: CreateUserCommand): Observable<ResultOfString> {
         let url_ = this.baseUrl + "/api/Users";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1011,14 +1011,14 @@ export class UsersClient implements IUsersClient {
                 try {
                     return this.processCreate(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<string>;
+                    return _observableThrow(e) as any as Observable<ResultOfString>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<string>;
+                return _observableThrow(response_) as any as Observable<ResultOfString>;
         }));
     }
 
-    protected processCreate(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<ResultOfString> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1029,9 +1029,15 @@ export class UsersClient implements IUsersClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = ResultOfString.fromJS(resultData200);
             return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ResultOfString.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -2598,6 +2604,148 @@ export class GetRefreshTokenQuery implements IGetRefreshTokenQuery {
 export interface IGetRefreshTokenQuery {
     token?: string;
     refreshToken?: string;
+}
+
+export class Result implements IResult {
+    isSuccess?: boolean;
+    isFailure?: boolean;
+    error?: ErrorDto;
+
+    constructor(data?: IResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.isFailure = _data["isFailure"];
+            this.error = _data["error"] ? ErrorDto.fromJS(_data["error"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): Result {
+        data = typeof data === 'object' ? data : {};
+        let result = new Result();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["isFailure"] = this.isFailure;
+        data["error"] = this.error ? this.error.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IResult {
+    isSuccess?: boolean;
+    isFailure?: boolean;
+    error?: ErrorDto;
+}
+
+export class ResultOfString extends Result implements IResultOfString {
+    value?: string;
+
+    constructor(data?: IResultOfString) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.value = _data["value"];
+        }
+    }
+
+    static override fromJS(data: any): ResultOfString {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResultOfString();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IResultOfString extends IResult {
+    value?: string;
+}
+
+export abstract class ValueObject implements IValueObject {
+
+    constructor(data?: IValueObject) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): ValueObject {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'ValueObject' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IValueObject {
+}
+
+export class ErrorDto extends ValueObject implements IErrorDto {
+    code?: string;
+    message?: string;
+
+    constructor(data?: IErrorDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.code = _data["code"];
+            this.message = _data["message"];
+        }
+    }
+
+    static override fromJS(data: any): ErrorDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ErrorDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["code"] = this.code;
+        data["message"] = this.message;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IErrorDto extends IValueObject {
+    code?: string;
+    message?: string;
 }
 
 export class CreateUserCommand implements ICreateUserCommand {

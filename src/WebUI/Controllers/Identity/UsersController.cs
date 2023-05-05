@@ -10,6 +10,8 @@ using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
 using CheckflixApp.Application.Identity.Users.Queries.GetById;
 using CheckflixApp.Application.Identity.Users.Queries.GetList;
 using CheckflixApp.Application.Identity.Users.Queries.GetUserRoles;
+using CheckflixApp.Domain.Common.Errors;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.WebUI.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,9 +33,13 @@ public class UsersController : ApiControllerBase
 
     [HttpPost]
     [OpenApiOperation("Creates a new user.", "")]
-    public async Task<string> CreateAsync(CreateUserCommand command)
-        => await Mediator.Send(command);
-
+    [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result<string>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateAsync(CreateUserCommand command) =>
+        await Result.Create(command, DomainErrors.General.UnProcessableRequest)
+            .Bind(command => Mediator.Send(command))
+            .Match(Ok, BadRequest);
+                     
     [HttpGet("{id}/roles")]
     [OpenApiOperation("Get a user's roles.", "")]
     public async Task<List<UserRoleDto>> GetRolesAsync([FromRoute] string id)

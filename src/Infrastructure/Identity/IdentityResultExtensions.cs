@@ -1,4 +1,5 @@
-﻿using CheckflixApp.Application.Common.Models;
+﻿using CheckflixApp.Domain.Common.Primitives;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 
@@ -9,7 +10,7 @@ public static class IdentityResultExtensions
     {
         return result.Succeeded
             ? Result.Success()
-            : Result.Failure(result.Errors.Select(e => e.Description));
+            : Result.Failure(result.Errors.Select(e => new Error(e.Code, e.Description)).First());
     }
 
     public static List<string> GetErrors(this IdentityResult result, IStringLocalizer localizer) =>
