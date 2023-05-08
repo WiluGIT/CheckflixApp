@@ -6,27 +6,27 @@ namespace CheckflixApp.Domain.Common.Errors;
 /// </summary>
 public static class DomainErrors
 {
-    ///// <summary>
-    ///// Contains the user errors.
-    ///// </summary>
-    //public static class User
-    //{
-    //    public static Error NotFound => new Error("User.NotFound", "The user with the specified identifier was not found.");
+    /// <summary>
+    /// Contains the user errors.
+    /// </summary>
+    public static class User
+    {
+        public static Error NotFound => new Error("User.NotFound", "The user with the specified identifier was not found.", ErrorType.Validation);
 
-    //    public static Error InvalidPermissions => new Error(
-    //        "User.InvalidPermissions",
-    //        "The current user does not have the permissions to perform that operation.");
+        public static Error InvalidPermissions => new Error(
+            "User.InvalidPermissions",
+            "The current user does not have the permissions to perform that operation.", ErrorType.Validation);
 
-    //    public static Error DuplicateEmail => new Error("User.DuplicateEmail", "The specified email is already in use.");
+        public static Error DuplicateEmail => new Error("User.DuplicateEmail", "The specified email is already in use.", ErrorType.Validation);
 
-    //    public static Error CannotChangePassword => new Error(
-    //        "User.CannotChangePassword",
-    //        "The password cannot be changed to the specified password.");
+        public static Error CannotChangePassword => new Error(
+            "User.CannotChangePassword",
+            "The password cannot be changed to the specified password.", ErrorType.Validation);
 
-    //    public static Error PasswordValidationError => new Error(
-    //        "User.PasswordValidationError",
-    //        "The password validation error occured.");
-    //}
+        public static Error PasswordValidationError => new Error(
+            "User.PasswordValidationError",
+            "The password validation error occured.", ErrorType.Validation);
+    }
 
     ///// <summary>
     ///// Contains the UserName errors.
@@ -76,25 +76,25 @@ public static class DomainErrors
             "The password requires at least one non-alphanumeric.", ErrorType.Validation);
     }
 
-    ///// <summary>
-    ///// Contains general errors.
-    ///// </summary>
-    //public static class General
-    //{
-    //    public static Error UnProcessableRequest => new Error(
-    //        "General.UnProcessableRequest",
-    //        "The server could not process the request.");
+    /// <summary>
+    /// Contains general errors.
+    /// </summary>
+    public static class General
+    {
+        public static Error UnProcessableRequest => new Error(
+            "General.UnProcessableRequest",
+            "The server could not process the request.", ErrorType.Validation);
 
-    //    public static Error ServerError => new Error("General.ServerError", "The server encountered an unrecoverable error.");
-    //}
+        public static Error ServerError => new Error("General.ServerError", "The server encountered an unrecoverable error.", ErrorType.Validation);
+    }
 
-    ///// <summary>
-    ///// Contains the authentication errors.
-    ///// </summary>
-    //public static class Authentication
-    //{
-    //    public static Error InvalidEmailOrPassword => new Error(
-    //        "Authentication.InvalidEmailOrPassword",
-    //        "The specified email or password are incorrect.");
-    //}
+    /// <summary>
+    /// Contains the authentication errors.
+    /// </summary>
+    public static class Authentication
+    {
+        public static Error InvalidEmailOrPassword => new Error(
+            "Authentication.InvalidEmailOrPassword",
+            "The specified email or password are incorrect.", ErrorType.Validation);
+    }
 }

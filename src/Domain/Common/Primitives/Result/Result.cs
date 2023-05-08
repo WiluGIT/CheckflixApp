@@ -3,9 +3,8 @@
 /// <summary>
 /// A discriminated union of Result Object.
 /// </summary>
-public record struct Result<TValue> : IResult
+public class Result : IResult
 {
-    private readonly TValue? _value = default;
     private readonly List<Error>? _errors = null;
 
     private static readonly Error NoFirstError = Error.Unexpected(
@@ -32,19 +31,6 @@ public record struct Result<TValue> : IResult
     public List<Error> ErrorsOrEmptyList => IsFailure ? _errors! : new();
 
     /// <summary>
-    /// Creates an <see cref="Result{TValue}"/> from a list of errors.
-    /// </summary>
-    public static Result<TValue> From(List<Error> errors)
-    {
-        return errors;
-    }
-
-    /// <summary>
-    /// Gets the value.
-    /// </summary>
-    public TValue Value => _value!;
-
-    /// <summary>
     /// Gets the first error.
     /// </summary>
     public Error FirstError
@@ -60,23 +46,69 @@ public record struct Result<TValue> : IResult
         }
     }
 
-    private Result(Error error)
+    protected Result(Error error)
     {
         _errors = new List<Error> { error };
         IsFailure = true;
     }
 
-    private Result(List<Error> errors)
+    protected Result(List<Error> errors)
     {
         _errors = errors;
         IsFailure = true;
     }
-
-    private Result(TValue value)
+    protected Result()
     {
-        _value = value;
         IsFailure = false;
     }
+
+    public static Result<TValue> From<TValue>(TValue value)
+    {
+        return value;
+    }
+
+    public static Result From(List<Error>? errors = null)
+    {
+        return errors != null ? new Result(errors) : new Result();
+    }
+
+    /// <summary>
+    /// Creates an <see cref="Result{TValue}"/> from a value.
+    /// </summary>
+    public static implicit operator Result(List<Error> errors)
+    {
+        return new Result(errors);
+    }
+
+    /// <summary>
+    /// Returns all errors from Results with failure <paramref name="results"/>.
+    /// If there is a failure. Error list is returned.
+    /// </summary>
+    /// <param name="results">The error list.</param>
+    /// <returns>
+    /// The error list from specified results with failure <paramref name="results"/>.
+    /// </returns>
+    public static List<Error> GetErrorsFromFailureResults(params Result[] results) =>
+        results.Where(x => x.IsFailure).SelectMany(x => x.Errors).ToList();
+}
+
+public class Result<TValue> : Result
+{
+    private readonly TValue? _value = default;
+
+    /// <summary>
+    /// Gets the value.
+    /// </summary>
+    public TValue Value => _value!;
+
+    private Result(TValue value) : base()
+    {
+        _value = value;
+    }
+
+    protected Result(Error error) : base(error) { }
+
+    protected Result(List<Error> errors) : base(errors) { }
 
     /// <summary>
     /// Creates an <see cref="Result{TValue}"/> from a value.
@@ -199,27 +231,3 @@ public readonly record struct Success;
 public readonly record struct Created;
 public readonly record struct Deleted;
 public readonly record struct Updated;
-
-public static class Result
-{
-    public static Success Success => default;
-
-    public static Created Created => default;
-
-    public static Deleted Deleted => default;
-
-    public static Updated Updated => default;
-
-    public static Result<TValue> From<TValue>(TValue value)
-    {
-        return value;
-    }
-}
-
-public static class ResultFactory
-{
-    public static Result<TValue> From<TValue>(TValue value)
-    {
-        return value;
-    }
-}

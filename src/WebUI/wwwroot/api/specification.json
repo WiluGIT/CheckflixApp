@@ -888,7 +888,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResultOfString"
+                  "$ref": "#/components/schemas/ResultOfProblemDetails"
                 }
               }
             }
@@ -1623,6 +1623,22 @@
         }
       },
       "ResultOfString": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "Result": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1640,9 +1656,6 @@
             "items": {
               "$ref": "#/components/schemas/Error"
             }
-          },
-          "value": {
-            "type": "string"
           },
           "firstError": {
             "$ref": "#/components/schemas/Error"
@@ -1699,6 +1712,51 @@
         "type": "object",
         "x-abstract": true,
         "additionalProperties": false
+      },
+      "ResultOfProblemDetails": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "$ref": "#/components/schemas/ProblemDetails"
+              }
+            }
+          }
+        ]
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "CreateUserCommand": {
         "type": "object",

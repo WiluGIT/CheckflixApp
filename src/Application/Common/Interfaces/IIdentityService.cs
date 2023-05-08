@@ -9,9 +9,9 @@ public interface IIdentityService
 
     Task<bool> AuthorizeAsync(string userId, string policyName);
 
-    Task<(Result<Success> Result, string UserId)> CreateUserAsync(string userName, string password);
+    Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
-    Task<Result<Success>> DeleteUserAsync(string userId);
+    Task<Result> DeleteUserAsync(string userId);
 
     Task<bool> IsEmailUniqueAsync(string email);
 }

@@ -1,150 +1,58 @@
 ﻿namespace CheckflixApp.Domain.Common.Primitives.Result;
+
 /// <summary>
 /// Contains extension methods for the result class.
 /// </summary>
 public static class ResultExtensions
 {
     /// <summary>
-    /// Ensures that the specified predicate is true, otherwise returns a failure result with the specified error.
+    /// Ensures that the specified predicate is true, otherwise adds a failure result to error list.
     /// </summary>
-    /// <typeparam name = "T" > The result type.</typeparam>
-    /// <param name = "result" > The result.</param>
+    /// <typeparam name = "List<Error>" > The result type.</typeparam>
+    /// <param name = "errorResult" > The error result list.</param>
     /// <param name = "predicate" > The predicate.</param>
     /// <param name = "error" > The error.</param>
     /// <returns>
-    /// The success result if the predicate is true and the current result is a success result, otherwise a failure result.
+    /// The current error list result if the predicate is true, otherwise adds error to the list.
     /// </returns>
-    public static List<Error> Ensure<T>(this List<Error> result, T value, Func<T, bool> predicate, Error error)
+    //public static List<Error> Ensure<T>(this List<Error> errorResult, T value, Func<T, bool> predicate, Error error)
+    public static List<Error> Ensure(this List<Error> errorResult, bool predicateValue, Error error)
     {
-        if (!predicate(value))
+        if (!predicateValue)
         {
-            result.Add(error);
+            errorResult.Add(error);
         }
 
-        return result;
+        return errorResult;
     }
 
-    ///// <summary>
-    ///// Maps the result value to a new value based on the specified mapping function.
-    ///// </summary>
-    ///// <typeparam name="TIn">The result type.</typeparam>
-    ///// <typeparam name="TOut">The output result type.</typeparam>
-    ///// <param name="result">The result.</param>
-    ///// <param name="func">The mapping function.</param>
-    ///// <returns>
-    ///// The success result with the mapped value if the current result is a success result, otherwise a failure result.
-    ///// </returns>
-    //public static Result<TOut> Map<TIn, TOut>(this Result<TIn> result, Func<TIn, TOut> func) =>
-    //    result.IsSuccess ? func(result.Value) : Result.Failure<TOut>(result.Error);
+    /// <summary>
+    /// Binds to the result of the function and returns it.
+    /// </summary>
+    /// <typeparam name="TIn">The result type.</typeparam>
+    /// <param name="result">The result.</param>
+    /// <param name="func">The bind function.</param>
+    /// <returns>
+    /// The success result with the bound value if the current result is a success result, otherwise a failure result.
+    /// </returns>
+    public static async Task<Result<TOut>> Bind<TIn, TOut>(this Result<TIn> result, Func<TIn, Task<Result<TOut>>> func) =>
+        !result.IsFailure ? await func(result.Value) : result.Errors;
 
-    ///// <summary>
-    ///// Binds to the result of the function and returns it.
-    ///// </summary>
-    ///// <typeparam name="TIn">The result type.</typeparam>
-    ///// <param name="result">The result.</param>
-    ///// <param name="func">The bind function.</param>
-    ///// <returns>
-    ///// The success result with the bound value if the current result is a success result, otherwise a failure result.
-    ///// </returns>
-    //public static async Task<Result> Bind<TIn>(this Result<TIn> result, Func<TIn, Task<Result>> func) =>
-    //    result.IsSuccess ? await func(result.Value) : Result.Failure(result.Error);
+    /// <summary>
+    /// Matches to the corresponding functions based on existence of the value.
+    /// </summary>
+    /// <typeparam name="TIn">The input type.</typeparam>
+    /// <typeparam name="TOut">The output type.</typeparam>
+    /// <param name="resultTask">The maybe task.</param>
+    /// <param name="onSuccess">The on-success function.</param>
+    /// <param name="onFailure">The on-failure function.</param>
+    /// <returns>
+    /// The result of the on-success function if the maybe has a value, otherwise the result of the failure result.
+    /// </returns>
+    public static async Task<TOut> Match<TIn, TOut>(this Task<Result<TIn>> resultTask, Func<TIn, TOut> onSuccess, Func<List<Error>, TOut> onError)
+    {
+        Result<TIn> result = await resultTask;
 
-    ///// <summary>
-    ///// Binds to the result of the function and returns it.
-    ///// </summary>
-    ///// <typeparam name="TIn">The result type.</typeparam>
-    ///// <typeparam name="TOut">The output result type.</typeparam>
-    ///// <param name="result">The result.</param>
-    ///// <param name="func">The bind function.</param>
-    ///// <returns>
-    ///// The success result with the bound value if the current result is a success result, otherwise a failure result.
-    ///// </returns>
-    //public static async Task<Result<TOut>> Bind<TIn, TOut>(this Result<TIn> result, Func<TIn, Task<Result<TOut>>> func) =>
-    //    result.IsSuccess ? await func(result.Value) : Result.Failure<TOut>(result.Error);
-
-    ///// <summary>
-    ///// Matches the success status of the result to the corresponding functions.
-    ///// </summary>
-    ///// <typeparam name="T">The result type.</typeparam>
-    ///// <param name="resultTask">The result task.</param>
-    ///// <param name="onSuccess">The on-success function.</param>
-    ///// <param name="onFailure">The on-failure function.</param>
-    ///// <returns>
-    ///// The result of the on-success function if the result is a success result, otherwise the result of the failure result.
-    ///// </returns>
-    //public static async Task<T> Match<T>(this Task<Result> resultTask, Func<T> onSuccess, Func<Error, T> onFailure)
-    //{
-    //    Result result = await resultTask;
-
-    //    return result.IsSuccess ? onSuccess() : onFailure(result.Error);
-    //}
-
-    //public static async Task<T> Match<T>(this Task<FluentResults.Result> resultTask, Func<T> onSuccess, Func<IEnumerable<Error>, T> onFailure)
-    //{
-    //    FluentResults.Result result = await resultTask;
-
-    //    return result.IsSuccess ? onSuccess() : onFailure(result.Errors.Select(e => e.TransformError()));
-    //}
-
-    //public static async Task<T> Match<T>(this FluentResults.Result<T> resultTask, Func<T> onSuccess)
-    //{
-    //    FluentResults.Result<T> result = resultTask;
-
-    //    //return result.Value;
-    //    return result.IsSuccess ? onSuccess() : result.Value;
-    //}
-
-    ////public static FluentResults.Result<T> TEST<T>(this FluentResults.Result<T> res)
-    ////{
-    ////    return res;
-    ////}
-
-    //public static async Task<T> Match<T>(this Task<FluentResults.Result<string>> resultTask, Func<T> onSuccess, Func<IEnumerable<Error>, T> onFailure)
-    //{
-    //    FluentResults.Result<string> result = await resultTask;
-
-    //    return result.IsSuccess ? onSuccess() : onFailure(result.Errors.Select(e => e.TransformError()));
-    //}
-
-    //public static T Match<T>(this FluentResults.Result<T> resultTask, Func<TValue, TResult> onValue, Func<T> onSuccess)
-    //{
-    //    FluentResults.Result<T> result = resultTask;
-
-    //    //return result.Value;
-    //    return result.IsSuccess ? onSuccess() : result.Value;
-    //}
-
-
-    //public static Primitives.Error TransformError(this IError error)
-    //{
-    //    var errorCode = TransformErrorCode(error);
-
-    //    return new Primitives.Error(error.Message, errorCode);
-    //}
-
-    //private static string TransformErrorCode(IError error)
-    //{
-    //    return error.Metadata.TryGetValue("ErrorCode", out var errorCode) ? errorCode as string ?? string.Empty : string.Empty;
-    //}
-
-    ///// <summary>
-    ///// Matches the success status of the result to the corresponding functions.
-    ///// </summary>
-    ///// <typeparam name="TIn">The result type.</typeparam>
-    ///// <typeparam name="TOut">The output result type.</typeparam>
-    ///// <param name="resultTask">The result task.</param>
-    ///// <param name="onSuccess">The on-success function.</param>
-    ///// <param name="onFailure">The on-failure function.</param>
-    ///// <returns>
-    ///// The result of the on-success function if the result is a success result, otherwise the result of the failure result.
-    ///// </returns>
-    //public static async Task<TOut> Match<TIn, TOut>(
-    //    this Task<Result<TIn>> resultTask,
-    //    Func<TIn, TOut> onSuccess,
-    //    Func<Error, TOut> onFailure)
-    //{
-    //    Result<TIn> result = await resultTask;
-
-    //    return result.IsSuccess ? onSuccess(result.Value) : onFailure(result.Error);
-    //}
+        return !result.IsFailure ? onSuccess(result.Value) : onError(result.Errors);
+    }
 }

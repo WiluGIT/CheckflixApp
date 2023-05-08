@@ -7,10 +7,10 @@ using Microsoft.Extensions.Localization;
 namespace CheckflixApp.Infrastructure.Identity;
 public static class IdentityResultExtensions
 {
-    public static Result<Success> ToApplicationResult(this IdentityResult result)
+    public static Result ToApplicationResult(this IdentityResult result)
     {
         return result.Succeeded
-            ? Result.Success
+            ? Result.From()
             : result.Errors.Select(e => new Error(e.Code, e.Description, ErrorType.Validation)).ToList();
     }
 

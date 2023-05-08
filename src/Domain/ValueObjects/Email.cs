@@ -40,12 +40,15 @@ public sealed class Email : ValueObject
     /// <returns>The result of the email creation process containing the email or an error.</returns>
     public static Result<Email> Create(string email) =>
         new List<Error>()
-            .Ensure(email, f => string.IsNullOrWhiteSpace(f), DomainErrors.Email.NullOrEmpt)
-            .Ensure(email, f => f.Length >= MaxLength, DomainErrors.Email.LongerThanAllowed)
-            .Ensure(email, e => EmailFormatRegex.Value.IsMatch(e), DomainErrors.Email.InvalidFormat)
+            .Ensure(!string.IsNullOrWhiteSpace(email), DomainErrors.Email.NullOrEmpty)
+            .Ensure(email.Length <= MaxLength, DomainErrors.Email.LongerThanAllowed)
+            .Ensure(EmailFormatRegex.Value.IsMatch(email), DomainErrors.Email.InvalidFormat)
         is var validationErrors && validationErrors.Any() ?
         validationErrors :
         Result.From(new Email(email));
+
+    /// <inheritdoc />
+    public override string ToString() => Value;
 
     /// <inheritdoc />
     protected override IEnumerable<object> GetEqualityComponents()

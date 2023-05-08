@@ -10,10 +10,8 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
     public CreateUserCommandValidator()
     {
         RuleFor(x => x.Email).NotEmpty();
-            //.WithError(ValidationErrors.CreateUser.EmailIsRequired);
 
         RuleFor(x => x.Password).NotEmpty();
-        //.WithError(ValidationErrors.CreateUser.PasswordIsRequired);
 
         RuleFor(x => x.ConfirmPassword).NotEmpty();
 

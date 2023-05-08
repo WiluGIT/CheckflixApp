@@ -34,8 +34,8 @@ public sealed class UserName : ValueObject
     /// <returns>The result of the first name creation process containing the first name or an error.</returns>
     public static Result<UserName> Create(string firstName) =>
         new List<Error>()
-            .Ensure(firstName, f => !string.IsNullOrWhiteSpace(f), DomainErrors.UserName.NullOrEmpty)
-            .Ensure(firstName, f => f.Length <= MaxLength, DomainErrors.UserName.LongerThanAllowed) 
+            .Ensure(!string.IsNullOrWhiteSpace(firstName), DomainErrors.UserName.NullOrEmpty)
+            .Ensure(firstName.Length <= MaxLength, DomainErrors.UserName.LongerThanAllowed) 
         is var validationErrors && validationErrors.Any() ?  
         validationErrors :
         Result.From(new UserName(firstName));

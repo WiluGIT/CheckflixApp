@@ -1710,7 +1710,7 @@ export class UsersClient implements IUsersClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ResultOfString.fromJS(resultData400);
+            result400 = ResultOfProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -3189,14 +3189,13 @@ export interface IGetRefreshTokenQuery {
     refreshToken?: string;
 }
 
-export class ResultOfString implements IResultOfString {
+export class Result implements IResult {
     isFailure?: boolean;
     errors?: ErrorDto[];
     errorsOrEmptyList?: ErrorDto[];
-    value?: string;
     firstError?: ErrorDto;
 
-    constructor(data?: IResultOfString) {
+    constructor(data?: IResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3218,14 +3217,13 @@ export class ResultOfString implements IResultOfString {
                 for (let item of _data["errorsOrEmptyList"])
                     this.errorsOrEmptyList!.push(ErrorDto.fromJS(item));
             }
-            this.value = _data["value"];
             this.firstError = _data["firstError"] ? ErrorDto.fromJS(_data["firstError"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): ResultOfString {
+    static fromJS(data: any): Result {
         data = typeof data === 'object' ? data : {};
-        let result = new ResultOfString();
+        let result = new Result();
         result.init(data);
         return result;
     }
@@ -3243,18 +3241,49 @@ export class ResultOfString implements IResultOfString {
             for (let item of this.errorsOrEmptyList)
                 data["errorsOrEmptyList"].push(item.toJSON());
         }
-        data["value"] = this.value;
         data["firstError"] = this.firstError ? this.firstError.toJSON() : <any>undefined;
         return data;
     }
 }
 
-export interface IResultOfString {
+export interface IResult {
     isFailure?: boolean;
     errors?: ErrorDto[];
     errorsOrEmptyList?: ErrorDto[];
-    value?: string;
     firstError?: ErrorDto;
+}
+
+export class ResultOfString extends Result implements IResultOfString {
+    value?: string;
+
+    constructor(data?: IResultOfString) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.value = _data["value"];
+        }
+    }
+
+    static override fromJS(data: any): ResultOfString {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResultOfString();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IResultOfString extends IResult {
+    value?: string;
 }
 
 export abstract class ValueObject implements IValueObject {
@@ -3337,6 +3366,103 @@ export enum ErrorType {
     Conflict = 3,
     NotFound = 4,
     Unauthorized = 5,
+}
+
+export class ResultOfProblemDetails extends Result implements IResultOfProblemDetails {
+    value?: ProblemDetails;
+
+    constructor(data?: IResultOfProblemDetails) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.value = _data["value"] ? ProblemDetails.fromJS(_data["value"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): ResultOfProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResultOfProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value ? this.value.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IResultOfProblemDetails extends IResult {
+    value?: ProblemDetails;
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data;
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
 }
 
 export class CreateUserCommand implements ICreateUserCommand {
