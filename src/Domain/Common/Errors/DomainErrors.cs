@@ -83,7 +83,7 @@ public static class DomainErrors
     {
         public static Error UnProcessableRequest => new Error(
             "General.UnProcessableRequest",
-            "The server could not process the request.", ErrorType.Validation);
+            "The server could not process the request.", ErrorType.Unexpected);
 
         public static Error ServerError => new Error("General.ServerError", "The server encountered an unrecoverable error.", ErrorType.Validation);
     }

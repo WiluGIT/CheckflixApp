@@ -14,7 +14,7 @@ using CheckflixApp.WebUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace WebUI.Controllers.Identity;
+namespace WebUI.Controllers;
 
 public class UsersController : ApiControllerBase
 {
@@ -35,7 +35,7 @@ public class UsersController : ApiControllerBase
     public async Task<IActionResult> CreateAsync(CreateUserCommand command) =>
          await Result.From(command)
         .Bind(command => Mediator.Send(command))
-        .Match(response => Created(nameof(CreateAsync), response), errors => Problem(errors));
+        .Match(response => CreatedAtAction(nameof(GetByIdAsync), new { id = response.Item2 }, response.Item1), errors => Problem(errors));
 
     [HttpGet("{id}/roles")]
     [OpenApiOperation("Get a user's roles.", "")]

@@ -788,9 +788,10 @@
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenDto"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -821,9 +822,10 @@
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenDto"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -1579,22 +1581,6 @@
           },
           "name": {
             "type": "string"
-          }
-        }
-      },
-      "TokenDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "token": {
-            "type": "string"
-          },
-          "refreshToken": {
-            "type": "string"
-          },
-          "refreshTokenExpiryTime": {
-            "type": "string",
-            "format": "date-time"
           }
         }
       },

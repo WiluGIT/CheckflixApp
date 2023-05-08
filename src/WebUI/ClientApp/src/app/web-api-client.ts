@@ -1410,11 +1410,11 @@ export interface ITokensClient {
     /**
      * Request an access token using credentials.
      */
-    getToken(query: GetTokenQuery): Observable<TokenDto>;
+    getToken(query: GetTokenQuery): Observable<FileResponse>;
     /**
      * Request an access token using a refresh token.
      */
-    getRefreshToken(query: GetRefreshTokenQuery): Observable<TokenDto>;
+    getRefreshToken(query: GetRefreshTokenQuery): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -1433,7 +1433,7 @@ export class TokensClient implements ITokensClient {
     /**
      * Request an access token using credentials.
      */
-    getToken(query: GetTokenQuery): Observable<TokenDto> {
+    getToken(query: GetTokenQuery): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Tokens";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1445,7 +1445,7 @@ export class TokensClient implements ITokensClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -1456,27 +1456,31 @@ export class TokensClient implements ITokensClient {
                 try {
                     return this.processGetToken(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TokenDto>;
+                    return _observableThrow(e) as any as Observable<FileResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TokenDto>;
+                return _observableThrow(response_) as any as Observable<FileResponse>;
         }));
     }
 
-    protected processGetToken(response: HttpResponseBase): Observable<TokenDto> {
+    protected processGetToken(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = TokenDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1488,7 +1492,7 @@ export class TokensClient implements ITokensClient {
     /**
      * Request an access token using a refresh token.
      */
-    getRefreshToken(query: GetRefreshTokenQuery): Observable<TokenDto> {
+    getRefreshToken(query: GetRefreshTokenQuery): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Tokens/refresh";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1500,7 +1504,7 @@ export class TokensClient implements ITokensClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -1511,27 +1515,31 @@ export class TokensClient implements ITokensClient {
                 try {
                     return this.processGetRefreshToken(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TokenDto>;
+                    return _observableThrow(e) as any as Observable<FileResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TokenDto>;
+                return _observableThrow(response_) as any as Observable<FileResponse>;
         }));
     }
 
-    protected processGetRefreshToken(response: HttpResponseBase): Observable<TokenDto> {
+    protected processGetRefreshToken(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = TokenDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -3063,50 +3071,6 @@ export class CreateOrUpdateRoleCommand implements ICreateOrUpdateRoleCommand {
 export interface ICreateOrUpdateRoleCommand {
     id?: string | undefined;
     name?: string;
-}
-
-export class TokenDto implements ITokenDto {
-    token?: string;
-    refreshToken?: string;
-    refreshTokenExpiryTime?: Date;
-
-    constructor(data?: ITokenDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.token = _data["token"];
-            this.refreshToken = _data["refreshToken"];
-            this.refreshTokenExpiryTime = _data["refreshTokenExpiryTime"] ? new Date(_data["refreshTokenExpiryTime"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): TokenDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new TokenDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["token"] = this.token;
-        data["refreshToken"] = this.refreshToken;
-        data["refreshTokenExpiryTime"] = this.refreshTokenExpiryTime ? this.refreshTokenExpiryTime.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ITokenDto {
-    token?: string;
-    refreshToken?: string;
-    refreshTokenExpiryTime?: Date;
 }
 
 export class GetTokenQuery implements IGetTokenQuery {

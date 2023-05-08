@@ -4,6 +4,7 @@ using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
 using CheckflixApp.Domain.Common;
 using CheckflixApp.Domain.Common.Errors;
+using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Domain.ValueObjects;
 using Microsoft.AspNetCore.Identity;
@@ -169,10 +170,14 @@ internal partial class UserService
         return string.Join(Environment.NewLine, "dsad");
     }
 
-    public async Task<string> UpdateAsync(UpdateUserCommand command, string userId)
+    public async Task<Result<string>> UpdateAsync(UpdateUserCommand command, string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
-        _ = user ?? throw new NotFoundException(_localizer["User Not Found."]);
+
+        if (user == null)
+        {
+            return Error.NotFound(description: _localizer["User Not Found."]);
+        }
 
         string currentImage = user.ImageUrl ?? string.Empty;
         if (command.Image != null || command.DeleteCurrentImage)
@@ -200,9 +205,9 @@ internal partial class UserService
 
         if (!result.Succeeded)
         {
-            throw new InternalServerException(_localizer["Update profile failed"]);
+            return Error.Failure(description: _localizer["Update profile failed"]);
         }
 
-        return _localizer["Update profile succeeded"];
+        return _localizer["Update profile succeeded"].Value;
     }
 }

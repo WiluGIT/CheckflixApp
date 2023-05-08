@@ -6,12 +6,16 @@ using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetRefreshToken;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetToken;
+using CheckflixApp.Domain.Common.Errors;
+using CheckflixApp.Domain.Common.Primitives;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Infrastructure.Auth;
 using CheckflixApp.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit.Cryptography;
 
 namespace CheckflixApp.Infrastructure.Identity;
 public class TokenService : ITokenService
@@ -33,46 +37,46 @@ public class TokenService : ITokenService
         _securitySettings = securitySettings.Value;
     }
 
-    public async Task<TokenDto> GetTokenAsync(GetTokenQuery query, string ipAddress, CancellationToken cancellationToken)
+    public async Task<Result<TokenDto>> GetTokenAsync(GetTokenQuery query, string ipAddress, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(query.Email.Trim().Normalize());
 
         if (user is null)
         {
-            throw new UnauthorizedAccessException(_localizer["auth.failed"]);
+            return Error.NotFound(description: _localizer["auth.failed"]);
         }
 
         if (!user.IsActive)
         {
-            throw new UnauthorizedAccessException(_localizer["identity.usernotactive"]);
+            return Error.Validation(description: _localizer["identity.usernotactive"]);
         }
 
         if (_securitySettings.RequireConfirmedAccount && !user.EmailConfirmed)
         {
-            throw new UnauthorizedAccessException(_localizer["identity.emailnotconfirmed"]);
+            return Error.Unauthorized(description: _localizer["identity.emailnotconfirmed"]);
         }
 
         if (!await _userManager.CheckPasswordAsync(user, query.Password))
         {
-            throw new UnauthorizedAccessException(_localizer["identity.invalidcredentials"]);
+            return Error.Unauthorized(description: _localizer["identity.invalidcredentials"]);
         }
 
         return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
 
-    public async Task<TokenDto> GetRefreshTokenAsync(GetRefreshTokenQuery query, string ipAddress, CancellationToken cancellationToken)
+    public async Task<Result<TokenDto>> GetRefreshTokenAsync(GetRefreshTokenQuery query, string ipAddress, CancellationToken cancellationToken)
     {
         var userPrincipal = GetPrincipalFromExpiredToken(query.Token);
         string? userEmail = userPrincipal.GetEmail();
         var user = await _userManager.FindByEmailAsync(userEmail);
         if (user is null)
         {
-            throw new UnauthorizedAccessException(_localizer["auth.failed"]);
+            return Error.Unauthorized(description: _localizer["auth.failed"]);
         }
 
         if (user.RefreshToken != query.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
-            throw new UnauthorizedAccessException(_localizer["identity.invalidrefreshtoken"]);
+            return Error.Unauthorized(description: _localizer["identity.invalidrefreshtoken"]);
         }
 
         return await GenerateTokensAndUpdateUser(user, ipAddress);

@@ -8,7 +8,7 @@ using CheckflixApp.WebUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace WebUI.Controllers.Identity;
+namespace WebUI.Controllers;
 
 public class RolesController : ApiControllerBase
 {

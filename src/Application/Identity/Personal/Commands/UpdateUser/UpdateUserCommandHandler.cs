@@ -1,10 +1,11 @@
 ﻿using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
 namespace CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 
-public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, string>
+public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Result<string>>
 {
     private readonly IUserService _userService;
     private readonly ICurrentUserService _currentUserService;
@@ -15,10 +16,17 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, strin
         _currentUserService = currentUserService;
     }
 
-    public async Task<string> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId ?? string.Empty;
 
-        return await _userService.UpdateAsync(command, userId);
+        var updateResult = await _userService.UpdateAsync(command, userId);
+
+        if (updateResult.IsFailure)
+        {
+            return updateResult.Errors;
+        }
+
+        return updateResult;
     }
 }
