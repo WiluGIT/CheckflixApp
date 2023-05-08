@@ -1,5 +1,5 @@
-﻿using MediatR;
-using FluentResults;
+﻿using CheckflixApp.Domain.Common.Primitives.Result;
+using MediatR;
 
 namespace CheckflixApp.Application.Identity.Users.Commands.CreateUser;
 public class CreateUserCommand : IRequest<Result<string>>

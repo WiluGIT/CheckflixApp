@@ -4,8 +4,10 @@ using CheckflixApp.WebUI.Filters;
 using CheckflixApp.WebUI.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using WebUI.Common.Errors;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class ConfigureServices
@@ -24,6 +26,8 @@ public static class ConfigureServices
         services.AddControllersWithViews(options =>
             options.Filters.Add<ApiExceptionFilterAttribute>())
                 .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
+
+        services.AddSingleton<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 
         services.AddRazorPages();
 

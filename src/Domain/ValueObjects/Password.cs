@@ -33,14 +33,16 @@ public sealed class Password : ValueObject
     /// <param name="password">The password value.</param>
     /// <returns>The result of the password creation process containing the password or an error.</returns>
     public static Result<Password> Create(string password) =>
-        Result.Create(password, DomainErrors.Password.NullOrEmpty)
-            .Ensure(p => !string.IsNullOrWhiteSpace(p), DomainErrors.Password.NullOrEmpty)
-            .Ensure(p => p.Length >= MinPasswordLength, DomainErrors.Password.TooShort)
-            .Ensure(p => p.Any(IsLower), DomainErrors.Password.MissingLowercaseLetter)
-            .Ensure(p => p.Any(IsUpper), DomainErrors.Password.MissingUppercaseLetter)
-            .Ensure(p => p.Any(IsDigit), DomainErrors.Password.MissingDigit)
-            .Ensure(p => p.Any(IsNonAlphaNumeric), DomainErrors.Password.MissingNonAlphaNumeric)
-            .Map(p => new Password(p));
+        new List<Error>()
+            .Ensure(password, p => !string.IsNullOrWhiteSpace(p), DomainErrors.Password.NullOrEmpty)
+            .Ensure(password, p => p.Length >= MinPasswordLength, DomainErrors.Password.TooShort)
+            .Ensure(password, p => p.Any(IsLower), DomainErrors.Password.MissingLowercaseLetter)
+            .Ensure(password, p => p.Any(IsUpper), DomainErrors.Password.MissingUppercaseLetter)
+            .Ensure(password, p => p.Any(IsDigit), DomainErrors.Password.MissingDigit)
+            .Ensure(password, p => p.Any(IsNonAlphaNumeric), DomainErrors.Password.MissingNonAlphaNumeric)
+        is var validationErrors && validationErrors.Any() ?
+        validationErrors :
+        Result.From(new Password(password));
 
     /// <inheritdoc />
     protected override IEnumerable<object> GetEqualityComponents()

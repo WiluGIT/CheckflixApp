@@ -1,5 +1,4 @@
 ﻿using CheckflixApp.Application.Identity.Common;
-using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Users.Commands.AssignRoles;
 using CheckflixApp.Application.Identity.Users.Commands.ConfirmEmail;
 using CheckflixApp.Application.Identity.Users.Commands.ConfirmPhoneNumber;
@@ -10,10 +9,8 @@ using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
 using CheckflixApp.Application.Identity.Users.Queries.GetById;
 using CheckflixApp.Application.Identity.Users.Queries.GetList;
 using CheckflixApp.Application.Identity.Users.Queries.GetUserRoles;
-using CheckflixApp.Domain.Common.Errors;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.WebUI.Controllers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -34,18 +31,13 @@ public class UsersController : ApiControllerBase
     [HttpPost]
     [OpenApiOperation("Creates a new user.", "")]
     [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Result<string>), StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> CreateAsync(CreateUserCommand command) =>
-    //    await Result.Create(command, DomainErrors.General.UnProcessableRequest)
-    //        .Bind(command => Mediator.Send(command))
-    //        .Match(Ok, BadRequest);
-    public async Task<IActionResult> CreateAsync(CreateUserCommand command)
-    {
-        var res = await Mediator.Send(command);
-
-
-        return BadRequest(res.ToResult());
-    }
+    [ProducesResponseType(typeof(Result<ProblemDetails>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateAsync(CreateUserCommand command) =>
+        (await Mediator.Send(command))
+        .Match(
+            response => Created(nameof(CreateAsync), response),
+            errors => Problem(errors)
+        );
 
     [HttpGet("{id}/roles")]
     [OpenApiOperation("Get a user's roles.", "")]

@@ -1,4 +1,4 @@
-﻿using FluentResults;
+﻿using CheckflixApp.Domain.Common.Primitives;
 
 namespace CheckflixApp.Domain.Common.Errors;
 
@@ -11,10 +11,10 @@ public class ApiErrorResponse
     /// Initializes a new instance of the <see cref="ApiErrorResponse"/> class.
     /// </summary>
     /// <param name="errors">The enumerable collection of errors.</param>
-    public ApiErrorResponse(IReadOnlyCollection<Error> errors) => Errors = errors;
+    public ApiErrorResponse(IEnumerable<Error> errors) => Errors = errors;
 
     /// <summary>
     /// Gets the errors.
     /// </summary>
-    public IReadOnlyCollection<Error> Errors { get; }
+    public IEnumerable<Error> Errors { get; }
 }

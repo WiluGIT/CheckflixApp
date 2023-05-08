@@ -1,6 +1,6 @@
 ﻿using CheckflixApp.Domain.Common.Errors;
 using CheckflixApp.Domain.Common.Primitives;
-using FluentResults;
+using CheckflixApp.Domain.Common.Primitives.Result;
 
 namespace CheckflixApp.Domain.ValueObjects;
 
@@ -32,30 +32,13 @@ public sealed class UserName : ValueObject
     /// </summary>
     /// <param name="firstName">The first name value.</param>
     /// <returns>The result of the first name creation process containing the first name or an error.</returns>
-    //public static Result<UserName> Create(string firstName) =>
-    //    Result.Create(firstName, DomainErrors.FirstName.NullOrEmpty)
-    //        .Ensure(f => !string.IsNullOrWhiteSpace(f), DomainErrors.FirstName.NullOrEmpty)
-    //        .Ensure(f => f.Length <= MaxLength, DomainErrors.FirstName.LongerThanAllowed)
-    //        .Map(f => new UserName(f));
-
-    public static Result<UserName> Create(string firstName)
-    {
-        var valResult = Result.Merge(
-                Result.FailIf(!string.IsNullOrWhiteSpace(firstName), DomainErrors.FirstName.NullOrEmpty.Message),
-                Result.FailIf(firstName.Length <= MaxLength, DomainErrors.FirstName.LongerThanAllowed.Message)
-            );
-
-        var z = Result.Ok(new UserName(firstName));
-
-        if (valResult.IsFailed)
-        {
-            return valResult;
-        }
-
-       
-
-        return z;
-    }
+    public static Result<UserName> Create(string firstName) =>
+        new List<Error>()
+            .Ensure(firstName, f => !string.IsNullOrWhiteSpace(f), DomainErrors.UserName.NullOrEmpty)
+            .Ensure(firstName, f => f.Length <= MaxLength, DomainErrors.UserName.LongerThanAllowed) 
+        is var validationErrors && validationErrors.Any() ?  
+        validationErrors :
+        Result.From(new UserName(firstName));
 
     /// <inheritdoc />
     public override string ToString() => Value;

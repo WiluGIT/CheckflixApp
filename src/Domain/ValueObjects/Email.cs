@@ -39,11 +39,13 @@ public sealed class Email : ValueObject
     /// <param name="email">The email value.</param>
     /// <returns>The result of the email creation process containing the email or an error.</returns>
     public static Result<Email> Create(string email) =>
-        Result.Create(email, DomainErrors.Email.NullOrEmpty)
-            .Ensure(e => !string.IsNullOrWhiteSpace(e), DomainErrors.Email.NullOrEmpty)
-            .Ensure(e => e.Length <= MaxLength, DomainErrors.Email.LongerThanAllowed)
-            .Ensure(e => EmailFormatRegex.Value.IsMatch(e), DomainErrors.Email.InvalidFormat)
-            .Map(e => new Email(e));
+        new List<Error>()
+            .Ensure(email, f => string.IsNullOrWhiteSpace(f), DomainErrors.Email.NullOrEmpt)
+            .Ensure(email, f => f.Length >= MaxLength, DomainErrors.Email.LongerThanAllowed)
+            .Ensure(email, e => EmailFormatRegex.Value.IsMatch(e), DomainErrors.Email.InvalidFormat)
+        is var validationErrors && validationErrors.Any() ?
+        validationErrors :
+        Result.From(new Email(email));
 
     /// <inheritdoc />
     protected override IEnumerable<object> GetEqualityComponents()
