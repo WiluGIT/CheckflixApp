@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace CheckflixApp.Infrastructure.Identity;
 internal partial class UserService
 {
-    public async Task<string> ForgotPasswordAsync(ForgotPasswordCommand command, string origin)
+    public async Task<Result<string>> ForgotPasswordAsync(ForgotPasswordCommand command, string origin)
     {
         var user = await _userManager.FindByEmailAsync(command.Email.Normalize());
         if (user is null || !await _userManager.IsEmailConfirmedAsync(user))
         {
-            throw new InternalServerException(_localizer["An Error has occurred!"]);
+            return Error.Validation(description: _localizer["An Error has occurred!"]);
         }
 
         // For more information on how to enable account confirmation and password reset please
@@ -33,21 +33,24 @@ internal partial class UserService
 
         _jobService.Enqueue(() => _mailService.SendAsync(mailRequest, CancellationToken.None));
 
-        return _localizer["Password Reset Mail has been sent to your authorized Email."];
+        return _localizer["Password Reset Mail has been sent to your authorized Email."].Value;
     }
 
-    public async Task<string> ResetPasswordAsync(ResetPasswordCommand command)
+    public async Task<Result<string>> ResetPasswordAsync(ResetPasswordCommand command)
     {
         var user = await _userManager.FindByEmailAsync(command.Email?.Normalize());
 
         // Don't reveal that the user does not exist
-        _ = user ?? throw new InternalServerException(_localizer["An Error has occurred!"]);
+        if (user == null)
+        {
+            Error.Validation(description: _localizer["An Error has occurred!"]);
+        }
 
         var result = await _userManager.ResetPasswordAsync(user, command.Token, command.Password);
 
         return result.Succeeded
-            ? _localizer["Password Reset Successful!"]
-            : throw new InternalServerException(_localizer["An Error has occurred!"]);
+            ? _localizer["Password Reset Successful!"].Value
+            : Error.Validation(description: _localizer["An Error has occurred!"]);
     }
 
     public async Task<Result<string>> ChangePasswordAsync(ChangePasswordCommand command, string userId)

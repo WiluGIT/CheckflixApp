@@ -1,6 +1,8 @@
 ﻿using CheckflixApp.Application.Common.Exceptions;
 using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Primitives;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,7 @@ using Microsoft.Extensions.Localization;
 
 namespace CheckflixApp.Application.Followings.Commands.FollowUser;
 
-public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, string>
+public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, Result<string>>
 {
     private readonly IUserService _userService;
     private readonly ICurrentUserService _currentUserService;
@@ -23,7 +25,7 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, strin
         _localizer = localizer;
     }
 
-    public async Task<string> Handle(FollowUserCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(FollowUserCommand command, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId ?? string.Empty;
 
@@ -31,12 +33,12 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, strin
 
         if (target == null || target.Id == null)
         {
-            throw new NotFoundException(_localizer["User Not Found."]);
+            return Error.NotFound(description: _localizer["User Not Found."]);
         }
 
         if (userId == target.Id)
         {
-            throw new InternalServerException(_localizer["You cannot follow yourself"]);
+            return Error.Validation(description: _localizer["You cannot follow yourself"]);
         }
 
         var followedPeople = await _context.FollowedPeople
@@ -44,14 +46,15 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, strin
 
         if (followedPeople != null)
         {
-            throw new InternalServerException(_localizer["U are already following this user"]);
+            return Error.Validation(description: _localizer["U are already following this user"]);
         }
 
         followedPeople = FollowedPeople.Create(userId, target.Id);
 
+        // TODO: Add repository and unit
         await _context.FollowedPeople.AddAsync(followedPeople, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return _localizer["Follow has been added successfully"];
+        return _localizer["Follow has been added successfully"].Value;
     }
 }

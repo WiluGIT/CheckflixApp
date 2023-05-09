@@ -1,9 +1,10 @@
 ﻿using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
 namespace CheckflixApp.Application.Identity.Users.Commands.AssignRoles;
 
-public class AssignRolesCommandHandler : IRequestHandler<AssignRolesCommand, string>
+public class AssignRolesCommandHandler : IRequestHandler<AssignRolesCommand, Result<string>>
 {
     private readonly IUserService _userService;
     public AssignRolesCommandHandler(IUserService userService)
@@ -11,7 +12,7 @@ public class AssignRolesCommandHandler : IRequestHandler<AssignRolesCommand, str
         _userService = userService;
     }
 
-    public async Task<string> Handle(AssignRolesCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(AssignRolesCommand command, CancellationToken cancellationToken)
     {
         return await _userService.AssignRolesAsync(command.Id, command.UserRequest, cancellationToken);
     }

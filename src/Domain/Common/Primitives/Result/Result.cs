@@ -73,9 +73,17 @@ public class Result : IResult
     }
 
     /// <summary>
-    /// Creates an <see cref="Result{TValue}"/> from a value.
+    /// Creates an <see cref="Result{TValue}"/> from a error list.
     /// </summary>
     public static implicit operator Result(List<Error> errors)
+    {
+        return new Result(errors);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="Result{TValue}"/> from a error.
+    /// </summary>
+    public static implicit operator Result(Error errors)
     {
         return new Result(errors);
     }

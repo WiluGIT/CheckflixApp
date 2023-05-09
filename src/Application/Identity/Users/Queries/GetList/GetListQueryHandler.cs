@@ -1,11 +1,12 @@
 ﻿using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace CheckflixApp.Application.Identity.Users.Queries.GetList;
 
-public class GetListQueryHandler : IRequestHandler<GetListQuery, List<UserDetailsDto>>
+public class GetListQueryHandler : IRequestHandler<GetListQuery, Result<List<UserDetailsDto>>>
 {
     private readonly IUserService _userService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -15,7 +16,7 @@ public class GetListQueryHandler : IRequestHandler<GetListQuery, List<UserDetail
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<List<UserDetailsDto>> Handle(GetListQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<UserDetailsDto>>> Handle(GetListQuery query, CancellationToken cancellationToken)
     {
         return await _userService.GetListAsync(cancellationToken);
     }

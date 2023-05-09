@@ -1,10 +1,11 @@
 ﻿using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace CheckflixApp.Application.Identity.Users.Commands.ForgotPassword;
 
-public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, string>
+public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, Result<string>>
 {
     private readonly IUserService _userService;
     private readonly IHttpContextAccessor _contextAccessor;
@@ -15,7 +16,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         _contextAccessor = contextAccessor;
     }
 
-    public async Task<string> Handle(ForgotPasswordCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(ForgotPasswordCommand command, CancellationToken cancellationToken)
     {
 
         return await _userService.ForgotPasswordAsync(command, GetOriginFromRequest());

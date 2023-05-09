@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using CheckflixApp.Domain.Common.Primitives.Result;
+using MediatR;
 
 namespace CheckflixApp.Application.Identity.Users.Commands.ResetPassword;
-public class ResetPasswordCommand : IRequest<string>
+public class ResetPasswordCommand : IRequest<Result<string>>
 {
     public string Email { get; set; } = default!;
 

@@ -1,10 +1,11 @@
 ﻿using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
 namespace CheckflixApp.Application.Identity.Users.Queries.GetUserRoles;
 
-public class GetUserRolesQueryHandler : IRequestHandler<GetUserRolesQuery, List<UserRoleDto>>
+public class GetUserRolesQueryHandler : IRequestHandler<GetUserRolesQuery, Result<List<UserRoleDto>>>
 {
     private readonly IUserService _userService;
 
@@ -13,7 +14,7 @@ public class GetUserRolesQueryHandler : IRequestHandler<GetUserRolesQuery, List<
         _userService = userService;
     }
 
-    public async Task<List<UserRoleDto>> Handle(GetUserRolesQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<UserRoleDto>>> Handle(GetUserRolesQuery query, CancellationToken cancellationToken)
     {
         return await _userService.GetRolesAsync(query.Id, cancellationToken);
     }
