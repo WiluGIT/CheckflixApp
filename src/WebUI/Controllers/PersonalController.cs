@@ -1,33 +1,44 @@
-﻿using CheckflixApp.Application.Auditing.Common;
+﻿using Azure;
+using CheckflixApp.Application.Auditing.Common;
 using CheckflixApp.Application.Auditing.Queries;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
 using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 using CheckflixApp.Application.Identity.Personal.Queries.GetProfile;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Infrastructure.Extensions;
 using CheckflixApp.WebUI.Controllers;
+using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace WebUI.Controllers.Personal;
+namespace WebUI.Controllers;
 
 public class PersonalController : ApiControllerBase
 {
     [HttpGet("profile")]
     [OpenApiOperation("Get profile details of currently logged in user.", "")]
-    public async Task<ActionResult<UserDetailsDto>> GetProfileAsync(CancellationToken cancellationToken)
-        => await Mediator.Send(new GetProfileQuery());
+    public async Task<IActionResult> GetProfileAsync(CancellationToken cancellationToken) =>
+        await Result.From(new GetProfileQuery())
+        .Bind(query => Mediator.Send(query))
+        .Match(response => Ok(response), errors => Problem(errors));
 
     [HttpPut("profile")]
     [OpenApiOperation("Update profile details of currently logged in user.", "")]
-    public async Task<ActionResult<string>> UpdateProfileAsync([FromForm]UpdateUserCommand command)
-        => await Mediator.Send(command);
+    public async Task<IActionResult> UpdateProfileAsync([FromForm] UpdateUserCommand command) =>
+        await Result.From(command)
+        .Bind(command => Mediator.Send(command))
+        .Match(response => Ok(response), errors => Problem(errors));
 
     [HttpPut("change-password")]
     [OpenApiOperation("Change password of currently logged in user.", "")]
-    public async Task<ActionResult<string>> ChangePasswordAsync(ChangePasswordCommand command)
-        => await Mediator.Send(command);
+    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordCommand command) => 
+        await Result.From(command)
+        .Bind(command => Mediator.Send(command))
+        .Match(response => Ok(response), errors => Problem(errors));
 
     // TODO: Audit logs
     [HttpGet("logs")]

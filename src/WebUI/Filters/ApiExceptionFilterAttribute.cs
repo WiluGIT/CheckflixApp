@@ -1,4 +1,5 @@
-﻿using CheckflixApp.Application.Common.Exceptions;
+﻿using System;
+using CheckflixApp.Application.Common.Exceptions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -42,6 +43,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
             HandleInvalidModelStateException(context);
             return;
         }
+
+        HandleUnexpectedException(context);
     }
 
     private void HandleValidationException(ExceptionContext context)
@@ -67,6 +70,24 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         };
 
         context.Result = new BadRequestObjectResult(details);
+
+        context.ExceptionHandled = true;
+    }    
+    
+    private void HandleUnexpectedException(ExceptionContext context)
+    {
+        var details = new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "InternalServer",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+            Detail = context.Exception.Message
+        };
+
+        context.Result = new ObjectResult(details)
+        {
+            StatusCode = StatusCodes.Status500InternalServerError
+        };
 
         context.ExceptionHandled = true;
     }
@@ -135,7 +156,7 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         {
             Status = StatusCodes.Status500InternalServerError,
             Title = "InternalServer",
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
             Detail = exception.Message
         };
 

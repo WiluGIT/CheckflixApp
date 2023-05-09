@@ -8,6 +8,7 @@ using CheckflixApp.Application.Identity.Users.Commands.CreateUser;
 using CheckflixApp.Application.Identity.Users.Commands.ForgotPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ResetPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
+using CheckflixApp.Domain.Common.Primitives.Result;
 
 namespace CheckflixApp.Application.Identity.Interfaces;
 public interface IUserService
@@ -19,16 +20,16 @@ public interface IUserService
     Task<List<UserDetailsDto>> GetListAsync(CancellationToken cancellationToken);
     Task<int> GetCountAsync(CancellationToken cancellationToken);
     Task<UserFollowingsCountDto> GetFollowingCountAsync(string userId, CancellationToken cancellationToken);
-    Task<UserDetailsDto> GetAsync(string userId, CancellationToken cancellationToken);
+    Task<UserDetailsDto?> GetAsync(string userId, CancellationToken cancellationToken);
     Task<List<UserRoleDto>> GetRolesAsync(string userId, CancellationToken cancellationToken);    
     Task<string> AssignRolesAsync(string userId, UserRolesRequest request, CancellationToken cancellationToken);
     Task ToggleUserStatusAsync(ToggleUserStatusCommand command, CancellationToken cancellationToken);
     Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal);
-    Task<string> CreateAsync(CreateUserCommand command, string origin);
-    Task<string> UpdateAsync(UpdateUserCommand command, string userId);
+    Task<Result<string>> CreateAsync(CreateUserCommand command, string origin);
+    Task<Result<string>> UpdateAsync(UpdateUserCommand command, string userId);
     Task<string> ConfirmEmailAsync(string userId, string code, CancellationToken cancellationToken);
     Task<string> ConfirmPhoneNumberAsync(string userId, string code);
     Task<string> ForgotPasswordAsync(ForgotPasswordCommand command, string origin);
     Task<string> ResetPasswordAsync(ResetPasswordCommand command);
-    Task<string> ChangePasswordAsync(ChangePasswordCommand command, string userId);
+    Task<Result<string>> ChangePasswordAsync(ChangePasswordCommand command, string userId);
 }

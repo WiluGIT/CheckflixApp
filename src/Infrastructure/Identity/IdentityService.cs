@@ -1,10 +1,8 @@
 ﻿using CheckflixApp.Application.Common.Interfaces;
-using CheckflixApp.Application.Common.Models;
-using IdentityModel;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace CheckflixApp.Infrastructure.Identity;
 public class IdentityService : IIdentityService
@@ -12,7 +10,7 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
-
+    
     public IdentityService(
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
@@ -70,7 +68,7 @@ public class IdentityService : IIdentityService
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
 
-        return user != null ? await DeleteUserAsync(user) : Result.Success();
+        return user != null ? await DeleteUserAsync(user) : Result.From();
     }
 
     public async Task<Result> DeleteUserAsync(ApplicationUser user)
@@ -79,4 +77,7 @@ public class IdentityService : IIdentityService
 
         return result.ToApplicationResult();
     }
+
+    public async Task<bool> IsEmailUniqueAsync(string email) => 
+        await _userManager.FindByEmailAsync(email) == null;
 }

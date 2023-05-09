@@ -1,33 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CheckflixApp.Application.Common.Interfaces;
-using CheckflixApp.Application.Identity.Interfaces;
-using CheckflixApp.Application.TodoItems.Commands.CreateTodoItem;
-using CheckflixApp.Domain.Entities;
-using CheckflixApp.Domain.Events;
+﻿using CheckflixApp.Application.Common.Interfaces;
+using CheckflixApp.Domain.Common.Errors;
+using CheckflixApp.Domain.Common.Primitives.Result;
+using CheckflixApp.Domain.ValueObjects;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace CheckflixApp.Application.Identity.Users.Commands.CreateUser;
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<(string, string)>>
 {
-    private readonly IUserService _userService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    public CreateUserCommandHandler(IUserService userService, IHttpContextAccessor httpContextAccessor)
+    private readonly IIdentityService _identityService;
+    private readonly IStringLocalizer<CreateUserCommandHandler> _localizer;
+
+    public CreateUserCommandHandler(IIdentityService identityService, IStringLocalizer<CreateUserCommandHandler> localizer)
     {
-        _userService = userService;
-        _httpContextAccessor = httpContextAccessor;
+        _identityService = identityService;
+        _localizer = localizer;
     }
 
-    public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<(string, string)>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
-        return await _userService.CreateAsync(request, GetOriginFromRequest());
-    }
+        Result<UserName> userNameResult = UserName.Create(command.UserName);
+        Result<Email> emailResult = Email.Create(command.Email);
+        Result<Password> passwordResult = Password.Create(command.Password);
 
-    private string GetOriginFromRequest() => $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}{_httpContextAccessor.HttpContext.Request.PathBase.Value}";
+        var errorList = Result.GetErrorsFromFailureResults(userNameResult, emailResult, passwordResult);
+
+        if (errorList.Any())
+        {
+            return errorList;
+        }
+
+        if (!await _identityService.IsEmailUniqueAsync(emailResult.Value))
+        {
+            return DomainErrors.User.DuplicateEmail;
+        }
+
+        var (result, id) = await _identityService.CreateUserAsync(userNameResult.Value, passwordResult.Value);
+        if (result.IsFailure)
+        {
+            return DomainErrors.User.PasswordValidationError;
+        }
+
+        return (string.Format(_localizer["User {0} Registered."].Value, emailResult.Value), id);
+    }
 }
 

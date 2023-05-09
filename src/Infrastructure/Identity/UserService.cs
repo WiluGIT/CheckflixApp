@@ -1,7 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Ardalis.Specification.EntityFrameworkCore;
+﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using CheckflixApp.Application.Common.Exceptions;
 using CheckflixApp.Application.Common.FileStorage;
 using CheckflixApp.Application.Common.Interfaces;
@@ -30,6 +28,7 @@ internal partial class UserService : IUserService
     private readonly IJobService _jobService;
     private readonly IEmailTemplateService _templateService;
     private readonly IFileStorageService _fileStorage;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
     public UserService(
@@ -42,8 +41,8 @@ internal partial class UserService : IUserService
         IMailService mailService,
         IJobService jobService,
         IEmailTemplateService templateService,
-        IFileStorageService fileStorage
-        )
+        IFileStorageService fileStorage,
+        IUnitOfWork unitOfWork)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -55,6 +54,7 @@ internal partial class UserService : IUserService
         _jobService = jobService;
         _templateService = templateService;
         _fileStorage = fileStorage;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<int> GetCountAsync(CancellationToken cancellationToken) =>
@@ -103,16 +103,8 @@ internal partial class UserService : IUserService
         return userFollowingsCountDto;
     }
 
-    public async Task<UserDetailsDto> GetAsync(string userId, CancellationToken cancellationToken)
-    {
-        var test = await _userManager.Users
-    .AsNoTracking()
-    .Include(x => x.Followers)
-    .Include(x => x.Following)
-    .Where(u => u.Id == userId)
-    .FirstOrDefaultAsync(cancellationToken);
-
-        var userDetailsDto = await _userManager.Users
+    public async Task<UserDetailsDto?> GetAsync(string userId, CancellationToken cancellationToken) =>
+        await _userManager.Users
             .AsNoTracking()
             .Where(u => u.Id == userId)
             .Select(x => new UserDetailsDto
@@ -127,12 +119,7 @@ internal partial class UserService : IUserService
             })
             .FirstOrDefaultAsync(cancellationToken);
 
-        _ = userDetailsDto ?? throw new NotFoundException(_localizer["User Not Found."]);
-
-        return userDetailsDto;
-    }
-
-    public async Task<PaginatedList<UserDetailsDto>> SearchAsync(UserListFilter filter, CancellationToken cancellationToken)
+public async Task<PaginatedList<UserDetailsDto>> SearchAsync(UserListFilter filter, CancellationToken cancellationToken)
     {
         var spec = new EntitiesByPaginationFilterSpec<ApplicationUser>(filter);
 

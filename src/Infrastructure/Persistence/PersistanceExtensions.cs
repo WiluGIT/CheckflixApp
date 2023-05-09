@@ -30,6 +30,8 @@ internal static class PersistanceExtensions
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
+        services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
+
         services.AddScoped<ApplicationDbContextInitialiser>();
 
         return services;

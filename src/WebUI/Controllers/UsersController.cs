@@ -1,5 +1,4 @@
 ﻿using CheckflixApp.Application.Identity.Common;
-using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Users.Commands.AssignRoles;
 using CheckflixApp.Application.Identity.Users.Commands.ConfirmEmail;
 using CheckflixApp.Application.Identity.Users.Commands.ConfirmPhoneNumber;
@@ -10,12 +9,12 @@ using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
 using CheckflixApp.Application.Identity.Users.Queries.GetById;
 using CheckflixApp.Application.Identity.Users.Queries.GetList;
 using CheckflixApp.Application.Identity.Users.Queries.GetUserRoles;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.WebUI.Controllers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace WebUI.Controllers.Identity;
+namespace WebUI.Controllers;
 
 public class UsersController : ApiControllerBase
 {
@@ -31,8 +30,12 @@ public class UsersController : ApiControllerBase
 
     [HttpPost]
     [OpenApiOperation("Creates a new user.", "")]
-    public async Task<string> CreateAsync(CreateUserCommand command)
-        => await Mediator.Send(command);
+    [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result<ProblemDetails>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CreateAsync(CreateUserCommand command) =>
+         await Result.From(command)
+        .Bind(command => Mediator.Send(command))
+        .Match(response => CreatedAtAction(nameof(GetByIdAsync), new { id = response.Item2 }, response.Item1), errors => Problem(errors));
 
     [HttpGet("{id}/roles")]
     [OpenApiOperation("Get a user's roles.", "")]

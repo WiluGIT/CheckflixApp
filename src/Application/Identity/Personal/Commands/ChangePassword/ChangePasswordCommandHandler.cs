@@ -1,11 +1,11 @@
 ﻿using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Identity.Interfaces;
-using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
 namespace CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
 
-public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, string>
+public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, Result<string>>
 {
     private readonly IUserService _userService;
     private readonly ICurrentUserService _currentUserService;
@@ -16,10 +16,17 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         _currentUserService = currentUserService;
     }
 
-    public async Task<string> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId ?? string.Empty;
 
-        return await _userService.ChangePasswordAsync(command, userId);
+        var changePasswordResult = await _userService.ChangePasswordAsync(command, userId);
+
+        if (changePasswordResult.IsFailure)
+        {
+            return changePasswordResult.Errors;
+        }
+        
+        return changePasswordResult;
     }
 }
