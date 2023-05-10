@@ -1,5 +1,4 @@
-﻿using CheckflixApp.Application.Identity.Common;
-using CheckflixApp.Application.Identity.Roles.Commands.CreateOrUpdateRole;
+﻿using CheckflixApp.Application.Identity.Roles.Commands.CreateOrUpdateRole;
 using CheckflixApp.Application.Identity.Roles.Commands.DeleteRole;
 using CheckflixApp.Application.Identity.Roles.Queries.GetRoleById;
 using CheckflixApp.Application.Identity.Roles.Queries.GetRolesList;
@@ -7,7 +6,6 @@ using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.WebUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WebUI.Controllers;
 

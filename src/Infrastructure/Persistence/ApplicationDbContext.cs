@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using CheckflixApp.Application.Common.Interfaces;
+using CheckflixApp.Domain.Common;
+using CheckflixApp.Domain.Common.Primitives.Maybe;
 using CheckflixApp.Domain.Entities;
 using CheckflixApp.Infrastructure.Identity;
 using CheckflixApp.Infrastructure.Persistence.Interceptors;
@@ -53,4 +55,33 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     /// <inheritdoc />
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         => Database.BeginTransactionAsync(cancellationToken);
+
+    /// <inheritdoc />
+    public new DbSet<TEntity> Set<TEntity>()
+        where TEntity : BaseEntity
+        => base.Set<TEntity>();
+
+    /// <inheritdoc />
+    public async Task<TEntity?> GetBydIdAsync<TEntity>(int id)
+        where TEntity : BaseEntity
+        => await Set<TEntity>().FirstOrDefaultAsync(e => e.Id == id);
+
+    /// <inheritdoc />
+    public void Insert<TEntity>(TEntity entity)
+        where TEntity : BaseEntity
+        => Set<TEntity>().Add(entity);
+
+    /// <inheritdoc />
+    public void InsertRange<TEntity>(IReadOnlyCollection<TEntity> entities)
+        where TEntity : BaseEntity
+        => Set<TEntity>().AddRange(entities);
+
+    /// <inheritdoc />
+    public new void Remove<TEntity>(TEntity entity)
+        where TEntity : BaseEntity
+        => Set<TEntity>().Remove(entity);
+
+    /// <inheritdoc />
+    //public Task<int> ExecuteSqlAsync(string sql, IEnumerable<SqlParameter> parameters, CancellationToken cancellationToken = default)
+    //    => Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
 }

@@ -1,5 +1,4 @@
-﻿using Azure;
-using CheckflixApp.Application.Identity.Common;
+﻿using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Users.Commands.AssignRoles;
 using CheckflixApp.Application.Identity.Users.Commands.ConfirmEmail;
 using CheckflixApp.Application.Identity.Users.Commands.ConfirmPhoneNumber;
@@ -12,11 +11,8 @@ using CheckflixApp.Application.Identity.Users.Queries.GetList;
 using CheckflixApp.Application.Identity.Users.Queries.GetUserRoles;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.WebUI.Controllers;
-using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WebUI.Controllers;
 
@@ -59,13 +55,12 @@ public class UsersController : ApiControllerBase
         .Bind(command => Mediator.Send(command))
         .Match(response => Ok(response), errors => Problem(errors));
 
-    // TODO: Returns 200 on problem
     [HttpPut("{id}/toggle-status")]
     [OpenApiOperation("Toggle a user's active status.", "")]
-    public async Task ToggleStatusAsync([FromRoute] string id, [FromBody] bool activateUser) =>
+    public async Task<IActionResult> ToggleStatusAsync([FromRoute] string id, [FromBody] bool activateUser) =>
         await Result.From(new ToggleUserStatusCommand(id, activateUser))
         .Bind(command => Mediator.Send(command))
-        .Match(response => Ok(response), errors => Problem(errors));
+        .Match(response => NoContent(), errors => Problem(errors));
 
     [HttpGet("confirm-email")]
     [OpenApiOperation("Confirm email address for a user.", "")]

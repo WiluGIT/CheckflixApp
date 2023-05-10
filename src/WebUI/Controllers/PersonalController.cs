@@ -1,19 +1,12 @@
-﻿using Azure;
-using CheckflixApp.Application.Auditing.Common;
+﻿using CheckflixApp.Application.Auditing.Common;
 using CheckflixApp.Application.Auditing.Queries;
-using CheckflixApp.Application.Identity.Common;
-using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
 using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
 using CheckflixApp.Application.Identity.Personal.Queries.GetProfile;
 using CheckflixApp.Domain.Common.Primitives.Result;
-using CheckflixApp.Infrastructure.Extensions;
 using CheckflixApp.WebUI.Controllers;
-using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebUI.Controllers;
 

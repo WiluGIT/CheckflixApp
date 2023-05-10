@@ -1,13 +1,10 @@
 ﻿using CheckflixApp.Application.Followings.Commands.FollowUser;
 using CheckflixApp.Application.Followings.Commands.UnfollowUser;
-using CheckflixApp.Application.Followings.Common;
 using CheckflixApp.Application.Followings.Queries.GetUserFollowingsCount;
-using CheckflixApp.Application.Identity.Roles.Queries.GetRoleById;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.WebUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using static CheckflixApp.Domain.Common.Errors.DomainErrors;
 
 namespace WebUI.Controllers;
 

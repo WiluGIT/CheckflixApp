@@ -1527,7 +1527,7 @@ export interface IUsersClient {
     /**
      * Toggle a user's active status.
      */
-    toggleStatus(id: string | null, activateUser: boolean): Observable<void>;
+    toggleStatus(id: string | null, activateUser: boolean): Observable<FileResponse>;
     /**
      * Confirm email address for a user.
      * @param userId (optional) 
@@ -1861,7 +1861,7 @@ export class UsersClient implements IUsersClient {
     /**
      * Toggle a user's active status.
      */
-    toggleStatus(id: string | null, activateUser: boolean): Observable<void> {
+    toggleStatus(id: string | null, activateUser: boolean): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Users/{id}/toggle-status";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1876,6 +1876,7 @@ export class UsersClient implements IUsersClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -1886,24 +1887,31 @@ export class UsersClient implements IUsersClient {
                 try {
                     return this.processToggleStatus(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<FileResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<FileResponse>;
         }));
     }
 
-    protected processToggleStatus(response: HttpResponseBase): Observable<void> {
+    protected processToggleStatus(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);

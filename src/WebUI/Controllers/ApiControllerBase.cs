@@ -1,7 +1,5 @@
-﻿using CheckflixApp.Domain.Common.Errors;
-using CheckflixApp.Domain.Common.Primitives;
+﻿using CheckflixApp.Domain.Common.Primitives;
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Common;
 
