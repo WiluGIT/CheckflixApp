@@ -29,7 +29,7 @@ internal abstract class GenericRepository<TEntity>
     /// </summary>
     /// <param name="id">The entity identifier.</param>
     /// <returns>The maybe instance that may contain the entity with the specified identifier.</returns>
-    public async Task<Maybe<TEntity>> GetByIdAsync(Guid id) => await DbContext.GetBydIdAsync<TEntity>(id);
+    public async Task<TEntity?> GetByIdAsync(int id) => await DbContext.GetBydIdAsync<TEntity>(id);
 
     /// <summary>
     /// Inserts the specified entity into the database.
@@ -63,7 +63,7 @@ internal abstract class GenericRepository<TEntity>
     /// <param name="specification">The specification.</param>
     /// <returns>True if any entity meets the specified specification, otherwise false.</returns>
     protected async Task<bool> AnyAsync(Specification<TEntity> specification) =>
-        await DbContext.Set<TEntity>().AnyAsync(specification);
+        await DbContext.Set<TEntity>().AnyAsync();
 
     /// <summary>
     /// Gets the first entity that meets the specified specification.
@@ -71,5 +71,5 @@ internal abstract class GenericRepository<TEntity>
     /// <param name="specification">The specification.</param>
     /// <returns>The maybe instance that may contain the first entity that meets the specified specification.</returns>
     protected async Task<Maybe<TEntity>> FirstOrDefaultAsync(Specification<TEntity> specification) =>
-        await DbContext.Set<TEntity>().FirstOrDefaultAsync(specification);
+        await DbContext.Set<TEntity>().FirstOrDefaultAsync();
 }

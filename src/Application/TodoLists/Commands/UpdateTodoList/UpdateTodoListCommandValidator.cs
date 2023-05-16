@@ -1,4 +1,5 @@
 ﻿using CheckflixApp.Application.Common.Interfaces;
+using CheckflixApp.Domain.Entities;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ public class UpdateTodoListCommandValidator : AbstractValidator<UpdateTodoListCo
 
     public async Task<bool> BeUniqueTitle(UpdateTodoListCommand model, string title, CancellationToken cancellationToken)
     {
-        return await _context.TodoLists
+        return await _context.Set<TodoList>()
             .Where(l => l.Id != model.Id)
             .AllAsync(l => l.Title != title, cancellationToken);
     }

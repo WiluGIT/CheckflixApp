@@ -15,15 +15,17 @@ public class UnfollowUserCommandHandler : IRequestHandler<UnfollowUserCommand, R
 {
     private readonly IUserService _userService;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IApplicationDbContext _context;
     private readonly IStringLocalizer<FollowUserCommandHandler> _localizer;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IFollowedPeopleRepository _followedPeopleRepository;
 
-    public UnfollowUserCommandHandler(IUserService userService, ICurrentUserService currentUserService, IApplicationDbContext applicationDbContext, IStringLocalizer<FollowUserCommandHandler> localizer)
+    public UnfollowUserCommandHandler(IUserService userService, ICurrentUserService currentUserService, IStringLocalizer<FollowUserCommandHandler> localizer, IUnitOfWork unitOfWork, IFollowedPeopleRepository followedPeopleRepository)
     {
         _userService = userService;
         _currentUserService = currentUserService;
-        _context = applicationDbContext;
         _localizer = localizer;
+        _unitOfWork = unitOfWork;
+        _followedPeopleRepository = followedPeopleRepository;
     }
 
     public async Task<Result<string>> Handle(UnfollowUserCommand command, CancellationToken cancellationToken)
@@ -32,7 +34,7 @@ public class UnfollowUserCommandHandler : IRequestHandler<UnfollowUserCommand, R
 
         var target = await _userService.GetAsync(command.UserId, cancellationToken);
 
-        if (target == null)
+        if (target == null || target.Id == null)
         {
             return Error.NotFound(description: _localizer["User Not Found."]);
         }
@@ -42,17 +44,14 @@ public class UnfollowUserCommandHandler : IRequestHandler<UnfollowUserCommand, R
             return Error.Validation(description: _localizer["You cannot unfollow yourself"]);
         }
 
-        var followedPeople = await _context.FollowedPeople
-            .FirstOrDefaultAsync(x => x.ObserverId == userId && x.TargetId == target.Id, cancellationToken);
-
+        var followedPeople = await _followedPeopleRepository.GetFollowing(userId, target.Id);
         if (followedPeople == null)
         {
             return Error.Validation(description: _localizer["U are not following this user"]);
         }
 
-        // TODO rep and unit
-        _context.FollowedPeople.Remove(followedPeople);
-        await _context.SaveChangesAsync(cancellationToken);
+        _followedPeopleRepository.Remove(followedPeople);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return _localizer["User has been unfollowed successfully"].Value;
     }

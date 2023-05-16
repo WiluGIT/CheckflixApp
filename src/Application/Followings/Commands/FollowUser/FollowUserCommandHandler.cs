@@ -16,13 +16,17 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, Resul
     private readonly ICurrentUserService _currentUserService;
     private readonly IApplicationDbContext _context;
     private readonly IStringLocalizer<FollowUserCommandHandler> _localizer;
+    private readonly IFollowedPeopleRepository _followedPeopleRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public FollowUserCommandHandler(IUserService userService, ICurrentUserService currentUserService, IApplicationDbContext applicationDbContext, IStringLocalizer<FollowUserCommandHandler> localizer)
+    public FollowUserCommandHandler(IUserService userService, ICurrentUserService currentUserService, IApplicationDbContext applicationDbContext, IStringLocalizer<FollowUserCommandHandler> localizer, IFollowedPeopleRepository followedPeopleRepository, IUnitOfWork unitOfWork)
     {
         _userService = userService;
         _currentUserService = currentUserService;
         _context = applicationDbContext;
         _localizer = localizer;
+        _followedPeopleRepository = followedPeopleRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result<string>> Handle(FollowUserCommand command, CancellationToken cancellationToken)
@@ -41,9 +45,7 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, Resul
             return Error.Validation(description: _localizer["You cannot follow yourself"]);
         }
 
-        var followedPeople = await _context.FollowedPeople
-            .FirstOrDefaultAsync(x => x.ObserverId == userId && x.TargetId == target.Id, cancellationToken);
-
+        var followedPeople = await _followedPeopleRepository.GetFollowing(userId, target.Id);
         if (followedPeople != null)
         {
             return Error.Validation(description: _localizer["U are already following this user"]);
@@ -51,9 +53,8 @@ public class FollowUserCommandHandler : IRequestHandler<FollowUserCommand, Resul
 
         followedPeople = FollowedPeople.Create(userId, target.Id);
 
-        // TODO: Add repository and unit
-        await _context.FollowedPeople.AddAsync(followedPeople, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        _followedPeopleRepository.Insert(followedPeople);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return _localizer["Follow has been added successfully"].Value;
     }
