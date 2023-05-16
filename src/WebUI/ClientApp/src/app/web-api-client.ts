@@ -3106,6 +3106,7 @@ export class CreateProductionCommand implements ICreateProductionCommand {
     overview?: string;
     director?: string;
     keywords?: string;
+    genreIds?: number[];
 
     constructor(data?: ICreateProductionCommand) {
         if (data) {
@@ -3124,6 +3125,11 @@ export class CreateProductionCommand implements ICreateProductionCommand {
             this.overview = _data["overview"];
             this.director = _data["director"];
             this.keywords = _data["keywords"];
+            if (Array.isArray(_data["genreIds"])) {
+                this.genreIds = [] as any;
+                for (let item of _data["genreIds"])
+                    this.genreIds!.push(item);
+            }
         }
     }
 
@@ -3142,6 +3148,11 @@ export class CreateProductionCommand implements ICreateProductionCommand {
         data["overview"] = this.overview;
         data["director"] = this.director;
         data["keywords"] = this.keywords;
+        if (Array.isArray(this.genreIds)) {
+            data["genreIds"] = [];
+            for (let item of this.genreIds)
+                data["genreIds"].push(item);
+        }
         return data;
     }
 }
@@ -3153,6 +3164,7 @@ export interface ICreateProductionCommand {
     overview?: string;
     director?: string;
     keywords?: string;
+    genreIds?: number[];
 }
 
 export class CreateOrUpdateRoleCommand implements ICreateOrUpdateRoleCommand {

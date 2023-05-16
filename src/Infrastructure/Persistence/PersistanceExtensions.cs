@@ -34,6 +34,8 @@ internal static class PersistanceExtensions
 
         services.AddScoped<IProductionRepository, ProductionRepository>();
 
+        services.AddScoped<IGenreRepository, GenreRepository>();
+
         return services;
     }
 }

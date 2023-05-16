@@ -39,7 +39,7 @@ public class Production : BaseAuditableEntity
         string overview,
         string director,
         string keywords,
-        List<ProductionGenre> productionGenres)
+        List<int> genres)
     {
         return new(
             tmdbId: tmdbId,
@@ -48,9 +48,12 @@ public class Production : BaseAuditableEntity
             overview: overview,
             director: director,
             keywords: keywords, 
-            productionGenres: productionGenres);
+            productionGenres: CreateProductionGenres(genres));
     }
 
-    #pragma warning disable CS8618 // Required by Entity Framework
+    private static List<ProductionGenre> CreateProductionGenres(List<int> genres) =>
+        genres.Select(genreId => ProductionGenre.Create(genreId)).ToList();
+
+#pragma warning disable CS8618 // Required by Entity Framework
     private Production() { }
 }

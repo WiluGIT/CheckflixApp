@@ -7,19 +7,15 @@ public class ProductionGenre : BaseAuditableEntity
 
 
     private ProductionGenre(
-        int productionId,
         int genreId)
     {
         this.GenreId = genreId;
-        this.ProductionId = productionId;
     }
 
     public static ProductionGenre Create(
-        int productionId,
         int genreId)
     {
         return new(
-            productionId: productionId, 
             genreId: genreId);
     }
 

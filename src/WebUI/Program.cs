@@ -16,8 +16,8 @@ if (app.Environment.IsDevelopment())
     {
         var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
         // Comment it out to Remove-Migration
-        //await initialiser.InitialiseAsync();
-        //await initialiser.SeedAsync();
+        await initialiser.InitialiseAsync();
+        await initialiser.SeedAsync();
     }
 }
 else

@@ -92,19 +92,35 @@ public class ApplicationDbContextInitialiser
 
         // Default data
         // Seed, if necessary
-        if (!_context.TodoLists.Any())
+        if (!_context.Set<Genre>().Any())
         {
-            _context.TodoLists.Add(new TodoList
+            var defaultGenres = new List<Genre>()
             {
-                Title = "Todo List",
-                Items =
-                {
-                    new TodoItem { Title = "Make a todo list 📃" },
-                    new TodoItem { Title = "Check off the first item ✅" },
-                    new TodoItem { Title = "Realise you've already done two things on the list! 🤯"},
-                    new TodoItem { Title = "Reward yourself with a nice, long nap 🏆" },
-                }
-            });
+                Genre.Create("Action"),
+                Genre.Create("Adventure"),
+                Genre.Create("Animation"),
+                Genre.Create("Comedy"),
+                Genre.Create("Crime"),
+                Genre.Create("Documentary"),
+                Genre.Create("Drama"),
+                Genre.Create("Family"),
+                Genre.Create("Fantasy"),
+                Genre.Create("Fiction"),
+                Genre.Create("Foreign"),
+                Genre.Create("History"),
+                Genre.Create("Horror"),
+                Genre.Create("Movie"),
+                Genre.Create("Music"),
+                Genre.Create("Mystery"),
+                Genre.Create("Romance"),
+                Genre.Create("Science"),
+                Genre.Create("TV"),
+                Genre.Create("Thriller"),
+                Genre.Create("War"),
+                Genre.Create("Western"),
+            };
+
+            _context.Set<Genre>().AddRange(defaultGenres);
 
             await _context.SaveChangesAsync();
         }
