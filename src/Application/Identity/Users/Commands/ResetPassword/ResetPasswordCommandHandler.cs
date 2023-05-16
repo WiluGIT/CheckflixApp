@@ -1,10 +1,10 @@
 ﻿using CheckflixApp.Application.Identity.Interfaces;
-using CheckflixApp.Application.Identity.Users.Commands.ConfirmPhoneNumber;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
 namespace CheckflixApp.Application.Identity.Users.Commands.ResetPassword;
 
-public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, string>
+public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, Result<string>>
 {
     private readonly IUserService _userService;
 
@@ -13,7 +13,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         _userService = userService;
     }
 
-    public async Task<string> Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
     {
         return await _userService.ResetPasswordAsync(command);
     }

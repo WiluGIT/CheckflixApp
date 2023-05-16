@@ -6,8 +6,11 @@ using CheckflixApp.Application.Common.Mappings;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Roles.Commands.CreateOrUpdateRole;
+using CheckflixApp.Domain.Common.Primitives;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
@@ -53,11 +56,11 @@ internal class RoleService : IRoleService
     public async Task<bool> ExistsAsync(string roleName, string? excludeId) 
         => await _roleManager.FindByNameAsync(roleName) is IdentityRole existingRole && existingRole.Id != excludeId;
 
-    public async Task<RoleDto> GetByIdAsync(string id) 
+    public async Task<Result<RoleDto>> GetByIdAsync(string id)
         => await _db.Roles.SingleOrDefaultAsync(x => x.Id == id) is { } role ? _mapper.Map<RoleDto>(role)
-            : throw new NotFoundException(_t["Role Not Found"]);
+            : Error.NotFound(description: _t["Role Not Found"]);
 
-    public async Task<string> CreateOrUpdateAsync(CreateOrUpdateRoleCommand command)
+    public async Task<Result<string>> CreateOrUpdateAsync(CreateOrUpdateRoleCommand command)
     {
         if (string.IsNullOrEmpty(command.Id))
         {
@@ -67,7 +70,7 @@ internal class RoleService : IRoleService
 
             if (!createResult.Succeeded)
             {
-                throw new InternalServerException(string.Join(',', _t["Register role failed"], createResult.GetErrors(_t)));
+                return Error.Failure(description: string.Join(',', _t["Register role failed"], createResult.GetErrors(_t)));
             }
 
             //await _events.PublishAsync(new ApplicationRoleCreatedEvent(role.Id, role.Name));
@@ -78,11 +81,14 @@ internal class RoleService : IRoleService
         // Update an existing role.
         IdentityRole? role = await _roleManager.FindByIdAsync(command.Id);
 
-        _ = role ?? throw new NotFoundException(_t["Role Not Found"]);
+        if (role == null)
+        {
+            return Error.NotFound(description: _t["Role Not Found"]);
+        }
 
         if (SystemRoles.IsDefault(role.Name))
         {
-            throw new InternalServerException(string.Format(_t["Not allowed to modify {0} Role."], role.Name));
+            return Error.Failure(description: string.Format(_t["Not allowed to modify {0} Role."], role.Name));
         }
 
         role.Name = command.Name;
@@ -91,7 +97,7 @@ internal class RoleService : IRoleService
 
         if (!result.Succeeded)
         {
-            throw new InternalServerException(string.Join(',',_t["Update role failed"], result.GetErrors(_t)));
+            return Error.Failure(description: string.Join(',',_t["Update role failed"], result.GetErrors(_t)));
         }
 
         //await _events.PublishAsync(new ApplicationRoleUpdatedEvent(role.Id, role.Name));
@@ -99,20 +105,23 @@ internal class RoleService : IRoleService
         return string.Format(_t["Role {0} Updated."], role.Name);
     }
 
-    public async Task<string> DeleteAsync(string id)
+    public async Task<Result<string>> DeleteAsync(string id)
     {
         var role = await _roleManager.FindByIdAsync(id);
 
-        _ = role ?? throw new NotFoundException(_t["Role Not Found"]);
+        if (role == null)
+        {
+            return Error.NotFound(description: _t["Role Not Found"]);
+        }
 
         if (SystemRoles.IsDefault(role.Name))
         {
-            throw new InternalServerException(string.Format(_t["Not allowed to delete {0} Role."], role.Name));
+            return Error.Failure(description: string.Format(_t["Not allowed to delete {0} Role."], role.Name));
         }
 
         if ((await _userManager.GetUsersInRoleAsync(role.Name)).Count > 0)
         {
-            throw new InternalServerException(string.Format(_t["Not allowed to delete {0} Role as it is being used."], role.Name));
+            return Error.Failure(description: string.Format(_t["Not allowed to delete {0} Role as it is being used."], role.Name));
         }
 
         await _roleManager.DeleteAsync(role);

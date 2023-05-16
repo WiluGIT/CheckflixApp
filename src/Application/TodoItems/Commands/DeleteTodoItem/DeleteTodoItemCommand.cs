@@ -18,7 +18,7 @@ public class DeleteTodoItemCommandHandler : IRequestHandler<DeleteTodoItemComman
 
     public async Task<Unit> Handle(DeleteTodoItemCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.TodoItems
+        var entity = await _context.Set<TodoItem>()
             .FindAsync(new object[] { request.Id }, cancellationToken);
 
         if (entity == null)
@@ -26,11 +26,11 @@ public class DeleteTodoItemCommandHandler : IRequestHandler<DeleteTodoItemComman
             throw new NotFoundException(nameof(TodoItem), request.Id);
         }
 
-        _context.TodoItems.Remove(entity);
+        _context.Set<TodoItem>().Remove(entity);
 
         entity.AddDomainEvent(new TodoItemDeletedEvent(entity));
 
-        await _context.SaveChangesAsync(cancellationToken);
+        //await _context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }

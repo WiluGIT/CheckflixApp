@@ -1,9 +1,9 @@
 ﻿using CheckflixApp.Application.Common.Security;
 using CheckflixApp.Application.Followings.Common;
-using CheckflixApp.Application.Identity.Common;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
 namespace CheckflixApp.Application.Followings.Queries.GetUserFollowingsCount;
 
 [Authorize]
-public record GetFollowingsCountQuery() : IRequest<UserFollowingsCountDto>;
+public record GetFollowingsCountQuery() : IRequest<Result<UserFollowingsCountDto>>;

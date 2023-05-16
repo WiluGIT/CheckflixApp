@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CheckflixApp.Application.Common.Interfaces;
+﻿using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Infrastructure.Persistence.Interceptors;
+using CheckflixApp.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +29,12 @@ internal static class PersistanceExtensions
         services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped<ApplicationDbContextInitialiser>();
+
+        services.AddScoped<IFollowedPeopleRepository, FollowedPeopleRepository>();
+
+        services.AddScoped<IProductionRepository, ProductionRepository>();
+
+        services.AddScoped<IGenreRepository, GenreRepository>();
 
         return services;
     }

@@ -1,4 +1,5 @@
-﻿using CheckflixApp.Infrastructure.Identity;
+﻿using CheckflixApp.Domain.Common;
+using CheckflixApp.Infrastructure.Identity;
 using CheckflixApp.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -123,7 +124,7 @@ public partial class Testing
         await context.SaveChangesAsync();
     }
 
-    public static async Task<int> CountAsync<TEntity>() where TEntity : class
+    public static async Task<int> CountAsync<TEntity>() where TEntity : BaseEntity
     {
         using var scope = _scopeFactory.CreateScope();
 

@@ -1,9 +1,10 @@
 ﻿using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
 namespace CheckflixApp.Application.Identity.Roles.Commands.CreateOrUpdateRole;
 
-public class CreateOrUpdateRoleCommandHandler : IRequestHandler<CreateOrUpdateRoleCommand, string>
+public class CreateOrUpdateRoleCommandHandler : IRequestHandler<CreateOrUpdateRoleCommand, Result<string>>
 {
     private readonly IRoleService _roleService;
 
@@ -12,7 +13,7 @@ public class CreateOrUpdateRoleCommandHandler : IRequestHandler<CreateOrUpdateRo
         _roleService = roleService;
     }
 
-    public async Task<string> Handle(CreateOrUpdateRoleCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(CreateOrUpdateRoleCommand command, CancellationToken cancellationToken)
     {
         return await _roleService.CreateOrUpdateAsync(command);
     }

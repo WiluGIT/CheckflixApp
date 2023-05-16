@@ -1,5 +1,6 @@
 ﻿using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Security;
+using CheckflixApp.Domain.Entities;
 using MediatR;
 
 namespace CheckflixApp.Application.TodoLists.Commands.PurgeTodoLists;
@@ -19,9 +20,9 @@ public class PurgeTodoListsCommandHandler : IRequestHandler<PurgeTodoListsComman
 
     public async Task<Unit> Handle(PurgeTodoListsCommand request, CancellationToken cancellationToken)
     {
-        _context.TodoLists.RemoveRange(_context.TodoLists);
+        _context.Set<TodoList>().RemoveRange(_context.Set<TodoList>());
 
-        await _context.SaveChangesAsync(cancellationToken);
+        //await _context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }

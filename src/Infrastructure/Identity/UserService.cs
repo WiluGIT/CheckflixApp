@@ -10,6 +10,8 @@ using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
 using CheckflixApp.Application.Mailing;
+using CheckflixApp.Domain.Common.Primitives;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Infrastructure.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -84,7 +86,7 @@ internal partial class UserService : IUserService
                 })
                 .ToListAsync();
 
-    public async Task<UserFollowingsCountDto> GetFollowingCountAsync(string userId, CancellationToken cancellationToken)
+    public async Task<UserFollowingsCountDto?> GetFollowingCountAsync(string userId, CancellationToken cancellationToken)
     {
         var userFollowingsCountDto = await _userManager.Users
             .Include(x => x.Followers)
@@ -97,8 +99,6 @@ internal partial class UserService : IUserService
                 FollowingCount = x.Following.Count()
             })
             .FirstOrDefaultAsync(cancellationToken);
-
-        _ = userFollowingsCountDto ?? throw new NotFoundException(_localizer["User Followings Not Found"]);
 
         return userFollowingsCountDto;
     }
@@ -143,16 +143,19 @@ public async Task<PaginatedList<UserDetailsDto>> SearchAsync(UserListFilter filt
         return new PaginatedList<UserDetailsDto>(users, count, filter.PageNumber, filter.PageSize);
     }
 
-    public async Task ToggleUserStatusAsync(ToggleUserStatusCommand command, CancellationToken cancellationToken)
+    public async Task<Result> ToggleUserStatusAsync(ToggleUserStatusCommand command, CancellationToken cancellationToken)
     {
         var user = await _userManager.Users.Where(u => u.Id == command.Id).FirstOrDefaultAsync(cancellationToken);
 
-        _ = user ?? throw new NotFoundException(_localizer["User Not Found."]);
+        if (user == null)
+        {
+            return Error.NotFound(description: _localizer["User Not Found."]);
+        }
 
         bool isAdmin = await _userManager.IsInRoleAsync(user, SystemRoles.Administrator);
         if (isAdmin)
         {
-            throw new InternalServerException(_localizer["Administrators Profile's Status cannot be toggled"]);
+            return Error.Validation(description: _localizer["Administrators Profile's Status cannot be toggled"]);
         }
 
         user.IsActive = command.ActivateUser;
@@ -160,5 +163,7 @@ public async Task<PaginatedList<UserDetailsDto>> SearchAsync(UserListFilter filt
         await _userManager.UpdateAsync(user);
 
         //await _events.PublishAsync(new ApplicationUserUpdatedEvent(user.Id));
+
+        return Result.From();
     }
 }

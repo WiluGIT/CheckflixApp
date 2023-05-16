@@ -14,12 +14,12 @@ using Microsoft.Identity.Web;
 namespace CheckflixApp.Infrastructure.Identity;
 internal partial class UserService
 {
-    public async Task<string> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal)
+    public async Task<Result<string>> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal)
     {
         string? objectId = principal.GetObjectId();
         if (string.IsNullOrWhiteSpace(objectId))
         {
-            throw new InternalServerException(_localizer["Invalid objectId"]);
+            return Error.Validation(description: _localizer["Invalid objectId"]);
         }
 
         var user = await _userManager.Users.Where(u => u.ObjectId == objectId).FirstOrDefaultAsync()

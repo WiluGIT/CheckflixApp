@@ -24,7 +24,7 @@ public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemComman
 
     public async Task<Unit> Handle(UpdateTodoItemCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.TodoItems
+        var entity = await _context.Set<TodoItem>()
             .FindAsync(new object[] { request.Id }, cancellationToken);
 
         if (entity == null)
@@ -35,7 +35,7 @@ public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemComman
         entity.Title = request.Title;
         entity.Done = request.Done;
 
-        await _context.SaveChangesAsync(cancellationToken);
+        //await _context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }
