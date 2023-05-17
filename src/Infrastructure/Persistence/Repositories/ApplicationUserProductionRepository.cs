@@ -20,10 +20,6 @@ internal sealed class ApplicationUserProductionRepository : GenericRepository<Ap
 
     public async Task<List<Production>> GetUserProductions(string userId)
     {
-        //var applicationUserProductions = await DbContext.Set<ApplicationUserProduction>()
-        //    .Where(x => x.ApplicationUserId.Equals(userId))
-        //    .ToListAsync();
-
         var productions = await (from applicationUserProduction in DbContext.Set<ApplicationUserProduction>().AsNoTracking()
                                  join production in DbContext.Set<Production>().AsNoTracking()
                                     on applicationUserProduction.ProductionId equals production.Id
