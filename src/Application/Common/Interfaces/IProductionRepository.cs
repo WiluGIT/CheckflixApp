@@ -33,4 +33,10 @@ public interface IProductionRepository
     /// </summary>
     /// <param name="production">The production to be removed from the database.</param>
     void Remove(Production production);
+
+    /// <summary>
+    /// Updates the specified production in the database.
+    /// </summary>
+    /// <param name="production">The production to be updated in the database.</param>
+    void Update(Production production);
 }

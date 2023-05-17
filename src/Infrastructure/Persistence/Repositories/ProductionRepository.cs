@@ -32,4 +32,9 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
         await DbContext.Set<Production>()
             .WithSpecification(new EntitiesByPaginationFilterSpec<Production>(filter))
             .PaginatedListAsync(filter.PageNumber, filter.PageSize);
+
+    public new async Task<Production?> GetByIdAsync(int id) => 
+        await DbContext.Set<Production>()
+        .Include(x => x.ProductionGenres)
+        .FirstOrDefaultAsync(x => x.Id.Equals(id));
 }

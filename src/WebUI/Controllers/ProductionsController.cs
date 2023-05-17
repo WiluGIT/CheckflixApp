@@ -1,11 +1,8 @@
-﻿using CheckflixApp.Application.Auditing.Common;
-using CheckflixApp.Application.Auditing.Queries;
-using CheckflixApp.Application.Common.Models;
-using CheckflixApp.Application.Identity.Personal.Commands.ChangePassword;
-using CheckflixApp.Application.Identity.Personal.Commands.UpdateUser;
-using CheckflixApp.Application.Identity.Personal.Queries.GetProfile;
+﻿using CheckflixApp.Application.Common.Models;
 using CheckflixApp.Application.Productions.Commands.CreateProductionCommand;
 using CheckflixApp.Application.Productions.Commands.DeleteProductionCommand;
+using CheckflixApp.Application.Productions.Commands.UpdateProductionCommand;
+using CheckflixApp.Application.Productions.Common;
 using CheckflixApp.Application.Productions.Queries.GetProductionByIdQuery;
 using CheckflixApp.Application.Productions.Queries.GetProductionsQuery;
 using CheckflixApp.Domain.Common.Primitives.Result;
@@ -38,10 +35,17 @@ public class ProductionsController : ApiControllerBase
         .Bind(command => Mediator.Send(command))
         .Match(response => Created(nameof(GetById), response), errors => Problem(errors));
 
+    [HttpPut("{id}")]
+    [OpenApiOperation("Update production.", "")]
+    public async Task<IActionResult> UpdateProduction([FromRoute] int id, [FromBody] UpdateProductionRequest request) =>
+        await Result.From(new UpdateProductionCommand(id, request))
+        .Bind(command => Mediator.Send(command))
+        .Match(response => Ok(response), errors => Problem(errors));
+
     [HttpDelete("{id}")]
     [OpenApiOperation("Delete production.", "")]
     public async Task<IActionResult> DeleteProduction(int id) =>
         await Result.From(new DeleteProductionCommand(id))
         .Bind(command => Mediator.Send(command))
-        .Match(response => Created(nameof(GetById), response), errors => Problem(errors));
+        .Match(response => Ok(response), errors => Problem(errors));
 }

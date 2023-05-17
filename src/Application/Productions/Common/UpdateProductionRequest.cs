@@ -1,11 +1,6 @@
-﻿using CheckflixApp.Application.Common.Security;
-using CheckflixApp.Domain.Common.Primitives.Result;
-using MediatR;
+﻿namespace CheckflixApp.Application.Productions.Common;
 
-namespace CheckflixApp.Application.Productions.Commands.CreateProductionCommand;
-
-[Authorize(Roles = "Administrator")]
-public class CreateProductionCommand : IRequest<Result<string>>
+public class UpdateProductionRequest
 {
     public string TmdbId { get; set; } = string.Empty;
     public string ImdbId { get; set; } = string.Empty;
