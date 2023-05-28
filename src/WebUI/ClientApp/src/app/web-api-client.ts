@@ -616,6 +616,211 @@ export class TodoListsClient implements ITodoListsClient {
     }
 }
 
+export interface IApplicationUserProductionsClient {
+    /**
+     * Get collection of user productions.
+     */
+    getUserProductions(): Observable<FileResponse>;
+    /**
+     * Create application user production.
+     */
+    createUserProduction(command: CreateUserProductionCommand): Observable<FileResponse>;
+    /**
+     * Update application user production.
+     */
+    updateUserProduction(id: number, request: UpdateUserProductionRequest): Observable<FileResponse>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ApplicationUserProductionsClient implements IApplicationUserProductionsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * Get collection of user productions.
+     */
+    getUserProductions(): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/ApplicationUserProductions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserProductions(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserProductions(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processGetUserProductions(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Create application user production.
+     */
+    createUserProduction(command: CreateUserProductionCommand): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/ApplicationUserProductions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateUserProduction(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateUserProduction(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processCreateUserProduction(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Update application user production.
+     */
+    updateUserProduction(id: number, request: UpdateUserProductionRequest): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/ApplicationUserProductions/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateUserProduction(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateUserProduction(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processUpdateUserProduction(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface IFollowingsClient {
     /**
      * Follow user with given userId.
@@ -648,7 +853,7 @@ export class FollowingsClient implements IFollowingsClient {
      * Follow user with given userId.
      */
     followUser(userId: string | null): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Followings/{userId}/follow";
+        let url_ = this.baseUrl + "/api/Followings/{userId}";
         if (userId === undefined || userId === null)
             throw new Error("The parameter 'userId' must be defined.");
         url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
@@ -706,7 +911,7 @@ export class FollowingsClient implements IFollowingsClient {
      * Unfollow user with given userId.
      */
     unfollowUser(userId: string | null): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Followings/{userId}/follow";
+        let url_ = this.baseUrl + "/api/Followings/{userId}";
         if (userId === undefined || userId === null)
             throw new Error("The parameter 'userId' must be defined.");
         url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
@@ -1103,6 +1308,10 @@ export interface IProductionsClient {
      */
     getById(id: number): Observable<FileResponse>;
     /**
+     * Update production.
+     */
+    updateProduction(id: number, request: UpdateProductionRequest): Observable<FileResponse>;
+    /**
      * Delete production.
      */
     deleteProduction(id: number): Observable<FileResponse>;
@@ -1168,6 +1377,68 @@ export class ProductionsClient implements IProductionsClient {
     }
 
     protected processGetById(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Update production.
+     */
+    updateProduction(id: number, request: UpdateProductionRequest): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Productions/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateProduction(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateProduction(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processUpdateProduction(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1660,6 +1931,7 @@ export interface ITokensClient {
      * Request an access token using a refresh token.
      */
     getRefreshToken(query: GetRefreshTokenQuery): Observable<FileResponse>;
+    discordCallback(code: string | null | undefined): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -1768,6 +2040,60 @@ export class TokensClient implements ITokensClient {
     }
 
     protected processGetRefreshToken(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    discordCallback(code: string | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Tokens/discord-callback?";
+        if (code !== undefined && code !== null)
+            url_ += "Code=" + encodeURIComponent("" + code) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDiscordCallback(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDiscordCallback(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processDiscordCallback(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2987,6 +3313,98 @@ export interface IUpdateTodoListCommand {
     title?: string | undefined;
 }
 
+export class CreateUserProductionCommand implements ICreateUserProductionCommand {
+    productionId?: number;
+    favourites?: boolean | undefined;
+    toWatch?: boolean | undefined;
+    watched?: boolean | undefined;
+
+    constructor(data?: ICreateUserProductionCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.productionId = _data["productionId"];
+            this.favourites = _data["favourites"];
+            this.toWatch = _data["toWatch"];
+            this.watched = _data["watched"];
+        }
+    }
+
+    static fromJS(data: any): CreateUserProductionCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateUserProductionCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productionId"] = this.productionId;
+        data["favourites"] = this.favourites;
+        data["toWatch"] = this.toWatch;
+        data["watched"] = this.watched;
+        return data;
+    }
+}
+
+export interface ICreateUserProductionCommand {
+    productionId?: number;
+    favourites?: boolean | undefined;
+    toWatch?: boolean | undefined;
+    watched?: boolean | undefined;
+}
+
+export class UpdateUserProductionRequest implements IUpdateUserProductionRequest {
+    favourites?: boolean | undefined;
+    toWatch?: boolean | undefined;
+    watched?: boolean | undefined;
+
+    constructor(data?: IUpdateUserProductionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.favourites = _data["favourites"];
+            this.toWatch = _data["toWatch"];
+            this.watched = _data["watched"];
+        }
+    }
+
+    static fromJS(data: any): UpdateUserProductionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateUserProductionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["favourites"] = this.favourites;
+        data["toWatch"] = this.toWatch;
+        data["watched"] = this.watched;
+        return data;
+    }
+}
+
+export interface IUpdateUserProductionRequest {
+    favourites?: boolean | undefined;
+    toWatch?: boolean | undefined;
+    watched?: boolean | undefined;
+}
+
 export class ChangePasswordCommand implements IChangePasswordCommand {
     password?: string;
     newPassword?: string;
@@ -3158,6 +3576,74 @@ export class CreateProductionCommand implements ICreateProductionCommand {
 }
 
 export interface ICreateProductionCommand {
+    tmdbId?: string;
+    imdbId?: string;
+    title?: string;
+    overview?: string;
+    director?: string;
+    keywords?: string;
+    genreIds?: number[];
+}
+
+export class UpdateProductionRequest implements IUpdateProductionRequest {
+    tmdbId?: string;
+    imdbId?: string;
+    title?: string;
+    overview?: string;
+    director?: string;
+    keywords?: string;
+    genreIds?: number[];
+
+    constructor(data?: IUpdateProductionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tmdbId = _data["tmdbId"];
+            this.imdbId = _data["imdbId"];
+            this.title = _data["title"];
+            this.overview = _data["overview"];
+            this.director = _data["director"];
+            this.keywords = _data["keywords"];
+            if (Array.isArray(_data["genreIds"])) {
+                this.genreIds = [] as any;
+                for (let item of _data["genreIds"])
+                    this.genreIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateProductionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateProductionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tmdbId"] = this.tmdbId;
+        data["imdbId"] = this.imdbId;
+        data["title"] = this.title;
+        data["overview"] = this.overview;
+        data["director"] = this.director;
+        data["keywords"] = this.keywords;
+        if (Array.isArray(this.genreIds)) {
+            data["genreIds"] = [];
+            for (let item of this.genreIds)
+                data["genreIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IUpdateProductionRequest {
     tmdbId?: string;
     imdbId?: string;
     title?: string;

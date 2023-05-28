@@ -2,11 +2,11 @@
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 
-namespace CheckflixApp.Application.Productions.Commands.CreateProductionCommand;
+namespace CheckflixApp.Application.Productions.Commands.UpdateProductionCommand;
 
-public class CreateProductionCommandValidator : AbstractValidator<CreateProductionCommand>
+public class UpdateProductionCommandValidator : AbstractValidator<UpdateProductionCommand>
 {
-    public CreateProductionCommandValidator(IStringLocalizer<CreateProductionCommandValidator> T, IGenreRepository genreRepository)
+    public UpdateProductionCommandValidator(IStringLocalizer<UpdateProductionCommandValidator> T, IGenreRepository genreRepository)
     {
         RuleFor(p => p.TmdbId)
             .NotEmpty();
@@ -15,14 +15,14 @@ public class CreateProductionCommandValidator : AbstractValidator<CreateProducti
             .NotEmpty();
 
         RuleFor(p => p.Title)
-            .NotEmpty();        
-        
+            .NotEmpty();
+
         RuleFor(p => p.Director)
-            .NotEmpty();        
-        
+            .NotEmpty();
+
         RuleFor(p => p.Keywords)
-            .NotEmpty();            
-        
+            .NotEmpty();
+
         RuleFor(p => p.Overview)
             .NotEmpty();
 

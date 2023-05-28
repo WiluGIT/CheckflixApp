@@ -1,27 +1,27 @@
-﻿using CheckflixApp.Application.Common.Interfaces;
-using CheckflixApp.Application.Followings.Common;
-using CheckflixApp.Application.Followings.Queries.GetUserFollowingsCount;
-using CheckflixApp.Application.Identity.Interfaces;
+﻿using AutoMapper;
+using CheckflixApp.Application.Common.Interfaces;
+using CheckflixApp.Application.Productions.Common;
 using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
-using CheckflixApp.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Localization;
 
 namespace CheckflixApp.Application.Productions.Queries.GetProductionByIdQuery;
 
-public class GetProductionByIdQueryHandler : IRequestHandler<GetProductionByIdQuery, Result<Production>>
+public class GetProductionByIdQueryHandler : IRequestHandler<GetProductionByIdQuery, Result<ProductionDto>>
 {
     private readonly IStringLocalizer<GetProductionByIdQueryHandler> _localizer;
     private readonly IProductionRepository _productionRepository;
+    private readonly IMapper _mapper;
 
-    public GetProductionByIdQueryHandler(IStringLocalizer<GetProductionByIdQueryHandler> localizer, IProductionRepository productionRepository)
+    public GetProductionByIdQueryHandler(IStringLocalizer<GetProductionByIdQueryHandler> localizer, IProductionRepository productionRepository, IMapper mapper)
     {
         _localizer = localizer;
         _productionRepository = productionRepository;
+        _mapper = mapper;
     }
 
-    public async Task<Result<Production>> Handle(GetProductionByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ProductionDto>> Handle(GetProductionByIdQuery request, CancellationToken cancellationToken)
     {
         var production = await _productionRepository.GetByIdAsync(request.Id);
 
@@ -30,6 +30,10 @@ public class GetProductionByIdQueryHandler : IRequestHandler<GetProductionByIdQu
             return Error.NotFound(description: _localizer["Production not found"]);
         }
 
-        return production;
+        var productionDto = _mapper.Map<ProductionDto>(production);
+
+        var test = await _productionRepository.GetProductionDtoById(request.Id);
+
+        return test;
     }
 }

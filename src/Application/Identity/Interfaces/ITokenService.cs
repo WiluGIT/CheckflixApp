@@ -9,4 +9,6 @@ public interface ITokenService
     Task<Result<TokenDto>> GetTokenAsync(GetTokenQuery query, string ipAddress, CancellationToken cancellationToken);
 
     Task<Result<TokenDto>> GetRefreshTokenAsync(GetRefreshTokenQuery query, string ipAddress, CancellationToken cancellationToken);
+
+    Task<Result<TokenDto>> GetTokenByEmailAsync(string email, string ipAddress, CancellationToken cancellationToken);
 }

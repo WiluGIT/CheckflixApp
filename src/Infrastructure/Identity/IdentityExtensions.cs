@@ -1,6 +1,8 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using CheckflixApp.Infrastructure.Auth;
 using CheckflixApp.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +40,11 @@ internal static class IdentityExtensions
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(jwtSettings.Secret)
                 )
+            })
+            .AddDiscord(options =>
+            {
+                options.ClientId = "1112364224820297800";
+                options.ClientSecret = "jTF4NSq8RNcGhGPNwZK12N9h5Iuc0hC-";
             });
 
         services.AddAuthorization(options =>

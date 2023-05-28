@@ -6,7 +6,6 @@ using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetRefreshToken;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetToken;
-using CheckflixApp.Domain.Common.Errors;
 using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Infrastructure.Auth;
@@ -15,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MimeKit.Cryptography;
 
 namespace CheckflixApp.Infrastructure.Identity;
 public class TokenService : ITokenService
@@ -64,6 +62,18 @@ public class TokenService : ITokenService
         return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
 
+    public async Task<Result<TokenDto>> GetTokenByEmailAsync(string email, string ipAddress, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user is null)
+        {
+            return Error.NotFound(description: _localizer["auth.failed"]);
+        }
+
+        return await GenerateTokensAndUpdateUser(user, ipAddress);
+    }
+
     public async Task<Result<TokenDto>> GetRefreshTokenAsync(GetRefreshTokenQuery query, string ipAddress, CancellationToken cancellationToken)
     {
         var userPrincipal = GetPrincipalFromExpiredToken(query.Token);
@@ -104,6 +114,7 @@ public class TokenService : ITokenService
             new(ClaimTypes.Email, user.Email ?? string.Empty),
             new(ClaimTypes.Name, user.UserName ?? string.Empty),
             new(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty),
+            //new("Avatar", user.Avatar ?? string.Empty),
             new("ipAddress", ipAddress ?? string.Empty),
         };
 

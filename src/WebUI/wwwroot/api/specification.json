@@ -414,7 +414,107 @@
         ]
       }
     },
-    "/api/Followings/{userId}/follow": {
+    "/api/ApplicationUserProductions": {
+      "get": {
+        "tags": [
+          "ApplicationUserProductions"
+        ],
+        "summary": "Get collection of user productions.",
+        "operationId": "ApplicationUserProductions_GetUserProductions",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ApplicationUserProductions"
+        ],
+        "summary": "Create application user production.",
+        "operationId": "ApplicationUserProductions_CreateUserProduction",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserProductionCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ApplicationUserProductions/{id}": {
+      "put": {
+        "tags": [
+          "ApplicationUserProductions"
+        ],
+        "summary": "Update application user production.",
+        "operationId": "ApplicationUserProductions_UpdateUserProduction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserProductionRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Followings/{userId}": {
       "post": {
         "tags": [
           "Followings"
@@ -648,6 +748,50 @@
             "x-position": 1
           }
         ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Productions"
+        ],
+        "summary": "Update production.",
+        "operationId": "Productions_UpdateProduction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductionRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
         "responses": {
           "200": {
             "description": "",
@@ -988,6 +1132,38 @@
           "required": true,
           "x-position": 1
         },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Tokens/discord-callback": {
+      "get": {
+        "tags": [
+          "Tokens"
+        ],
+        "operationId": "Tokens_DiscordCallback",
+        "parameters": [
+          {
+            "name": "Code",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -1607,6 +1783,46 @@
           }
         }
       },
+      "CreateUserProductionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "favourites": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "toWatch": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "watched": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateUserProductionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "favourites": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "toWatch": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "watched": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
       "ChangePasswordCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -1665,6 +1881,37 @@
         }
       },
       "CreateProductionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tmdbId": {
+            "type": "string"
+          },
+          "imdbId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "overview": {
+            "type": "string"
+          },
+          "director": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "string"
+          },
+          "genreIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "UpdateProductionRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
