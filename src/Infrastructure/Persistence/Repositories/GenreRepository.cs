@@ -12,12 +12,12 @@ using Microsoft.EntityFrameworkCore;
 namespace CheckflixApp.Infrastructure.Persistence.Repositories;
 
 /// <summary>
-/// Represents the Production repository.
+/// Represents the Genre repository.
 /// </summary>
 internal sealed class GenreRepository : GenericRepository<Genre>, IGenreRepository
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ProductionRepository"/> class.
+    /// Initializes a new instance of the <see cref="GenreRepository"/> class.
     /// </summary>
     /// <param name="dbContext">The database context.</param>
     public GenreRepository(IApplicationDbContext dbContext)

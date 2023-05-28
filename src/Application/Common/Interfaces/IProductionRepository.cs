@@ -1,4 +1,5 @@
 ﻿using CheckflixApp.Application.Common.Models;
+using CheckflixApp.Application.Productions.Common;
 using CheckflixApp.Domain.Entities;
 
 namespace CheckflixApp.Application.Common.Interfaces;
@@ -22,6 +23,13 @@ public interface IProductionRepository
     Task<Production?> GetByIdAsync(int productionId);
 
     /// <summary>
+    /// Gets the ProductionDto with the specified identifier.
+    /// </summary>
+    /// <param name="productionId">The production identifier.</param>
+    /// <returns>The ProductionDto with specified identifier or null if does not exists.</returns>
+    Task<ProductionDto?> GetProductionDtoById(int productionId);
+
+    /// <summary>
     /// Inserts the specified production to the database.
     /// </summary>
     /// <param name="production">The production to be inserted into the database.</param>
@@ -33,4 +41,10 @@ public interface IProductionRepository
     /// </summary>
     /// <param name="production">The production to be removed from the database.</param>
     void Remove(Production production);
+
+    /// <summary>
+    /// Updates the specified production in the database.
+    /// </summary>
+    /// <param name="production">The production to be updated in the database.</param>
+    void Update(Production production);
 }

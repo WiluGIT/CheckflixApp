@@ -38,6 +38,33 @@ public class ApplicationUserProduction : BaseAuditableEntity
             watched: watched);
     }
 
+    public string Update(
+        bool? favourites,
+        bool? toWatch,
+        bool? watched)
+    {
+        string updateMessage = string.Empty;
+        if (favourites.HasValue)
+        {
+            Favourites = favourites;
+            updateMessage = favourites.Value ? "Added to 'Favourites'" : "Deleted from 'Favourites'";
+        }
+
+        if (toWatch.HasValue)
+        {
+            ToWatch = toWatch;
+            updateMessage = toWatch.Value ? "Added to 'To Watch'" : "Deleted from 'To Watch'";
+        }
+
+        if (watched.HasValue)
+        {
+            Watched = watched;
+            updateMessage = watched.Value ? "Added to 'To Watch'" : "Deleted from 'To Watch'";
+        }
+
+        return updateMessage;
+    }
+
     #pragma warning disable CS8618 // Required by Entity Framework
     private ApplicationUserProduction() { }
 }
