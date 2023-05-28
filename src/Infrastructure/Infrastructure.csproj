@@ -16,6 +16,7 @@
 
     <ItemGroup>
         <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="6.1.0" />
+        <PackageReference Include="AspNet.Security.OAuth.Discord" Version="7.0.2" />
         <PackageReference Include="CsvHelper" Version="15.0.10" />
         <PackageReference Include="Hangfire" Version="1.7.33" />
         <PackageReference Include="Hangfire.Console" Version="1.4.2" />

@@ -17,6 +17,7 @@ public static class ConfigureServices
             .AddAuth(configuration)
             .AddBackgroundJobs(configuration)
             .AddInternalServices(configuration)
+            .AddHttpClient(configuration)
             .AddConfigurations(configuration)
             .AddInternalLocalization(configuration)
             .AddDistributedMemoryCache();
@@ -35,7 +36,7 @@ public static class ConfigureServices
             .UseRouting()
             .UseAuthentication()
             .UseHangfireDashboard(config)
-            //.UseIdentityServer()
+            .UseIdentityServer()
             .UseAuthorization();
 
     public static IServiceCollection AddConfigurations(this IServiceCollection services, IConfiguration configuration)

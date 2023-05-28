@@ -31,4 +31,14 @@ internal static class ServicesExtensions
 
         return services;
     }
+
+    internal static IServiceCollection AddHttpClient(this IServiceCollection services, IConfiguration config)
+    {
+        services.AddHttpClient<IDiscordService, DiscordService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri("https://discord.com/api/");
+        });
+
+        return services;
+    }
 }
