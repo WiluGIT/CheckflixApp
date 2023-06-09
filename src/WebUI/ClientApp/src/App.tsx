@@ -1,13 +1,19 @@
-import { useState } from 'react'
 import './App.css'
-import SideBar from '@/components/SideBar/SideBar';
+import Router from './routes';
+import { BrowserRouter } from 'react-router-dom'
+import Layout from './pages/Layout/Layout';
+import { Suspense } from 'react';
 
 
 function App() {
   return (
-    <div className='flex '>
-      <SideBar />
-    </div>
+    <BrowserRouter>
+      <Layout>
+        <Suspense fallback={<h2>Loading...</h2>}>
+          <Router />
+        </Suspense>
+      </Layout>
+    </BrowserRouter>
   )
 }
 

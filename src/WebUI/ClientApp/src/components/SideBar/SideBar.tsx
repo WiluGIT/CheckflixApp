@@ -1,45 +1,53 @@
-import { useState } from "react";
 import SideBarIcon from "./SideBarIcon";
-import { FaFire } from 'react-icons/fa';
+import { FaFire, FaHome } from 'react-icons/fa';
+import { RiAdminFill, RiLoginBoxFill } from 'react-icons/ri'
 import { IconType } from "react-icons";
+import { NavLink } from "react-router-dom";
 
 type NavItemsType = {
     label: string;
     icon: IconType;
+    path: string;
 };
 
 const navItems: NavItemsType[] = [
     {
         label: "Home",
-        icon: FaFire
+        icon: FaHome,
+        path: "/"
     },
     {
-        label: "Genres",
-        icon: FaFire
+        label: "Admin",
+        icon: RiAdminFill,
+        path: "/admin"
     },
     {
-        label: "New",
-        icon: FaFire
+        label: "Login",
+        icon: RiLoginBoxFill,
+        path: "/login"
+    },
+    {
+        label: "Register",
+        icon: FaFire,
+        path: "/register"
     }
 ]
 
 const SideBar = () => {
-    const [activeIndex, setActiveIndex] = useState<number>(0);
-
     return (
-        <div className="fixed top-0 left-0 h-screen w-16 m-0 flex flex-col bg-[#202225] text-white shadow-lg">
-            {navItems.map((item, idx) => {
-                return (
-                    <div onClick={() => setActiveIndex(idx)}>
+        <nav className="h-screen w-20 m-0 flex flex-col bg-[#202225] text-white shadow-lg">
+            {navItems.map((item, idx) => (
+                <NavLink to={item.path} key={idx}>
+                    {({ isActive }) => (
                         <SideBarIcon
                             key={idx}
                             text={item.label}
                             icon={item.icon}
-                            active={idx === activeIndex} />
-                    </div>
-                );
-            })}
-        </div>
+                            active={isActive} />
+                    )}
+                </NavLink>
+            ))}
+        </nav>
     );
 }
 
