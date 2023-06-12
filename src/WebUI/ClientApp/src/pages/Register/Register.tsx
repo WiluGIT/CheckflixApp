@@ -22,16 +22,17 @@ const Register = () => {
     const {
         isLoading,
         mutateAsync,
-        isSuccess,
-    } = useRegisterMutation();
+    } = useRegisterMutation({
+        onSuccess: (response: string) => {
+            toast.success("Account created successfully", { theme: 'colored' });
+        },
+        onError: (error: ServerError) => {
+            toast.error(formatServerError(error), { theme: 'colored' });
+        }
+    });
 
     const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
-        await mutateAsync(data)
-            .catch((error: ServerError) => {
-                toast.error(formatServerError(error), { theme: 'colored' });
-            });
-
-        isSuccess && toast.success("Account created successfully", { theme: 'colored' });
+        await mutateAsync(data);
     }
 
     return (

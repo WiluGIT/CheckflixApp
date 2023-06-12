@@ -4,7 +4,7 @@ import { login, register } from "../services/auth.service";
 import { ServerError } from "@/types/api";
 
 export const useLoginMutation = (
-    config: UseMutationOptions<LoginResponse, ServerError, LoginRequest> = {}
+    config: UseMutationOptions<LoginResponse, ServerError, LoginRequest>
 ) => {
     return useMutation(
         ['login'],
@@ -20,10 +20,16 @@ export const useLoginMutation = (
     );
 };
 
-export const useRegisterMutation = () =>
-    useMutation({
-        mutationKey: ['register'],
-        mutationFn: async (body: RegisterRequest) => {
-            return await register(body);
+export const useRegisterMutation = (
+    config: UseMutationOptions<string, ServerError, RegisterRequest>
+) => {
+    return useMutation(
+        ['register'],
+        async (params: RegisterRequest) => {
+            return await register(params);
+        },
+        {
+            ...config
         }
-    });
+    );
+};
