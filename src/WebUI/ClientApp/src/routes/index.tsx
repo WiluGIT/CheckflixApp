@@ -3,6 +3,7 @@ import Home from '@/pages/Home/Home'
 import Admin from '@/pages/Admin/Admin';
 import Login from '@/pages/Login/Login';
 import WrapperRouteComponent from './config';
+import Register from '@/pages/Register/Register';
 
 
 // const NotFound = lazy(() => import('@/pages/404'));
@@ -20,6 +21,10 @@ const routeList: RouteObject[] = [
     {
         path: "login",
         element: <WrapperRouteComponent auth={false}><Login /></WrapperRouteComponent>,
+    },
+    {
+        path: "register",
+        element: <WrapperRouteComponent auth={false}><Register /></WrapperRouteComponent>,
     },
 ];
 

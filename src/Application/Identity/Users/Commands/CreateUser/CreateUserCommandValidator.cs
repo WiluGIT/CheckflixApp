@@ -9,9 +9,9 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
     /// </summary>
     public CreateUserCommandValidator()
     {
-        RuleFor(x => x.Email).NotEmpty();
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
 
-        RuleFor(x => x.Password).NotEmpty();
+        RuleFor(x => x.Password).MinimumLength(6);
 
         RuleFor(x => x.ConfirmPassword).NotEmpty();
 

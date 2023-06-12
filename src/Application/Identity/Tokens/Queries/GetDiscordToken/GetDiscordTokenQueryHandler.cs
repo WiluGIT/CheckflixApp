@@ -46,7 +46,7 @@ public class GetDiscordTokenQueryHandler : IRequestHandler<GetDiscordTokenQuery,
 
         if (await _identityService.IsEmailUniqueAsync(providerToken.Value.Email))
         {
-            var (result, id) = await _identityService.CreateUserAsync(providerToken.Value.Email, null);
+            var (result, id) = await _identityService.CreateUserAsync(providerToken.Value.Email, providerToken.Value.Email, null);
             if (result.IsFailure)
             {
                 return Error.Failure(_localizer["Failed to create user"]);

@@ -1,14 +1,29 @@
-import { LoginRequest, LoginResponse } from "@/types/auth";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { login } from "../services/auth.service";
-import { AxiosError } from "axios";
+import { LoginRequest, LoginResponse, RegisterRequest } from "@/types/auth";
+import { UseMutationOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { login, register } from "../services/auth.service";
+import { ServerError } from "@/types/api";
 
-export const useLoginMutation = () =>
+export const useLoginMutation = (
+    config: UseMutationOptions<LoginResponse, ServerError, LoginRequest> = {}
+) => {
+    return useMutation(
+        ['login'],
+        async (params: LoginRequest) => {
+            return await login(params);
+        },
+        {
+            ...config,
+            onSuccess: (data, ...args) => {
+                config?.onSuccess?.(data, ...args);
+            },
+        }
+    );
+};
+
+export const useRegisterMutation = () =>
     useMutation({
-        mutationKey: ['login'],
-        mutationFn: async (body: LoginRequest) => {
-            const result = await login(body);
-            return result;
+        mutationKey: ['register'],
+        mutationFn: async (body: RegisterRequest) => {
+            return await register(body);
         }
     });
-

@@ -24,6 +24,15 @@ internal static class IdentityExtensions
 
         //services.AddAuthentication()
         //    .AddIdentityServerJwt();
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequiredLength = 1;
+            options.Password.RequiredUniqueChars = 0;
+        });
 
         var jwtSettings = new JwtSettings();
         config.Bind(nameof(JwtSettings), jwtSettings);
