@@ -34,6 +34,7 @@ public static class ConfigureServices
                 settings.DocumentPath = "/api/specification.json";
             })
             .UseRouting()
+            .UseCors("CorsApi")
             .UseAuthentication()
             .UseHangfireDashboard(config)
             .UseIdentityServer()

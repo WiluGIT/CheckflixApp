@@ -1,9 +1,12 @@
 ﻿using CheckflixApp.Domain.Common.Primitives;
 using MediatR;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Common;
 
 namespace CheckflixApp.WebUI.Controllers;
+
+[EnableCors("CorsApi")]
 [ApiController]
 [Route("api/[controller]")]
 public abstract class ApiControllerBase : ControllerBase
