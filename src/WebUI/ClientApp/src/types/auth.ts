@@ -15,3 +15,28 @@ export interface RegisterRequest {
     password: string,
     confirmPassword: string
 }
+
+export interface AuthState {
+    isLoggedIn: boolean;
+    authToken?: string;
+    userId?: string;
+    name?: string;
+    email?: string;
+};
+
+export type UserData = {
+    authToken: string;
+    userId: string;
+    name: string;
+    email: string;
+};
+
+export type AuthProviderProps = {
+    children: React.ReactElement;
+};
+
+export type AuthContextType = {
+    authState: AuthState;
+    globalLogInDispatch: (props: UserData) => void;
+    globalLogOutDispatch: () => void;
+}

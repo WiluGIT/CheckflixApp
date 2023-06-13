@@ -1,9 +1,11 @@
 import { useLoginMutation } from "@/api/queries/auth.query";
+import AuthContext from "@/context/AuthContextProvider";
 import { formatServerError } from "@/lib/helpers";
 import { loginSchema } from "@/lib/validation";
 import { ServerError, ServerResponse } from "@/types/api";
 import { LoginRequest, LoginResponse } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -25,11 +27,21 @@ const Login = () => {
     } = useLoginMutation({
         onSuccess: (response: LoginResponse) => {
             toast.success("Sucessfully logged in", { theme: 'colored' });
+
+            debugger;
+            globalLogInDispatch({
+                userId: 'kdsoakjo',
+                name: 'dsadsa',
+                email: 'dsadsa',
+                authToken: response.token,
+            });
         },
         onError: (error: ServerError) => {
             toast.error(formatServerError(error), { theme: 'colored' });
         }
     });
+
+    const { globalLogInDispatch } = useContext(AuthContext);
 
     const onSubmit: SubmitHandler<LoginRequest> = async (data) => {
         await mutateAsync(data);
