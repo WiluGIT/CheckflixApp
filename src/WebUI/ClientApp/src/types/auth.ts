@@ -4,9 +4,18 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
+    accessToken: string;
+    email: string;
+    id: string;
+    userName: string;
+}
+
+export interface RefreshTokenRequest {
     token: string;
-    refreshToken: string;
-    refreshTokenExpiryDate: string;
+}
+
+export interface RefreshTokenResponse {
+    token: string;
 }
 
 export interface RegisterRequest {
@@ -16,18 +25,23 @@ export interface RegisterRequest {
     confirmPassword: string
 }
 
+// export interface AuthState {
+//     isLoggedIn: boolean;
+//     accessToken?: string;
+//     id?: string;
+//     userName?: string;
+//     email?: string;
+// };
+
 export interface AuthState {
-    isLoggedIn: boolean;
-    authToken?: string;
-    userId?: string;
-    name?: string;
-    email?: string;
+    isAuthenticated: boolean;
+    user?: UserData;
 };
 
 export type UserData = {
-    authToken: string;
-    userId: string;
-    name: string;
+    accessToken: string;
+    id: string;
+    userName: string;
     email: string;
 };
 
@@ -37,6 +51,6 @@ export type AuthProviderProps = {
 
 export type AuthContextType = {
     authState: AuthState;
-    globalLogInDispatch: (props: UserData) => void;
+    globalLogInDispatch: (props: UserData, withRedirect?: boolean) => void;
     globalLogOutDispatch: () => void;
 }

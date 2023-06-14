@@ -4,6 +4,8 @@ import {
     type InternalAxiosRequestConfig,
 } from 'axios';
 import { getItem, setItem } from './localStorage';
+import { useContext } from 'react';
+import AuthContext from '@/context/AuthContextProvider';
 
 export interface ConsoleError {
     status: number;
@@ -13,8 +15,9 @@ export interface ConsoleError {
 export const requestInterceptor = (
     config: InternalAxiosRequestConfig
 ): InternalAxiosRequestConfig => {
-    const token = getItem<string>('token');
-
+    const { authState } = useContext(AuthContext);
+    const token = authState?.user?.accessToken;
+    debugger;
     if (token) {
         config.headers.set('Authorization', `Bearer ${token}`);
     }

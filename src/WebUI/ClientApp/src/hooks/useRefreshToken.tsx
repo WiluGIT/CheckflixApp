@@ -1,24 +1,23 @@
-import { api } from "@/lib/api";
+import { refreshToken } from "@/api/services/auth.service";
+import AuthContext from "@/context/AuthContextProvider";
+import { axiosApi } from "@/lib/api";
+import { UserData } from "@/types/auth";
+import { useContext } from "react";
 
 const useRefreshToken = () => {
-    //const { user, setUser } = useAuthContext();
+    const { authState, globalLogInDispatch } = useContext(AuthContext);
 
     const refresh = async () => {
-        const { data } = await api.get('/Tokens/refresh', {
-            withCredentials: true
-        });
+        const { token } = await refreshToken({ token: authState?.user?.accessToken as string });
+        const userData: UserData = {
+            accessToken: token,
+            email: authState?.user?.email || '',
+            userName: authState?.user?.userName || '',
+            id: authState?.user?.id || ''
+        };
+        globalLogInDispatch(userData, false);
 
-        // console.log("PREV: ", JSON.stringify(user));
-        // console.log("DATA: ", data);
-        // debugger;
-        // setUser({
-        //     id: '3213',
-        //     name: 'dsadsa',
-        //     email: 'dsadsa',
-        //     authToken: 'dsads',
-        // });
-
-        return data?.accessToken;
+        return token;
     }
 
     return refresh;

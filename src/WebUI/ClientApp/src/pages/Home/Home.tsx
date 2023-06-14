@@ -1,8 +1,8 @@
 //import { useAuthContext } from "@/hooks/useAuthContext";
 import AuthContext from "@/context/AuthContextProvider";
+import useAxiosApi from "@/hooks/useAxiosApi";
 import useRefreshToken from "@/hooks/useRefreshToken";
-import { api } from "@/lib/api";
-import axios from "axios";
+import { axiosApi } from "@/lib/api";
 import { useContext, useEffect, useState } from "react";
 
 type User = {
@@ -11,33 +11,34 @@ type User = {
     userName: string;
 }
 const Home = () => {
+    const { authState } = useContext(AuthContext);
     const [users, setUsers] = useState<User[]>();
     const refresh = useRefreshToken();
-    const { authState } = useContext(AuthContext);
+    const axiosApi = useAxiosApi();
+    useEffect(() => {
+        console.log("HOMMMEee")
+        let isMounted = true;
+        const controller = new AbortController();
 
-    // useEffect(() => {
-    //     let isMounted = true;
-    //     const controller = new AbortController();
+        const getUsers = async () => {
+            try {
+                const { data } = await axiosApi.get('/Users', {
+                    signal: controller.signal
+                });
+                console.log(data);
+                isMounted && setUsers(data);
+            } catch (err) {
+                console.error(err);
+            }
+        }
 
-    //     const getUsers = async () => {
-    //         try {
-    //             const { data } = await api('/Users', {
-    //                 signal: controller.signal
-    //             });
-    //             console.log(data);
-    //             isMounted && setUsers(data);
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     }
-
-    //     getUsers();
-    //     console.log("User DAta: ", authState);
-    //     return () => {
-    //         isMounted = false;
-    //         controller.abort();
-    //     }
-    // }, [])
+        getUsers();
+        //console.log("User DAta: ", authState);
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
+    }, [])
 
     const test = () => {
         console.log("AuthencitacteD: ", authState);
@@ -55,8 +56,9 @@ const Home = () => {
                     </div>
                 ))}
             </div>
-            <button onClick={() => test()}>Refresh</button>
-            <div>User Data: {JSON.stringify(authState.isLoggedIn)}</div>
+            <button onClick={() => test()}>Authstate</button>
+            <button onClick={() => refresh()}>Refresh</button>
+            <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div>
         </div>
     );
 };

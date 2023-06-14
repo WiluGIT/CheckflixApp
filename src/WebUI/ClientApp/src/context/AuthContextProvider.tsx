@@ -3,6 +3,7 @@ import {
     useReducer,
     useCallback,
     useEffect,
+    useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +12,22 @@ import authReducer from "../store/auth/authReducer";
 import { AuthContextType, AuthProviderProps, AuthState, UserData } from "@/types/auth";
 
 export const defaultAuthState: AuthState = {
-    isLoggedIn: false,
+    isAuthenticated: false,
+    user: undefined
+};
+
+const initializeState = (defaultAuthState: AuthState) => {
+    // Browser refresh init call
+    const user = localStorage.getItem("user");
+    if (!user) {
+        return defaultAuthState;
+    }
+
+    const userData: UserData = JSON.parse(user!);
+    return {
+        isAuthenticated: true,
+        user: userData
+    };
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -22,32 +38,18 @@ export const AuthContext = createContext<AuthContextType>({
 
 export const AuthContextProvider = (props: AuthProviderProps) => {
     const { children } = props;
-
-    const [authState, authDispatch] = useReducer(authReducer, defaultAuthState);
+    const [authState, authDispatch] = useReducer(authReducer, defaultAuthState, initializeState);
     const navigate = useNavigate();
 
-    // browser refresh user init
-    useEffect(() => {
-        debugger;
-        const user = localStorage.getItem("user");
-        if (user) {
-            const userData: UserData = JSON.parse(user);
-            authDispatch({ type: AuthActionEnum.LOG_IN, payload: userData });
-        }
-    }, []);
-
-    const globalLogInDispatch = useCallback((userData: UserData) => {
-        const { authToken, email, name, userId } = userData;
+    const globalLogInDispatch = useCallback((userData: UserData, withRedirect = true) => {
         authDispatch({
             type: AuthActionEnum.LOG_IN,
             payload: {
-                authToken,
-                userId,
-                name,
-                email,
+                userData
             },
         });
-        navigate("/");
+
+        withRedirect && navigate("/");
     },
         [navigate]
     );

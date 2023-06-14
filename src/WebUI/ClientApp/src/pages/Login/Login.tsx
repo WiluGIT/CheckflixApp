@@ -27,14 +27,7 @@ const Login = () => {
     } = useLoginMutation({
         onSuccess: (response: LoginResponse) => {
             toast.success("Sucessfully logged in", { theme: 'colored' });
-
-            debugger;
-            globalLogInDispatch({
-                userId: 'kdsoakjo',
-                name: 'dsadsa',
-                email: 'dsadsa',
-                authToken: response.token,
-            });
+            globalLogInDispatch(response);
         },
         onError: (error: ServerError) => {
             toast.error(formatServerError(error), { theme: 'colored' });

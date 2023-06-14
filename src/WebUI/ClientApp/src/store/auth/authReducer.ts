@@ -5,14 +5,11 @@ import { defaultAuthState } from "@/context/AuthContextProvider";
 
 const authReducer: Reducer<AuthState, AuthAction> = (state, action) => {
     if (action.type === "LOG_IN") {
-        localStorage.setItem("user", JSON.stringify(action.payload));
+        localStorage.setItem("user", JSON.stringify(action.payload.userData));
         return {
             ...state,
-            isLoggedIn: true,
-            authToken: action.payload.authToken,
-            userId: action.payload.userId,
-            name: action.payload.name,
-            email: action.payload.email,
+            isAuthenticated: true,
+            user: action.payload.userData
         };
     }
 

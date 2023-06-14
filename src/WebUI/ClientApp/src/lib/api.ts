@@ -12,11 +12,12 @@ const axiosRequestConfig: AxiosRequestConfig = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
     },
+    withCredentials: true
 };
 
-const api: AxiosInstance = axios.create(axiosRequestConfig);
+const axiosApi: AxiosInstance = axios.create(axiosRequestConfig);
 
-api.interceptors.request.use(requestInterceptor);
-api.interceptors.response.use(successInterceptor, errorInterceptor);
+// axiosApi.interceptors.request.use(requestInterceptor);
+// axiosApi.interceptors.response.use(successInterceptor, errorInterceptor);
 
-export { api };
+export { axiosApi };

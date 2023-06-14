@@ -1,3 +1,5 @@
+import { UserData } from "@/types/auth"
+
 export enum AuthActionEnum {
     LOG_IN = 'LOG_IN',
     LOG_OUT = 'LOG_OUT',
@@ -6,10 +8,7 @@ export enum AuthActionEnum {
 export type AuthAction = {
     type: AuthActionEnum.LOG_IN,
     payload: {
-        authToken: string;
-        userId: string;
-        email: string;
-        name: string;
+        userData: UserData
     }
 } | {
     type: AuthActionEnum.LOG_OUT,

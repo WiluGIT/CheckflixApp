@@ -25,6 +25,7 @@ public static class ConfigureServices
             options.AddPolicy("CorsApi",
                 builder => builder.WithOrigins("http://127.0.0.1:5173")
                     .AllowAnyHeader()
+                    .AllowCredentials()
                     .AllowAnyMethod());
         });
 

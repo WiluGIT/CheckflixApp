@@ -9,6 +9,7 @@ using CheckflixApp.Application.Identity.Users.Commands.ForgotPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ResetPassword;
 using CheckflixApp.Application.Identity.Users.Commands.ToggleUserStatus;
 using CheckflixApp.Domain.Common.Primitives.Result;
+using Microsoft.AspNetCore.Identity;
 
 namespace CheckflixApp.Application.Identity.Interfaces;
 public interface IUserService
@@ -32,4 +33,5 @@ public interface IUserService
     Task<Result<string>> ForgotPasswordAsync(ForgotPasswordCommand command, string origin);
     Task<Result<string>> ResetPasswordAsync(ResetPasswordCommand command);
     Task<Result<string>> ChangePasswordAsync(ChangePasswordCommand command, string userId);
+    Task<IdentityUser?> GetUserByEmailAsync(string email);
 }
