@@ -3735,7 +3735,6 @@ export interface IGetTokenQuery {
 
 export class GetRefreshTokenQuery implements IGetRefreshTokenQuery {
     token?: string;
-    refreshToken?: string;
 
     constructor(data?: IGetRefreshTokenQuery) {
         if (data) {
@@ -3749,7 +3748,6 @@ export class GetRefreshTokenQuery implements IGetRefreshTokenQuery {
     init(_data?: any) {
         if (_data) {
             this.token = _data["token"];
-            this.refreshToken = _data["refreshToken"];
         }
     }
 
@@ -3763,14 +3761,12 @@ export class GetRefreshTokenQuery implements IGetRefreshTokenQuery {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["token"] = this.token;
-        data["refreshToken"] = this.refreshToken;
         return data;
     }
 }
 
 export interface IGetRefreshTokenQuery {
     token?: string;
-    refreshToken?: string;
 }
 
 export class Result implements IResult {

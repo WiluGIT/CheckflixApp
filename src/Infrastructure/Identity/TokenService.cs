@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
-using CheckflixApp.Application.Identity.Tokens.Queries.GetRefreshToken;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetToken;
 using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
@@ -74,17 +73,27 @@ public class TokenService : ITokenService
         return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
 
-    public async Task<Result<TokenDto>> GetRefreshTokenAsync(GetRefreshTokenQuery query, string ipAddress, CancellationToken cancellationToken)
+    public async Task<Result<TokenDto>> GetRefreshTokenAsync(string accessToken, string refreshToken, string ipAddress, CancellationToken cancellationToken)
     {
-        var userPrincipal = GetPrincipalFromExpiredToken(query.Token);
-        string? userEmail = userPrincipal.GetEmail();
+        var userPrincipal = GetPrincipalFromExpiredToken(accessToken);
+        if (userPrincipal.IsFailure)
+        {
+            return userPrincipal.Errors;
+        }
+
+        string? userEmail = userPrincipal.Value.GetEmail();
+        if (userEmail is null)
+        {
+            return Error.NotFound(description: _localizer["auth.usernotfound"]);
+        }
+
         var user = await _userManager.FindByEmailAsync(userEmail);
         if (user is null)
         {
             return Error.Unauthorized(description: _localizer["auth.failed"]);
         }
 
-        if (user.RefreshToken != query.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
             return Error.Unauthorized(description: _localizer["identity.invalidrefreshtoken"]);
         }
@@ -138,11 +147,11 @@ public class TokenService : ITokenService
         return tokenHandler.WriteToken(token);
     }
 
-    private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    private Result<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token)
     {
         if (string.IsNullOrEmpty(_jwtSettings.Secret))
         {
-            throw new InvalidOperationException("No Key defined in JwtSettings config.");
+            return Error.Failure(description: _localizer["No Key defined in JwtSettings config."]);
         }
 
         var tokenValidationParameters = new TokenValidationParameters
@@ -162,7 +171,7 @@ public class TokenService : ITokenService
                 SecurityAlgorithms.HmacSha256,
                 StringComparison.InvariantCultureIgnoreCase))
         {
-            throw new UnauthorizedAccessException(_localizer["identity.invalidtoken"]);
+            return Error.Unauthorized(description: _localizer["identity.invalidtoken"]);
         }
 
         return principal;
