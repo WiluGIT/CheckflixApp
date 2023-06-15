@@ -106,9 +106,7 @@ public class TokenService : ITokenService
         string token = GenerateJwt(user, ipAddress);
 
         user.RefreshToken = GenerateRefreshToken();
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddSeconds(30);
-        // TODO
-        //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
 
         await _userManager.UpdateAsync(user);
 
@@ -139,13 +137,9 @@ public class TokenService : ITokenService
 
     private string GenerateEncryptedToken(SigningCredentials signingCredentials, IEnumerable<Claim> claims)
     {
-        var test = DateTime.UtcNow.AddMicroseconds(10000);
-
         var token = new JwtSecurityToken(
            claims: claims,
-           // TODO
-           //expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
-           expires: DateTime.UtcNow.AddSeconds(15),
+           expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
            signingCredentials: signingCredentials,
            issuer: _jwtSettings.Issuer,
            audience: _jwtSettings.Audience);

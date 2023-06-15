@@ -2,7 +2,7 @@
 import AuthContext from "@/context/AuthContextProvider";
 import useAxiosApi from "@/hooks/useAxiosApi";
 import useRefreshToken from "@/hooks/useRefreshToken";
-import { axiosApi } from "@/lib/api";
+import { axiosApi as api } from "@/lib/api";
 import { useContext, useEffect, useState } from "react";
 
 type User = {
@@ -15,6 +15,7 @@ const Home = () => {
     const [users, setUsers] = useState<User[]>();
     const refresh = useRefreshToken();
     const axiosApi = useAxiosApi();
+
     useEffect(() => {
         console.log("HOMMMEee")
         let isMounted = true;
@@ -40,8 +41,18 @@ const Home = () => {
         }
     }, [])
 
-    const test = () => {
+    const test = async () => {
         console.log("AuthencitacteD: ", authState);
+        try {
+            console.log("fetching")
+
+            const response = await axiosApi.get('/Users');
+            console.log(response)
+            // Handle the response data
+            setUsers(response.data);
+        } catch (error) {
+            // Handle errors
+        }
     }
 
     return (

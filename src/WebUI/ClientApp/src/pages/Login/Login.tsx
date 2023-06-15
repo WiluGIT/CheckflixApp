@@ -1,5 +1,6 @@
 import { useLoginMutation } from "@/api/queries/auth.query";
 import AuthContext from "@/context/AuthContextProvider";
+import useAxiosApi from "@/hooks/useAxiosApi";
 import { formatServerError } from "@/lib/helpers";
 import { loginSchema } from "@/lib/validation";
 import { ServerError, ServerResponse } from "@/types/api";
@@ -15,6 +16,7 @@ type LoginInputs = {
 };
 
 const Login = () => {
+    const axiosApi = useAxiosApi();
     const {
         register,
         handleSubmit,
@@ -32,7 +34,7 @@ const Login = () => {
         onError: (error: ServerError) => {
             toast.error(formatServerError(error), { theme: 'colored' });
         }
-    });
+    }, axiosApi);
 
     const { globalLogInDispatch } = useContext(AuthContext);
 

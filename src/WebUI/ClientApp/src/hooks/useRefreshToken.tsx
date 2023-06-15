@@ -1,6 +1,5 @@
 import { refreshToken } from "@/api/services/auth.service";
 import AuthContext from "@/context/AuthContextProvider";
-import { axiosApi } from "@/lib/api";
 import { UserData } from "@/types/auth";
 import { useContext } from "react";
 
@@ -9,6 +8,7 @@ const useRefreshToken = () => {
 
     const refresh = async () => {
         const { token } = await refreshToken({ token: authState?.user?.accessToken as string });
+
         const userData: UserData = {
             accessToken: token,
             email: authState?.user?.email || '',

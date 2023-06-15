@@ -11,13 +11,13 @@ const axiosRequestConfig: AxiosRequestConfig = {
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-    },
-    withCredentials: true
+    }
 };
 
 const axiosApi: AxiosInstance = axios.create(axiosRequestConfig);
 
-// axiosApi.interceptors.request.use(requestInterceptor);
-// axiosApi.interceptors.response.use(successInterceptor, errorInterceptor);
+
+//axiosApi.interceptors.request.use(requestInterceptor);
+//axiosApi.interceptors.response.use(successInterceptor, errorInterceptor);
 
 export { axiosApi };
