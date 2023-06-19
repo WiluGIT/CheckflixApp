@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+    width: 100%;
+    height: 100vh;
+}
+
+.bg-main-gradient {
+    background: linear-gradient(90deg,#1c1c1e 13.93%,rgba(28,28,30,0) 75.72%),
+    linear-gradient(0deg,#1c1c1e,rgba(28,28,30,0)),
+    linear-gradient(112.81deg,rgba(255,111,81,.432) -16.2%,rgba(255,111,81,.222) -4.06%,rgba(104,93,90,0) 29.94%),
+    linear-gradient(117.83deg,#ff6f51 -32.35%,rgba(255,111,81,.577) -5.12%,rgba(255,111,81,.371) 14.84%,rgba(255,111,81,.169) 29.65%,rgba(255,111,81,0) 46.71%),
+    linear-gradient(255.2deg,rgba(1,100,121,.4) -36.42%,rgba(1,100,121,0) 92.99%),
+    linear-gradient(328.86deg,rgba(1,100,121,.9) -91.36%,rgba(1,100,121,0) 46.81%),
+    linear-gradient(255.2deg,rgba(1,100,121,.4) -36.42%,rgba(1,100,121,0) 92.99%),#84265e;;
+}

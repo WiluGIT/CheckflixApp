@@ -5,5 +5,6 @@ using CheckflixApp.Domain.Common.Primitives.Result;
 
 namespace CheckflixApp.Application.Identity.Users.Queries.GetList;
 
-[Authorize(Roles = "Administrator")]
+//TODO: FOR ADMIN [Authorize(Roles = "Administrator")]
+[Authorize]
 public record GetListQuery() : IRequest<Result<List<UserDetailsDto>>>;

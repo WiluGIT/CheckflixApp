@@ -1,6 +1,5 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
-using CheckflixApp.Application.Common.Exceptions;
 using CheckflixApp.Application.Common.FileStorage;
 using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Common.Models;
@@ -119,7 +118,10 @@ internal partial class UserService : IUserService
             })
             .FirstOrDefaultAsync(cancellationToken);
 
-public async Task<PaginatedList<UserDetailsDto>> SearchAsync(UserListFilter filter, CancellationToken cancellationToken)
+    public async Task<IdentityUser?> GetUserByEmailAsync(string email) =>
+        await _userManager.FindByEmailAsync(email.Trim().Normalize());
+
+    public async Task<PaginatedList<UserDetailsDto>> SearchAsync(UserListFilter filter, CancellationToken cancellationToken)
     {
         var spec = new EntitiesByPaginationFilterSpec<ApplicationUser>(filter);
 
