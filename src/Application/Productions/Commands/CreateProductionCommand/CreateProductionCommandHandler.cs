@@ -27,7 +27,8 @@ public class CreateProductionCommandHandler : IRequestHandler<CreateProductionCo
             command.Title, 
             command.Overview, 
             command.Director, 
-            command.Keywords, 
+            command.Keywords,
+            command.ReleaseDate,
             command.GenreIds);
 
         _productionRepository.Insert(production);

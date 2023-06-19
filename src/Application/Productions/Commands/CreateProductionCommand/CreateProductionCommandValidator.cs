@@ -26,6 +26,9 @@ public class CreateProductionCommandValidator : AbstractValidator<CreateProducti
         RuleFor(p => p.Overview)
             .NotEmpty();
 
+        RuleFor(p => p.ReleaseDate)
+            .NotEmpty();
+
         RuleFor(p => p.GenreIds)
             .NotEmpty()
             .Must(x => x.Any())

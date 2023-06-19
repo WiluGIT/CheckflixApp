@@ -1902,6 +1902,9 @@
           "keywords": {
             "type": "string"
           },
+          "releaseDate": {
+            "type": "string"
+          },
           "genreIds": {
             "type": "array",
             "items": {

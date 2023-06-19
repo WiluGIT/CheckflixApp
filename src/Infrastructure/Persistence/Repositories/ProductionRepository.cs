@@ -7,6 +7,7 @@ using CheckflixApp.Application.Common.Specification;
 using CheckflixApp.Application.Productions.Common;
 using CheckflixApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace CheckflixApp.Infrastructure.Persistence.Repositories;
 
@@ -27,9 +28,25 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
         _mapper = mapper;
     }
 
-    public async Task<PaginatedList<Production>> GetAllProductions(PaginationFilter filter) =>
+    public async Task<PaginatedList<ProductionDto>> GetAllProductions(PaginationFilter filter) =>
         await DbContext.Set<Production>()
+            .Include(x => x.ProductionGenres)
             .WithSpecification(new EntitiesByPaginationFilterSpec<Production>(filter))
+            .Select(x => new ProductionDto
+            {
+                ProductionId = x.Id,
+                Director = x.Director,
+                ReleaseDate = x.ReleaseDate,
+                ImdbId = x.ImdbId,
+                Keywords = x.Keywords,
+                Overview = x.Overview,
+                Title = x.Title,
+                TmdbId = x.TmdbId,
+                Genres = DbContext.Set<Genre>()
+                    .Where(g => x.ProductionGenres.Select(x => x.GenreId).Contains(g.Id))
+                    .Select(x => x.Name)
+                    .ToList()
+            })
             .PaginatedListAsync(filter.PageNumber, filter.PageSize);
 
     public new async Task<Production?> GetByIdAsync(int id) => 
@@ -57,7 +74,8 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
             Keywords = productionData.Productions.Keywords,
             Overview = productionData.Productions.Overview,
             Title = productionData.Productions.Title,
-            TmdbId = productionData.Productions.TmdbId,        
+            TmdbId = productionData.Productions.TmdbId,       
+            ReleaseDate = productionData.Productions.ReleaseDate,
             Genres = productionsWithGenres.Select(x => x.Genres.Name)
         };
 

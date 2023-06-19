@@ -27,5 +27,6 @@ public class UpdateProductionCommand : IRequest<Result<string>>
     public string Overview { get; set; } = string.Empty;
     public string Director { get; set; } = string.Empty;
     public string Keywords { get; set; } = string.Empty;
+    public string ReleaseDate { get; set; } = string.Empty;
     public List<int> GenreIds { get; set; } = new List<int>();
 }
