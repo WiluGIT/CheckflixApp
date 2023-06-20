@@ -2,7 +2,6 @@
 using CheckflixApp.Application.Common.Models;
 using CheckflixApp.Application.Productions.Common;
 using CheckflixApp.Domain.Common.Primitives.Result;
-using CheckflixApp.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Localization;
 
@@ -19,9 +18,5 @@ public class GetProductionsQueryHandler : IRequestHandler<GetProductionsQuery, R
     }
 
     public async Task<Result<PaginatedList<ProductionDto>>> Handle(GetProductionsQuery request, CancellationToken cancellationToken)
-    {
-        var productions = await _productionRepository.GetAllProductions(request.filter);
-
-        return productions;
-    }
+        => await _productionRepository.GetAllProductions(request.filter);
 }

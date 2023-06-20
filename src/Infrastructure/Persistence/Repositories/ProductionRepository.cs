@@ -7,7 +7,6 @@ using CheckflixApp.Application.Common.Specification;
 using CheckflixApp.Application.Productions.Common;
 using CheckflixApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace CheckflixApp.Infrastructure.Persistence.Repositories;
 
@@ -49,62 +48,30 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
             })
             .PaginatedListAsync(filter.PageNumber, filter.PageSize);
 
+
     public new async Task<Production?> GetByIdAsync(int id) => 
         await DbContext.Set<Production>()
             .Include(x => x.ProductionGenres)
             .FirstOrDefaultAsync(x => x.Id.Equals(id));
 
-    public async Task<ProductionDto?> GetProductionDtoById(int productionId)
-    {
-        var productionsWithGenres = await (from productionGenre in DbContext.Set<ProductionGenre>().AsNoTracking()
-                          join genre in DbContext.Set<Genre>().AsNoTracking()
-                               on productionGenre.GenreId equals genre.Id
-                          join production in DbContext.Set<Production>().AsNoTracking()
-                               on productionGenre.ProductionId equals production.Id
-                          where productionGenre.ProductionId.Equals(productionId)
-                          select new { Productions = production, Genres = genre })
-                          .ToListAsync();
-
-        var productionData = productionsWithGenres.First();
-
-        var productionDto = new ProductionDto
-        {
-            Director = productionData.Productions.Title,
-            ImdbId = productionData.Productions.ImdbId,
-            Keywords = productionData.Productions.Keywords,
-            Overview = productionData.Productions.Overview,
-            Title = productionData.Productions.Title,
-            TmdbId = productionData.Productions.TmdbId,       
-            ReleaseDate = productionData.Productions.ReleaseDate,
-            Genres = productionsWithGenres.Select(x => x.Genres.Name)
-        };
-
-
-
-        //var production = await DbContext.Set<Production>()
-        //    .Include(x => x.ProductionGenres)
-        //    .Where(x => x.Id.Equals(productionId))
-        //    .ProjectTo<ProductionDto>(_mapper.ConfigurationProvider)
-        //    .FirstOrDefaultAsync();
-
-        var production2 = await GetByIdAsync(productionId);
-
-        var productionGenreIds = production2.ProductionGenres.Select(x => x.GenreId);
-
-        var genres = await  DbContext.Set<Genre>()
-            .Where(x => productionGenreIds.Contains(x.Id))
-            .Select(x => x.Name)
-            .ToListAsync();
-
-        var productionDto1= _mapper.Map<ProductionDto>(production2);
-        productionDto.Genres = genres;
-
-        return productionDto;
-    }
-        //await DbContext.Set<Production>()
-        //    .Include(x => x.ProductionGenres)
-        //    .Where(x => x.Id.Equals(productionId))
-        //    .ProjectTo<ProductionDto>(_mapper.ConfigurationProvider)
-        //    .FirstOrDefaultAsync();        
- 
+    public async Task<ProductionDto?> GetProductionDtoById(int productionId) =>
+        await (from p in DbContext.Set<Production>()
+               join pg in DbContext.Set<ProductionGenre>() on p.Id equals pg.ProductionId into ppg
+               from pg in ppg.DefaultIfEmpty()
+               join g in DbContext.Set<Genre>() on pg.GenreId equals g.Id into gpg
+               from g in gpg.DefaultIfEmpty()
+               where p.Id == productionId
+               group g by new { p.Id, p.Director, p.ReleaseDate, p.ImdbId, p.Keywords, p.Overview, p.Title, p.TmdbId } into gGroup
+               select new ProductionDto
+               {
+                   ProductionId = gGroup.Key.Id,
+                   Director = gGroup.Key.Director,
+                   ReleaseDate = gGroup.Key.ReleaseDate,
+                   ImdbId = gGroup.Key.ImdbId,
+                   Keywords = gGroup.Key.Keywords,
+                   Overview = gGroup.Key.Overview,
+                   Title = gGroup.Key.Title,
+                   TmdbId = gGroup.Key.TmdbId,
+                   Genres = gGroup.Select(g => g.Name).ToArray()
+               }).FirstOrDefaultAsync();
 }
