@@ -16,10 +16,4 @@ public class ProductionDto : IMapFrom<Production>
     public string Keywords { get; set; } = string.Empty;
     public DateTime ReleaseDate { get; set; }
     public IEnumerable<string> Genres { get; set; } = new List<string>();
-
-    //public void Mapping(Profile profile)
-    //{
-    //    profile.CreateMap<Production, ProductionDto>()
-    //        .ForMember(d => d.Genres, opt => opt.MapFrom(s => s.ProductionGenres.Select(x => x.)));
-    //}
 }

@@ -23,7 +23,7 @@ public static class ConfigureServices
         services.AddCors(options =>
         {
             options.AddPolicy("CorsApi",
-                builder => builder.WithOrigins("http://127.0.0.1:5173")
+                builder => builder.WithOrigins("http://127.0.0.1:5173", "http://localhost:5173")
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyMethod());

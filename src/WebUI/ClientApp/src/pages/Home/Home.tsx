@@ -1,4 +1,5 @@
 //import { useAuthContext } from "@/hooks/useAuthContext";
+import ProductionSlider from "@/components/ProductionSlider/ProductionSlider";
 import AuthContext from "@/context/AuthContextProvider";
 import useAxiosApi from "@/hooks/useAxiosApi";
 import useRefreshToken from "@/hooks/useRefreshToken";
@@ -16,30 +17,30 @@ const Home = () => {
     const refresh = useRefreshToken();
     const axiosApi = useAxiosApi();
 
-    useEffect(() => {
-        console.log("HOMMMEee")
-        let isMounted = true;
-        const controller = new AbortController();
+    // useEffect(() => {
+    //     console.log("HOMMMEee")
+    //     let isMounted = true;
+    //     const controller = new AbortController();
 
-        const getUsers = async () => {
-            try {
-                const { data } = await axiosApi.get('/Users', {
-                    signal: controller.signal
-                });
-                console.log(data);
-                isMounted && setUsers(data);
-            } catch (err) {
-                console.error(err);
-            }
-        }
+    //     const getUsers = async () => {
+    //         try {
+    //             const { data } = await axiosApi.get('/Users', {
+    //                 signal: controller.signal
+    //             });
+    //             console.log(data);
+    //             isMounted && setUsers(data);
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     }
 
-        getUsers();
-        //console.log("User DAta: ", authState);
-        return () => {
-            isMounted = false;
-            controller.abort();
-        }
-    }, [])
+    //     getUsers();
+    //     //console.log("User DAta: ", authState);
+    //     return () => {
+    //         isMounted = false;
+    //         controller.abort();
+    //     }
+    // }, [])
 
     const test = async () => {
         console.log("AuthencitacteD: ", authState);
@@ -70,6 +71,7 @@ const Home = () => {
             <button onClick={() => test()}>Authstate</button>
             <button onClick={() => refresh()}>Refresh</button>
             <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div>
+            <ProductionSlider />
         </div>
     );
 };
