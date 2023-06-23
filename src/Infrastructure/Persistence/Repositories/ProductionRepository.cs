@@ -29,6 +29,7 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
 
     public async Task<PaginatedList<ProductionDto>> GetAllProductions(PaginationFilter filter) =>
         await DbContext.Set<Production>()
+            .AsNoTracking()
             .Include(x => x.ProductionGenres)
             .WithSpecification(new EntitiesByBaseFilterSpec<Production>(filter))
             .Select(x => new ProductionDto
@@ -41,10 +42,9 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
                 Overview = x.Overview,
                 Title = x.Title,
                 TmdbId = x.TmdbId,
-                Genres = DbContext.Set<Genre>()
-                    .Where(g => x.ProductionGenres.Select(x => x.GenreId).Contains(g.Id))
-                    .Select(x => x.Name)
-                    .ToList()
+                Genres = (from productionGenre in x.ProductionGenres
+                          join genre in DbContext.Set<Genre>() on productionGenre.GenreId equals genre.Id
+                          select genre.Name).ToArray()
             }).PaginatedListAsync(filter.PageNumber, filter.PageSize);
 
 

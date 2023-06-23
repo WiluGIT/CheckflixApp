@@ -43,7 +43,7 @@ const ProductionSlider = () => {
             <Slider {...settings}>
                 {[1, 2, 3, 4, 6, 7, 8].map((el, idx) => (
                     <div className="pl-5" key={idx}>
-                        <img src="https://daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.jpg" />
+                        <img src="https://www.imdb.com/title/tt11737520/mediaviewer" />
                     </div>
                 ))}
             </Slider>

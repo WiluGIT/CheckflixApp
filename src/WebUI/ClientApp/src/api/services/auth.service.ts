@@ -4,7 +4,6 @@ import { LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse,
 import { AxiosInstance } from "axios";
 
 const login = async (params: LoginRequest, axiosInstance: AxiosInstance = axiosApi): Promise<LoginResponse> => {
-    debugger;
     const { data } = await axiosInstance.post<LoginResponse>(TOKENS_PATH,
         { ...params },
         { withCredentials: true });

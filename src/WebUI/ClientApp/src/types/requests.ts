@@ -5,13 +5,9 @@ export interface PaginationFilter extends BaseFilter {
 }
 
 export interface BaseFilter {
-    advancedSearch?: AdvancedSearch
+    'AdvancedSearch.Fields'?: string | string[];
+    'AdvancedSearch.Keyword'?: string;
     keyword?: string
-}
-
-export interface AdvancedSearch {
-    fields: string[];
-    keyword?: string;
 }
 
 export interface PaginationResponse<T> {

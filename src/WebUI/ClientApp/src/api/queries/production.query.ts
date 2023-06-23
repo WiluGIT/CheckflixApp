@@ -1,30 +1,9 @@
 import { ServerError } from "@/types/api";
 import { GetProductionsRequest, GetProductionsResponse } from "@/types/production";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { AxiosInstance } from "axios";
+import axios, { AxiosInstance } from "axios";
 import { getProductions } from "../services/production.service";
 import { PaginationResponse } from "@/types/requests";
-
-// export const useGetProductionsQuery = (
-//     config: UseQueryOptions<GetProductionsResponse, ServerError, GetProductionsRequest>,
-//     axiosInstance?: AxiosInstance,
-// ) => {
-//     return useQuery(
-//         ['productions'],
-//         async (params: GetProductionsRequest) => {
-//             return await getProductions(params, axiosInstance);
-//         },
-//         {
-//             ...config,
-//         }
-//     );
-// };
-
-// const usersKeys = createQueryKeys('usersService', {
-//     users: (params: { page?: number; size?: number }) => [params],
-//     user: (params: { login?: string }) => [params],
-//     userForm: null,
-//   });
 
 export const useGetProductionsQuery = (
     { page = 0, size = 10 } = {},
@@ -34,15 +13,26 @@ export const useGetProductionsQuery = (
     const query = useQuery({
         queryKey: ['users', { page, size }],
         queryFn: async () => {
-            // const response = await Axios.get(USERS_BASE_URL, {
-            //     params: { page, size, sort: 'id,desc' },
-            // });
-            // return zUserList().parse({
-            //     users: response.data,
-            //     totalItems: response.headers?.['x-total-count'],
-            // });
-            const response = await getProductions({ pageNumber: page, pageSize: size, orderBy: 'releaseDate desc', keyword: 'nolan' }, axiosInstance);
-            return response;
+            const response = await getProductions({ pageNumber: page, pageSize: size, orderBy: 'releaseDate desc' }, axiosInstance);
+            const productionArray: Production[] = response.items;
+
+            for (const movie of productionArray) {
+                const response = await fetch(`https://api.themoviedb.org/3/movie/${movie.tmdbId}?api_key=61a4454e6812a635ebe4b24f2af2c479`, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-cache",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    redirect: "follow",
+                    referrerPolicy: "no-referrer",
+                });
+
+                const data = await response.json();
+                movie.poster = data['poster_path'];
+            }
+
+            return response
         },
         keepPreviousData: true,
         ...queryOptions,
@@ -63,3 +53,17 @@ export const useGetProductionsQuery = (
         ...query,
     };
 };
+
+
+export interface Production {
+    productionId: number;
+    tmdbId: string;
+    imdbId: string;
+    title: string;
+    overview: string;
+    director: string;
+    keywords: string;
+    releaseDate: Date;
+    genres: string[];
+    poster?: string;
+}
