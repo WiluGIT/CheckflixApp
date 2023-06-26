@@ -7,9 +7,9 @@ type LayoutPropsType = {
 
 const Layout: FC<LayoutPropsType> = ({ children }) => {
     return (
-        <div className="flex w-full h-full bg-color-gradient bg-main-gradient ">
+        <div className="flex w-full min-h-screen bg-color-gradient bg-main-gradient">
             <SideBar />
-            <div className="w-full">
+            <div className="w-[80%] mx-auto">
                 {children}
             </div>
         </div>

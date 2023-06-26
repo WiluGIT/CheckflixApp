@@ -1,5 +1,7 @@
 //import { useAuthContext } from "@/hooks/useAuthContext";
+import ProductionList from "@/components/ProductionList/ProductionList";
 import ProductionSlider from "@/components/ProductionSlider/ProductionSlider";
+import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop ";
 import AuthContext from "@/context/AuthContextProvider";
 import useAxiosApi from "@/hooks/useAxiosApi";
 import useRefreshToken from "@/hooks/useRefreshToken";
@@ -58,6 +60,7 @@ const Home = () => {
 
     return (
         <div className="home">
+            <ScrollToTop />
             Home page
             <div>
                 {users?.map((el) => (
@@ -72,6 +75,8 @@ const Home = () => {
             <button onClick={() => refresh()}>Refresh</button>
             <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div>
             <ProductionSlider />
+            <ProductionList />
+
         </div>
     );
 };

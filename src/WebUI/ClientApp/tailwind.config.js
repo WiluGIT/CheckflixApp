@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 export default {
   mode: 'jit',
   content: [
@@ -11,6 +13,13 @@ export default {
         
       }
     },
+    screens: {
+      'xs': '500px',
+      ...defaultTheme.screens,
+    },
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require("daisyui")
+  ],
 }

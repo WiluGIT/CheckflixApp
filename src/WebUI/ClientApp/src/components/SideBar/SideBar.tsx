@@ -35,7 +35,7 @@ const navItems: NavItemsType[] = [
 
 const SideBar = () => {
     return (
-        <nav className="h-screen w-20 m-0 flex flex-col bg-[#202225] text-white shadow-lg">
+        <nav className="w-20 m-0 flex flex-col bg-[#202225] text-white shadow-lg">
             {navItems.map((item, idx) => (
                 <NavLink to={item.path} key={idx}>
                     {({ isActive }) => (

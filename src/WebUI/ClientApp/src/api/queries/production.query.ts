@@ -1,6 +1,6 @@
 import { ServerError } from "@/types/api";
 import { GetProductionsRequest, GetProductionsResponse } from "@/types/production";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios, { AxiosInstance } from "axios";
 import { getProductions } from "../services/production.service";
 import { PaginationResponse } from "@/types/requests";
@@ -50,6 +50,43 @@ export const useGetProductionsQuery = (
         hasMore,
         totalPages,
         isLoadingPage,
+        ...query,
+    };
+};
+
+export const useGetProductionsInfiniteQuery = (
+    { pageParam = 0, size = 10 } = {},
+    queryOptions: UseQueryOptions<PaginationResponse<GetProductionsResponse>> = {}
+) => {
+    const query = useInfiniteQuery({
+        queryKey: ['productions', 'infinite'],
+        getNextPageParam: (prevData: PaginationResponse<GetProductionsResponse>) => {
+            return prevData.pageNumber + 1;
+        },
+        queryFn: async ({ pageParam = 1 }) => {
+            return await getProductions({ pageNumber: pageParam, pageSize: size })
+        }
+        // queryFn: async () => {
+        //     const response = await getProductions({ pageNumber: page, pageSize: size, orderBy: 'releaseDate desc' }, axiosInstance);
+        //     const productionArray: Production[] = response.items;
+        //     return response
+        // },
+        // keepPreviousData: true,
+        // ...queryOptions,
+    });
+
+    // const items = query.data?.items;
+    // const totalItems = query.data?.totalCount ?? 0;
+    // const totalPages = query.data?.totalPages ?? 0;
+    // const hasMore = query.data?.hasNextPage;
+    // const isLoadingPage = query.isFetching;
+
+    return {
+        // items,
+        // totalItems,
+        // hasMore,
+        // totalPages,
+        // isLoadingPage,
         ...query,
     };
 };
