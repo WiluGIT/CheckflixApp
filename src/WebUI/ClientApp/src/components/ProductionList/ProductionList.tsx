@@ -1,6 +1,9 @@
 import { useGetProductionsInfiniteQuery } from "@/api/queries/production.query";
 import useAxiosApi from "@/hooks/useAxiosApi";
 import InfiniteScroll from "react-infinite-scroll-component";
+import ProductionCard from "../ProductionCard/ProductionCard";
+import { GetProductionsResponse, Production } from "@/types/production";
+import { PaginationResponse } from "@/types/requests";
 
 const ProductionList = () => {
     const axiosApi = useAxiosApi();
@@ -11,43 +14,29 @@ const ProductionList = () => {
         isFetchingNextPage,
         data,
         status,
-        error } = useGetProductionsInfiniteQuery({ pageParam: 1, size: 10 });
+        error } = useGetProductionsInfiniteQuery({ pageParam: 1, size: 40 });
 
 
-    const productions = data?.pages.reduce((prod: any, page: any) => {
+    const productions = data?.pages.reduce((prod: Production[], page: PaginationResponse<GetProductionsResponse>) => {
         return [...prod, ...page.items]
     }, [])
 
 
     return (
-        <div className="">
-            <div className="prose prose-slate lg:prose-lg text-white mb-5">
-                <h3 className="text-white ">All Movies</h3>
+        <InfiniteScroll
+            dataLength={productions ? productions.length : 0}
+            next={() => fetchNextPage()}
+            hasMore={hasNextPage || false}
+            loader={<div>testsejtidjfiosdjfiosdjoifdsj</div>}
+        >
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+                {productions &&
+                    productions.map((production, idx) => (
+                        <ProductionCard production={production} key={idx} />
+                    ))
+                }
             </div>
-            <div>{productions?.length}</div>
-
-
-            <InfiniteScroll
-                dataLength={productions ? productions.length : 0}
-                next={() => fetchNextPage()}
-                hasMore={hasNextPage || false}
-                loader={<div>testsejtidjfiosdjfiosdjoifdsj</div>}
-            >
-                <div className="grid gap-6 grid-cols-1 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2">
-                    {productions &&
-                        productions.map((production, idx) => (
-                            <div className="card mx-auto w-[200px]" key={idx}>
-                                <span className="absolute top-0 text-white ">{idx}</span>
-                                <figure className="">
-                                    <img src="https://image.tmdb.org/t/p/w500/vgpXmVaVyUL7GGiDeiK1mKEKzcX.jpg" className="rounded-lg shadow-lg" />
-                                </figure>
-                            </div>
-                        ))
-
-                    }
-                </div>
-            </InfiniteScroll>
-        </div >
+        </InfiniteScroll>
     );
 }
 

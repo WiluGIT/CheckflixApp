@@ -14,3 +14,16 @@ export interface GetProductionsResponse {
     releaseDate: Date;
     genres: string[];
 }
+
+export interface Production {
+    productionId: number;
+    tmdbId: string;
+    imdbId: string;
+    title: string;
+    overview: string;
+    director: string;
+    keywords: string;
+    releaseDate: Date;
+    genres: string[];
+}
+

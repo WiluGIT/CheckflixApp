@@ -2,11 +2,11 @@
 import ProductionList from "@/components/ProductionList/ProductionList";
 import ProductionSlider from "@/components/ProductionSlider/ProductionSlider";
 import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop ";
+import SectionHeading from "@/components/SectionHeading/SectionHeading";
 import AuthContext from "@/context/AuthContextProvider";
 import useAxiosApi from "@/hooks/useAxiosApi";
 import useRefreshToken from "@/hooks/useRefreshToken";
-import { axiosApi as api } from "@/lib/api";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
 type User = {
     id: string;
@@ -18,31 +18,6 @@ const Home = () => {
     const [users, setUsers] = useState<User[]>();
     const refresh = useRefreshToken();
     const axiosApi = useAxiosApi();
-
-    // useEffect(() => {
-    //     console.log("HOMMMEee")
-    //     let isMounted = true;
-    //     const controller = new AbortController();
-
-    //     const getUsers = async () => {
-    //         try {
-    //             const { data } = await axiosApi.get('/Users', {
-    //                 signal: controller.signal
-    //             });
-    //             console.log(data);
-    //             isMounted && setUsers(data);
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     }
-
-    //     getUsers();
-    //     //console.log("User DAta: ", authState);
-    //     return () => {
-    //         isMounted = false;
-    //         controller.abort();
-    //     }
-    // }, [])
 
     const test = async () => {
         console.log("AuthencitacteD: ", authState);
@@ -60,7 +35,6 @@ const Home = () => {
 
     return (
         <div className="home">
-            <ScrollToTop />
             Home page
             <div>
                 {users?.map((el) => (
@@ -74,9 +48,11 @@ const Home = () => {
             <button onClick={() => test()}>Authstate</button>
             <button onClick={() => refresh()}>Refresh</button>
             <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div>
+            <SectionHeading text={"New Trending Movies"} />
             <ProductionSlider />
+            <SectionHeading text={"All Movies"} />
             <ProductionList />
-
+            <ScrollToTop />
         </div>
     );
 };

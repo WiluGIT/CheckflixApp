@@ -16,6 +16,8 @@ export default {
     screens: {
       'xs': '500px',
       ...defaultTheme.screens,
+      '2xl': '1535px',
+      '3xl': '1600px',
     },
   },
   plugins: [
