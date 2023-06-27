@@ -28,7 +28,7 @@ public class IdentityService : IIdentityService
         return user.UserName;
     }
 
-    public async Task<(Result Result, string UserId)> CreateUserAsync(string email, string userName, string? password)
+    public async Task<(Result Result, IdentityUser user)> CreateUserAsync(string email, string userName, string? password)
     {
         var user = ApplicationUser.Create(
             username: userName,
@@ -38,7 +38,7 @@ public class IdentityService : IIdentityService
 
         var result = await CreateUserWithRole(user, password, SystemRoles.Basic);
 
-        return (result.ToApplicationResult(), user.Id);
+        return (result.ToApplicationResult(), user);
     }
     
     private async Task<IdentityResult> CreateUserWithRole(ApplicationUser user, string? password, string role)
@@ -91,4 +91,7 @@ public class IdentityService : IIdentityService
 
     public async Task<bool> IsUserNameUniqueAsync(string userName) =>
         await _userManager.FindByNameAsync(userName) == null;
+
+    public async Task<IdentityUser?> GetIdentityUserByEmailAsync(string email) =>
+        await _userManager.FindByEmailAsync(email.Trim().Normalize());
 }

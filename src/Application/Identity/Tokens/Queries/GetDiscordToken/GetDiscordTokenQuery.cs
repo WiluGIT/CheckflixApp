@@ -4,4 +4,4 @@ using MediatR;
 
 namespace CheckflixApp.Application.Identity.Tokens.Queries.GetDiscordToken;
 
-public record GetDiscordTokenQuery(string Code) : IRequest<Result<TokenDto>>;
+public record GetDiscordTokenQuery(string Code) : IRequest<Result<string>>;

@@ -41,17 +41,7 @@ public class GetRefreshTokenQueryHandler : IRequestHandler<GetRefreshTokenQuery,
             return tokenResult.Errors;
         }
 
-        _httpContextAccessor.HttpContext.Response.Cookies.Append(
-            AuthKeys.RefreshTokenKey, 
-            tokenResult.Value.RefreshToken,
-            new CookieOptions
-            { 
-                Expires = tokenResult.Value.RefreshTokenExpiryTime,
-                HttpOnly = true,
-                Secure = true,
-                IsEssential = true,
-                SameSite = SameSiteMode.None
-            });
+        _tokenService.SetRefreshTokenHttpOnlyCookie(tokenResult.Value.RefreshToken, tokenResult.Value.RefreshTokenExpiryTime);
 
         return new AccessTokenDto(tokenResult.Value.Token);
     }

@@ -53,17 +53,8 @@ public class GetTokenQueryHandler : IRequestHandler<GetTokenQuery, Result<UserIn
 
         var userInfo = _mapper.Map<UserInfoDto>(user);
         userInfo.AccessToken = tokenResult.Value.Token;
-        _httpContextAccessor.HttpContext.Response.Cookies.Append(
-            AuthKeys.RefreshTokenKey,
-            tokenResult.Value.RefreshToken,
-            new CookieOptions
-            {
-                Expires = tokenResult.Value.RefreshTokenExpiryTime,
-                HttpOnly = true,
-                Secure = true,
-                IsEssential = true,
-                SameSite = SameSiteMode.None
-            });
+
+        _tokenService.SetRefreshTokenHttpOnlyCookie(tokenResult.Value.RefreshToken, tokenResult.Value.RefreshTokenExpiryTime);
 
         return userInfo;
     }

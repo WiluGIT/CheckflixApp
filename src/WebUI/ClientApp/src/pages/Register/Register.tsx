@@ -4,6 +4,7 @@ import { registerSchema } from "@/lib/validation";
 import { ServerError } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 type RegisterInputs = {
@@ -14,6 +15,7 @@ type RegisterInputs = {
 };
 
 const Register = () => {
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -25,6 +27,7 @@ const Register = () => {
     } = useRegisterMutation({
         onSuccess: (response: string) => {
             toast.success("Account created successfully", { theme: 'colored' });
+            navigate('/login');
         },
         onError: (error: ServerError) => {
             toast.error(formatServerError(error), { theme: 'colored' });
@@ -36,46 +39,48 @@ const Register = () => {
     }
 
     return (
-        <div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-center items-center bg-300 mt-5 gap-5">
-                <div className="form-control w-full max-w-xs">
-                    <label className="label">
-                        <span className="label-text text-white">Email</span>
-                    </label>
-                    <input type="text" placeholder="Type email" {...register("email", { required: true })} className="input input-bordered w-full max-w-xs" />
-                    <span className="text-error">{errors.email?.message}</span>
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex justify-center items-center h-full text-white">
+            <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+                <div className="card-body">
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label">
+                            <span className="label-text text-white">Email</span>
+                        </label>
+                        <input type="text" placeholder="Type email" {...register("email", { required: true })} className="input input-bordered w-full max-w-xs" />
+                        <span className="text-error">{errors.email?.message}</span>
+                    </div>
 
-                <div className="form-control w-full max-w-xs">
-                    <label className="label">
-                        <span className="label-text text-white">User name</span>
-                    </label>
-                    <input type="text" placeholder="Type user name" {...register("userName", { required: true })} className="input input-bordered w-full max-w-xs" />
-                    <span className="text-error">{errors.userName?.message}</span>
-                </div>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label">
+                            <span className="label-text text-white">User name</span>
+                        </label>
+                        <input type="text" placeholder="Type user name" {...register("userName", { required: true })} className="input input-bordered w-full max-w-xs" />
+                        <span className="text-error">{errors.userName?.message}</span>
+                    </div>
 
-                <div className="form-control w-full max-w-xs">
-                    <label className="label">
-                        <span className="label-text text-white">Password</span>
-                    </label>
-                    <input type="password" placeholder="Type password" {...register("password", { required: true })} className="input input-bordered w-full max-w-xs" />
-                    <span className="text-error">{errors.password?.message}</span>
-                </div>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label">
+                            <span className="label-text text-white">Password</span>
+                        </label>
+                        <input type="password" placeholder="Type password" {...register("password", { required: true })} className="input input-bordered w-full max-w-xs" />
+                        <span className="text-error">{errors.password?.message}</span>
+                    </div>
 
-                <div className="form-control w-full max-w-xs">
-                    <label className="label">
-                        <span className="label-text text-white">Confirm password</span>
-                    </label>
-                    <input type="password" placeholder="Type confirm password" {...register("confirmPassword", { required: true })} className="input input-bordered w-full max-w-xs" />
-                    <span className="text-error">{errors.confirmPassword?.message}</span>
-                </div>
+                    <div className="form-control w-full max-w-xs">
+                        <label className="label">
+                            <span className="label-text text-white">Confirm password</span>
+                        </label>
+                        <input type="password" placeholder="Type confirm password" {...register("confirmPassword", { required: true })} className="input input-bordered w-full max-w-xs" />
+                        <span className="text-error">{errors.confirmPassword?.message}</span>
+                    </div>
 
-                <button className="btn" type="submit">
-                    {isLoading && (<span className="loading loading-spinner"></span>)}
-                    Register
-                </button>
-            </form>
-        </div>
+                    <button className="btn btn-primary" type="submit">
+                        {isLoading && (<span className="loading loading-spinner"></span>)}
+                        Register
+                    </button>
+                </div>
+            </div>
+        </form>
     );
 };
 

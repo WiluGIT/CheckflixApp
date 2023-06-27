@@ -4,6 +4,8 @@ import Admin from '@/pages/Admin/Admin';
 import Login from '@/pages/Login/Login';
 import WrapperRouteComponent from './config';
 import Register from '@/pages/Register/Register';
+import Logout from '@/pages/Logout/Logout';
+import AuthRedirect from '@/pages/Login/AuthRedirect';
 
 
 // const NotFound = lazy(() => import('@/pages/404'));
@@ -25,6 +27,14 @@ const routeList: RouteObject[] = [
     {
         path: "register",
         element: <WrapperRouteComponent auth={false}><Register /></WrapperRouteComponent>,
+    },
+    {
+        path: "logout",
+        element: <WrapperRouteComponent auth={false}><Logout /></WrapperRouteComponent>,
+    },
+    {
+        path: "authRedirect",
+        element: <WrapperRouteComponent auth={false}><AuthRedirect /></WrapperRouteComponent>,
     },
 ];
 

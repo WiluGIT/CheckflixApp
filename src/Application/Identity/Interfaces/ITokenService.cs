@@ -10,4 +10,6 @@ public interface ITokenService
     Task<Result<TokenDto>> GetRefreshTokenAsync(string accessToken, string refreshToken, string ipAddress, CancellationToken cancellationToken);
 
     Task<Result<TokenDto>> GetTokenByEmailAsync(string email, string ipAddress, CancellationToken cancellationToken);
+
+    void SetRefreshTokenHttpOnlyCookie(string refreshToken, DateTime refreshTokenExpiryTime);
 }

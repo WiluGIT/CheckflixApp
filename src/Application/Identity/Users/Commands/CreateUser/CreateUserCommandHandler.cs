@@ -40,13 +40,13 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             return DomainErrors.User.DuplicateUserName;
         }
 
-        var (result, id) = await _identityService.CreateUserAsync(emailResult.Value, userNameResult.Value, passwordResult.Value);
+        var (result, user) = await _identityService.CreateUserAsync(emailResult.Value, userNameResult.Value, passwordResult.Value);
         if (result.IsFailure)
         {
             return DomainErrors.User.PasswordValidationError;
         }
 
-        return (string.Format(_localizer["User {0} Registered."].Value, emailResult.Value), id);
+        return (string.Format(_localizer["User {0} Registered."].Value, emailResult.Value), user.Id);
     }
 }
 

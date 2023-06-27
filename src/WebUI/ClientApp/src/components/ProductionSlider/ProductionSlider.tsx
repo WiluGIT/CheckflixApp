@@ -11,7 +11,7 @@ const SliderNextArrow = (props: HTMLProps<HTMLElement>) => {
     const { className, style, onClick } = props;
     return (
         <div
-            className={`absolute top-0 right-0 pl-1 pr-2 btn hover:bg-slate-900 z-50 h-[98%] rounded-l-none rounded-r-sm no-animation opacity-60 hover:opacity-80 hover:text-white text-black ${className?.includes("slick-disabled") && 'slick-disabled '}`}
+            className={`absolute top-0 right-0 pl-1 pr-2 btn z-50 h-[98%] rounded-l-none rounded-r-sm no-animation opacity-70 hover:opacity-90 text-white ${className?.includes("slick-disabled") && 'slick-disabled '}`}
             //style={{ ...style }}
             onClick={onClick}
         >
@@ -24,7 +24,7 @@ const SliderPrevArrow = (props: HTMLProps<HTMLElement>) => {
     const { className, style, onClick } = props;
     return (
         <div
-            className={`absolute top-0 left-0 pr-1 pl-2 btn hover:bg-slate-900 z-50 h-[98%] rounded-r-none rounded-l-sm no-animation opacity-60 hover:opacity-80 hover:text-white text-black ${className?.includes("slick-disabled") && 'slick-disabled '}`}
+            className={`absolute top-0 left-0 pr-1 pl-2 btn z-50 h-[98%] rounded-r-none rounded-l-sm no-animation opacity-70 hover:opacity-90 text-white ${className?.includes("slick-disabled") && 'slick-disabled '}`}
             //style={{ ...style }}
             onClick={onClick}
         >

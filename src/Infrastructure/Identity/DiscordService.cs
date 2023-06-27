@@ -22,6 +22,7 @@ public class DiscordService : IDiscordService
 
     public async Task<Result<ProviderTokenDto>> GetTokenFromDiscordAsync(string authorizationCode)
     {
+        // TODO: Configuration hardcoded
         var parameters = new Dictionary<string, string>
         {
             { "client_id", "1112364224820297800" },
@@ -38,10 +39,10 @@ public class DiscordService : IDiscordService
 
         if (tokenResponse == null || !response.IsSuccessStatusCode)
         {
-            return Error.Validation(_localizer["Failed to obtain discord access token"]);
+            return Error.Validation(description: $"{_localizer["Failed to obtain discord access token"]} details: {content}");
         }
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, DiscordAuthenticationDefaults.UserInformationEndpoint);    
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, DiscordAuthenticationDefaults.UserInformationEndpoint);
         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
         var userResponse = await _httpClient.SendAsync(requestMessage);
         var userContent = await userResponse.Content.ReadAsStringAsync();
