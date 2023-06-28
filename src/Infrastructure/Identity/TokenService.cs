@@ -5,11 +5,14 @@ using System.Text;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
 using CheckflixApp.Application.Identity.Tokens.Queries.GetToken;
+using CheckflixApp.Domain.Common.Consts;
 using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Infrastructure.Auth;
 using CheckflixApp.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -20,18 +23,24 @@ public class TokenService : ITokenService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IStringLocalizer<TokenService> _localizer;
     private readonly JwtSettings _jwtSettings;
+    private readonly OAuthSettings _oAuthSettings;
     private readonly SecuritySettings _securitySettings;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public TokenService(
         UserManager<ApplicationUser> userManager,
         IOptions<JwtSettings> jwtSettings,
         IStringLocalizer<TokenService> localizer,
-        IOptions<SecuritySettings> securitySettings)
+        IOptions<SecuritySettings> securitySettings,
+        IOptions<OAuthSettings> oAuthSettings,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _localizer = localizer;
         _jwtSettings = jwtSettings.Value;
         _securitySettings = securitySettings.Value;
+        _oAuthSettings = oAuthSettings.Value;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<Result<TokenDto>> GetTokenAsync(GetTokenQuery query, string ipAddress, CancellationToken cancellationToken)
@@ -100,6 +109,24 @@ public class TokenService : ITokenService
 
         return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
+
+    public void SetRefreshTokenHttpOnlyCookie(string refreshToken, DateTime refreshTokenExpiryTime)
+    {
+        _httpContextAccessor.HttpContext?.Response.Cookies.Append(
+            AuthKeys.RefreshTokenKey,
+            refreshToken,
+            new CookieOptions
+            {
+                Expires = refreshTokenExpiryTime,
+                HttpOnly = true,
+                Secure = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.None
+            });
+    }
+
+    public string GetAuthRedirectUrl(Dictionary<string, string?> queryParams)
+        => new Uri(QueryHelpers.AddQueryString(_oAuthSettings.FrontendAuthRedirect, queryParams)).ToString();
 
     private async Task<TokenDto> GenerateTokensAndUpdateUser(ApplicationUser user, string ipAddress)
     {

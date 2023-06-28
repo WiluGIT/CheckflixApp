@@ -23,17 +23,13 @@ public class GetProductionByIdQueryHandler : IRequestHandler<GetProductionByIdQu
 
     public async Task<Result<ProductionDto>> Handle(GetProductionByIdQuery request, CancellationToken cancellationToken)
     {
-        var production = await _productionRepository.GetByIdAsync(request.Id);
+        var production = await _productionRepository.GetProductionDtoById(request.Id);
 
         if (production == null)
         {
             return Error.NotFound(description: _localizer["Production not found"]);
         }
 
-        var productionDto = _mapper.Map<ProductionDto>(production);
-
-        var test = await _productionRepository.GetProductionDtoById(request.Id);
-
-        return test;
+        return production;
     }
 }

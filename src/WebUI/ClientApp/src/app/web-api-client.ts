@@ -3524,6 +3524,7 @@ export class CreateProductionCommand implements ICreateProductionCommand {
     overview?: string;
     director?: string;
     keywords?: string;
+    releaseDate?: string;
     genreIds?: number[];
 
     constructor(data?: ICreateProductionCommand) {
@@ -3543,6 +3544,7 @@ export class CreateProductionCommand implements ICreateProductionCommand {
             this.overview = _data["overview"];
             this.director = _data["director"];
             this.keywords = _data["keywords"];
+            this.releaseDate = _data["releaseDate"];
             if (Array.isArray(_data["genreIds"])) {
                 this.genreIds = [] as any;
                 for (let item of _data["genreIds"])
@@ -3566,6 +3568,7 @@ export class CreateProductionCommand implements ICreateProductionCommand {
         data["overview"] = this.overview;
         data["director"] = this.director;
         data["keywords"] = this.keywords;
+        data["releaseDate"] = this.releaseDate;
         if (Array.isArray(this.genreIds)) {
             data["genreIds"] = [];
             for (let item of this.genreIds)
@@ -3582,6 +3585,7 @@ export interface ICreateProductionCommand {
     overview?: string;
     director?: string;
     keywords?: string;
+    releaseDate?: string;
     genreIds?: number[];
 }
 

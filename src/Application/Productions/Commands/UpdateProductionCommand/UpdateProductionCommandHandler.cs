@@ -36,6 +36,7 @@ public class UpdateProductionCommandHandler : IRequestHandler<UpdateProductionCo
             command.Overview,
             command.Director,
             command.Keywords,
+            command.ReleaseDate,
             command.GenreIds);
 
         _productionRepository.Update(productionToUpdate);

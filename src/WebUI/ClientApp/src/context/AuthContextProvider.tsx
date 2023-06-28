@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthActionEnum } from "../store/auth/authActions";
 import authReducer from "../store/auth/authReducer";
 import { AuthContextType, AuthProviderProps, AuthState, UserData } from "@/types/auth";
+import { toast } from "react-toastify";
 
 export const defaultAuthState: AuthState = {
     isAuthenticated: false,
@@ -50,6 +51,7 @@ export const AuthContextProvider = (props: AuthProviderProps) => {
         });
 
         withRedirect && navigate("/");
+        toast.success("Sucessfully logged in", { theme: 'colored' });
     },
         [navigate]
     );

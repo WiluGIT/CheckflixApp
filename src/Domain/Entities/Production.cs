@@ -8,6 +8,7 @@ public class Production : BaseAuditableEntity
     public string Overview { get; private set; }
     public string Director { get; private set; }
     public string Keywords { get; private set; }
+    public DateTime ReleaseDate { get; private set; }
 
 
     private List<ProductionGenre> _productionGenres = new();
@@ -22,6 +23,7 @@ public class Production : BaseAuditableEntity
         string overview,
         string director,
         string keywords,
+        DateTime releaseDate,
         List<ProductionGenre> productionGenres)
     {
         this.TmdbId = tmdbId;
@@ -30,6 +32,7 @@ public class Production : BaseAuditableEntity
         this.Overview = overview;
         this.Director = director;
         this.Keywords = keywords;
+        this.ReleaseDate = releaseDate;
         this._productionGenres = productionGenres;
     }
 
@@ -40,6 +43,7 @@ public class Production : BaseAuditableEntity
         string overview,
         string director,
         string keywords,
+        string releaseDate,
         List<int> genres)
     {
         return new(
@@ -49,6 +53,7 @@ public class Production : BaseAuditableEntity
             overview: overview,
             director: director,
             keywords: keywords, 
+            releaseDate: FormatProductionDate(releaseDate),
             productionGenres: CreateProductionGenres(genres));
     }
 
@@ -59,6 +64,7 @@ public class Production : BaseAuditableEntity
         string overview,
         string director,
         string keywords,
+        string releaseDate,
         List<int> genres)
     {
         this.TmdbId = tmdbId;
@@ -67,11 +73,22 @@ public class Production : BaseAuditableEntity
         this.Overview = overview;
         this.Director = director;
         this.Keywords = keywords;
+        this.ReleaseDate = FormatProductionDate(releaseDate);
         this._productionGenres = CreateProductionGenres(genres);
     }
 
     private static List<ProductionGenre> CreateProductionGenres(List<int> genres) =>
         genres.Select(genreId => ProductionGenre.Create(genreId)).ToList();
+
+    private static DateTime FormatProductionDate(string releaseDate)
+    {
+        if (DateTime.TryParse(releaseDate, out var dateValue))
+        {
+            return dateValue;
+        }
+
+        throw new ArgumentException("Unable to parse given Production date");
+    }
 
 #pragma warning disable CS8618 // Required by Entity Framework
     private Production() { }

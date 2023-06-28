@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using CheckflixApp.Application.Identity.Common;
-using CheckflixApp.Domain.Entities;
+﻿using CheckflixApp.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace CheckflixApp.Infrastructure.Identity;

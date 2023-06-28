@@ -7,5 +7,5 @@ namespace CheckflixApp.Application.Identity.Interfaces;
 
 public interface IDiscordService
 {
-    Task<Result<ProviderTokenDto>> GetTokenFromDiscordAsync(string authorizationCode);
+    Task<Result<ProviderTokenDto>> GetTokenFromDiscordAsync(string authorizationCode, string baseUrl);
 }

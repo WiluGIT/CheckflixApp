@@ -4,32 +4,39 @@ using System.Text.Json;
 using AspNet.Security.OAuth.Discord;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Consts;
 using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
+using CheckflixApp.Infrastructure.Auth;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace CheckflixApp.Infrastructure.Identity;
 public class DiscordService : IDiscordService
 {
     private readonly HttpClient _httpClient;
     private readonly IStringLocalizer<DiscordService> _localizer;
+    private readonly DiscordAuthSettings _discordAuthSettings;
 
-    public DiscordService(HttpClient httpClient, IStringLocalizer<DiscordService> localizer)
+    public DiscordService(HttpClient httpClient, IStringLocalizer<DiscordService> localizer, IOptions<DiscordAuthSettings> discordAuthSettings)
     {
         _httpClient = httpClient;
         _localizer = localizer;
+        _discordAuthSettings = discordAuthSettings.Value;
     }
 
-    public async Task<Result<ProviderTokenDto>> GetTokenFromDiscordAsync(string authorizationCode)
+    public async Task<Result<ProviderTokenDto>> GetTokenFromDiscordAsync(string authorizationCode, string baseUrl)
     {
         var parameters = new Dictionary<string, string>
         {
-            { "client_id", "1112364224820297800" },
-            { "client_secret", "jTF4NSq8RNcGhGPNwZK12N9h5Iuc0hC-" },
-            { "grant_type", "authorization_code" },
-            { "code", authorizationCode },
-            { "redirect_uri", "https://localhost:5001/api/Tokens/discord-callback" },
-            { "scope", "identify email" }
+            { AuthKeys.ClientId, _discordAuthSettings.ClientId },
+            { AuthKeys.ClientSecret, _discordAuthSettings.ClientSecret },
+            { AuthKeys.GrantType, AuthKeys.AuthorizationCode },
+            { AuthKeys.Code, authorizationCode },
+            // we need our base app path to concat with token discord callback endpoint
+            { AuthKeys.RedirectUri, $"{baseUrl}{_discordAuthSettings.RedirectUri}"},
+            { AuthKeys.Scope, _discordAuthSettings.Scope }
+            //"https://localhost:5001/api/Tokens/discord-callback"
         };
 
         var response = await _httpClient.PostAsync(DiscordAuthenticationDefaults.TokenEndpoint, new FormUrlEncodedContent(parameters));
@@ -38,10 +45,10 @@ public class DiscordService : IDiscordService
 
         if (tokenResponse == null || !response.IsSuccessStatusCode)
         {
-            return Error.Validation(_localizer["Failed to obtain discord access token"]);
+            return Error.Validation(description: $"{_localizer["Failed to obtain discord access token"]} details: {content}");
         }
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, DiscordAuthenticationDefaults.UserInformationEndpoint);    
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, DiscordAuthenticationDefaults.UserInformationEndpoint);
         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResponse.AccessToken);
         var userResponse = await _httpClient.SendAsync(requestMessage);
         var userContent = await userResponse.Content.ReadAsStringAsync();

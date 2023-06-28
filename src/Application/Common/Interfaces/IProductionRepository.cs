@@ -13,7 +13,7 @@ public interface IProductionRepository
     /// Gets paginated system productions.
     /// </summary>
     /// <returns>The IQueryable collection of system productions.</returns>
-    Task<PaginatedList<Production>> GetAllProductions(PaginationFilter filter);
+    Task<PaginatedList<ProductionDto>> GetAllProductions(PaginationFilter filter);
 
     /// <summary>
     /// Gets the production with the specified identifier.
