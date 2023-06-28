@@ -1,4 +1,5 @@
 //import { useAuthContext } from "@/hooks/useAuthContext";
+import HeroSlider from "@/components/HeroSlider/HeroSlider";
 import ProductionList from "@/components/ProductionList/ProductionList";
 import ProductionSlider from "@/components/ProductionSlider/ProductionSlider";
 import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop ";
@@ -48,6 +49,7 @@ const Home = () => {
             <button onClick={() => test()}>Authstate</button>
             <button onClick={() => refresh()}>Refresh</button>
             <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div>
+            <HeroSlider />
             <SectionHeading text={"New Trending Movies"} />
             <ProductionSlider />
             <SectionHeading text={"All Movies"} />

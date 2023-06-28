@@ -74,7 +74,7 @@ const Register = () => {
                         <span className="text-error">{errors.confirmPassword?.message}</span>
                     </div>
 
-                    <button className="btn btn-primary" type="submit">
+                    <button className="btn btn-primary mt-6" type="submit">
                         {isLoading && (<span className="loading loading-spinner"></span>)}
                         Register
                     </button>
