@@ -44,7 +44,7 @@ const SideBar = () => {
     const { authState } = useContext(AuthContext);
 
     return (
-        <nav className="w-20 m-0 flex flex-col bg-[#202225] text-white shadow-lg">
+        <nav className="w-[5.5rem] m-0 flex flex-col fixed h-full bg-[#202225] text-white shadow-lg">
             {navItems.map((item, idx) => (
                 <NavLink to={item.path} key={idx}>
                     {({ isActive }) => {

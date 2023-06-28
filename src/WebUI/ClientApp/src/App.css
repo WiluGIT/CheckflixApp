@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    background: #1c1c1e !important;
+}
+
 #root {
     width: 100%;
     min-height: 100vh;

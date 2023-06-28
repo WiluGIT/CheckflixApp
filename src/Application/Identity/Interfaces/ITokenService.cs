@@ -12,4 +12,6 @@ public interface ITokenService
     Task<Result<TokenDto>> GetTokenByEmailAsync(string email, string ipAddress, CancellationToken cancellationToken);
 
     void SetRefreshTokenHttpOnlyCookie(string refreshToken, DateTime refreshTokenExpiryTime);
+
+    string GetAuthRedirectUrl(Dictionary<string, string?> queryParams);
 }

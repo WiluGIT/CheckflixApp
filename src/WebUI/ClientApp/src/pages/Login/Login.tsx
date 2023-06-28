@@ -27,7 +27,6 @@ const Login = () => {
         mutateAsync,
     } = useLoginMutation({
         onSuccess: (response: LoginResponse) => {
-            toast.success("Sucessfully logged in", { theme: 'colored' });
             globalLogInDispatch(response);
         },
         onError: (error: ServerError) => {

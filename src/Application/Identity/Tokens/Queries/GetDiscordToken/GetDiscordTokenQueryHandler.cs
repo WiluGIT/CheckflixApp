@@ -1,7 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Runtime.CompilerServices;
+using AutoMapper;
+using CheckflixApp.Application.Common.Extensions;
 using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Application.Identity.Interfaces;
+using CheckflixApp.Domain.Common.Consts;
 using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
@@ -39,7 +42,8 @@ public class GetDiscordTokenQueryHandler : IRequestHandler<GetDiscordTokenQuery,
             ? _httpContextAccessor.HttpContext.Request.Headers["X-Forwarded-For"].ToString()
             : _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "N/A";
 
-        var providerToken = await _discordService.GetTokenFromDiscordAsync(query.Code);
+        var baseUrl = _httpContextAccessor.HttpContext.GetBaseUrl();
+        var providerToken = await _discordService.GetTokenFromDiscordAsync(query.Code, baseUrl);
         if (providerToken.IsFailure)
         {
             return providerToken.Errors;
@@ -65,16 +69,15 @@ public class GetDiscordTokenQueryHandler : IRequestHandler<GetDiscordTokenQuery,
 
         _tokenService.SetRefreshTokenHttpOnlyCookie(tokenResult.Value.RefreshToken, tokenResult.Value.RefreshTokenExpiryTime);
 
-        var queryParams = new Dictionary<string, string>()
+        var queryParams = new Dictionary<string, string?>()
         {
-            { "Id", user.Id },
-            { "UserName", user?.UserName ?? string.Empty },
-            { "Email", user?.Email ?? string.Empty },
-            { "AccessToken", tokenResult.Value.Token },
+            { AuthKeys.Id, user.Id },
+            { AuthKeys.UserName, user?.UserName ?? string.Empty },
+            { AuthKeys.Email, user?.Email ?? string.Empty },
+            { AuthKeys.AccessToken, tokenResult.Value.Token },
         };
 
-        // TODO: Configuration hardcoded
-        var redirectUrl = new Uri(QueryHelpers.AddQueryString("http://127.0.0.1:5173/authRedirect", queryParams)).ToString();
+        var redirectUrl = _tokenService.GetAuthRedirectUrl(queryParams);
 
         return redirectUrl;
     }

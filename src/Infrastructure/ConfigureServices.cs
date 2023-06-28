@@ -45,6 +45,8 @@ public static class ConfigureServices
         services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.Configure<SecuritySettings>(configuration.GetSection(nameof(SecuritySettings)));
         services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+        services.Configure<OAuthSettings>(configuration.GetSection(nameof(OAuthSettings)));
+        services.Configure<DiscordAuthSettings>(configuration.GetSection(nameof(DiscordAuthSettings)));
 
         return services;
     }
