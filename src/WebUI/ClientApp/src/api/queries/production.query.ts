@@ -61,12 +61,13 @@ export const useGetProductionsInfiniteQuery = (
     const query = useInfiniteQuery({
         queryKey: ['productions', 'infinite'],
         getNextPageParam: (prevData: PaginationResponse<GetProductionsResponse>) => {
-            return prevData.pageNumber + 1;
+            return prevData.hasNextPage ? prevData.pageNumber + 1 : undefined;
         },
         queryFn: async ({ pageParam = 1 }) => {
             return await getProductions({ pageNumber: pageParam, pageSize: size })
         },
-        keepPreviousData: true,
+        refetchOnMount: true,
+        keepPreviousData: false,
         ...queryOptions,
     });
 

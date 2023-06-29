@@ -63,7 +63,7 @@ const HeroSlider = () => {
         <Slider {...settings} className="pt-10 mb-10 w-[70%] mx-auto">
             {
                 heroSliderData.map((slide, idx) => (
-                    <div className={`flex flex-col h-[480px] w-full relative ${slide.bgClass} bg-gradient-[#fffff] rounded-lg shadow-lg`}>
+                    <div className={`flex flex-col h-[480px] w-full relative ${slide.bgClass} bg-gradient-[#fffff] rounded-lg shadow-lg`} key={idx}>
                         <img src={slide.image} className={`rounded-lg shadow-lg absolute w-full h-full opacity-30 ${slide.imgClass}`} />
                         <div className="max-w-md card-body absolute prose prose-slate text-white my-5 left-[5%] bottom-[5%]">
                             <h2 className="text-white mb-[0px]">{slide.text}</h2>

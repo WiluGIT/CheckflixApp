@@ -4,6 +4,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ProductionCard from "../ProductionCard/ProductionCard";
 import { GetProductionsResponse, Production } from "@/types/production";
 import { PaginationResponse } from "@/types/requests";
+import Loader from "@/components/Loader/Loader";
 
 const ProductionList = () => {
     const axiosApi = useAxiosApi();
@@ -27,7 +28,7 @@ const ProductionList = () => {
             dataLength={productions ? productions.length : 0}
             next={() => fetchNextPage()}
             hasMore={hasNextPage || false}
-            loader={<div>testsejtidjfiosdjfiosdjoifdsj</div>}
+            loader={<Loader width="w-14" />}
         >
             <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
                 {productions &&

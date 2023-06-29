@@ -36,7 +36,7 @@ const Home = () => {
 
     return (
         <div className="home">
-            Home page
+            {/* Home page
             <div>
                 {users?.map((el) => (
                     <div key={el.id} className="text-white">
@@ -48,7 +48,7 @@ const Home = () => {
             </div>
             <button onClick={() => test()}>Authstate</button>
             <button onClick={() => refresh()}>Refresh</button>
-            <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div>
+            <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div> */}
             <HeroSlider />
             <SectionHeading text={"New Trending Movies"} />
             <ProductionSlider />
