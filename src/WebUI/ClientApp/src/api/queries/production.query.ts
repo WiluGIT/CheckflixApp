@@ -4,6 +4,7 @@ import { UseInfiniteQueryOptions, UseQueryOptions, useInfiniteQuery, useQuery } 
 import axios, { AxiosInstance } from "axios";
 import { getProductions } from "../services/production.service";
 import { PaginationResponse } from "@/types/requests";
+import { productions } from "@/mock/productionMock";
 
 export const useGetProductionsQuery = (
     { page = 0, size = 10 } = {},
@@ -69,6 +70,33 @@ export const useGetProductionsInfiniteQuery = (
         refetchOnMount: true,
         keepPreviousData: false,
         ...queryOptions,
+    });
+
+    return {
+        ...query,
+    };
+};
+
+
+export const useFakeSearchProductionsQuery = (
+    { page = 0, size = 5, searchTerm = '' } = {},
+    queryOptions: UseQueryOptions<Production[]> = {},
+    axiosInstance?: AxiosInstance,
+) => {
+    const query = useQuery({
+        queryKey: ['search', searchTerm],
+        queryFn: async () => {
+            await new Promise((resolve, reject) => {
+                return setTimeout(resolve, 1000)
+            })
+
+            const response = productions.filter(x => x.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())).slice(0, size);
+            console.log("Fetched response: ", response);
+            return response
+        },
+        keepPreviousData: true,
+        ...queryOptions,
+        enabled: searchTerm.length > 1
     });
 
     return {

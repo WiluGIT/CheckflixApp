@@ -28,7 +28,7 @@ const ProductionList = () => {
             dataLength={productions ? productions.length : 0}
             next={() => fetchNextPage()}
             hasMore={hasNextPage || false}
-            loader={<Loader width="w-14" />}
+            loader={<Loader classes="w-14" loaderType={"loading-infinity"} />}
         >
             <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
                 {productions &&

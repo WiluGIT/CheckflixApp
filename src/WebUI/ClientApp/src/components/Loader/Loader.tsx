@@ -1,7 +1,7 @@
-const Loader: React.FC<{ width: string }> = ({ width }) => {
+const Loader: React.FC<{ classes: string, loaderType: string }> = ({ classes, loaderType }) => {
     return (
         <div className="flex justify-center items-center h-full">
-            <span className={`loading loading-infinity text-white ${width}`}></span>
+            <span className={`loading text-white ${loaderType} ${classes}`}></span>
         </div>
     );
 }
