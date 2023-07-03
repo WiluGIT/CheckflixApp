@@ -6,6 +6,9 @@ import WrapperRouteComponent from './config';
 import Register from '@/pages/Register/Register';
 import Logout from '@/pages/Logout/Logout';
 import AuthRedirect from '@/pages/Login/AuthRedirect';
+import Search from '@/pages/Search/Search';
+import News from '@/pages/News/News';
+import Genres from '@/pages/Genres/Genres';
 
 
 // const NotFound = lazy(() => import('@/pages/404'));
@@ -35,6 +38,18 @@ const routeList: RouteObject[] = [
     {
         path: "authRedirect",
         element: <WrapperRouteComponent auth={false}><AuthRedirect /></WrapperRouteComponent>,
+    },
+    {
+        path: "search",
+        element: <WrapperRouteComponent auth={false}><Search /></WrapperRouteComponent>,
+    },
+    {
+        path: "news",
+        element: <WrapperRouteComponent auth={false}><News /></WrapperRouteComponent>,
+    },
+    {
+        path: "genres",
+        element: <WrapperRouteComponent auth={false}><Genres /></WrapperRouteComponent>,
     },
 ];
 

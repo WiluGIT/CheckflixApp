@@ -3,10 +3,14 @@ import useAxiosApi from "@/hooks/useAxiosApi";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ProductionCard from "../ProductionCard/ProductionCard";
 import { GetProductionsResponse, Production } from "@/types/production";
-import { PaginationResponse } from "@/types/requests";
+import { PaginationFilter, PaginationResponse } from "@/types/requests";
 import Loader from "@/components/Loader/Loader";
 
-const ProductionList = () => {
+type ProductionListPropsType = {
+    filters: PaginationFilter;
+}
+
+const ProductionList: React.FC<ProductionListPropsType> = ({ filters }) => {
     const axiosApi = useAxiosApi();
     const {
         fetchNextPage,
@@ -15,7 +19,7 @@ const ProductionList = () => {
         isFetchingNextPage,
         data,
         status,
-        error } = useGetProductionsInfiniteQuery({ pageParam: 1, size: 40 });
+        error } = useGetProductionsInfiniteQuery(filters);
 
 
     const productions = data?.pages.reduce((prod: Production[], page: PaginationResponse<GetProductionsResponse>) => {

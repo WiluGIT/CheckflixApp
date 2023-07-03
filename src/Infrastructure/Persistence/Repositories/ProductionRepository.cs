@@ -30,8 +30,7 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
     public async Task<PaginatedList<ProductionDto>> GetAllProductions(PaginationFilter filter) =>
         await DbContext.Set<Production>()
             .AsNoTracking()
-            .Include(x => x.ProductionGenres)
-            .WithSpecification(new EntitiesByBaseFilterSpec<Production>(filter))
+            .WithSpecification(new EntitiesByPaginationWithOrderFilterSpec<Production>(filter))
             .Select(x => new ProductionDto
             {
                 ProductionId = x.Id,

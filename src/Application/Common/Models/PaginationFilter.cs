@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CheckflixApp.Application.Common.Models;
+﻿namespace CheckflixApp.Application.Common.Models;
 public class PaginationFilter : BaseFilter
 {
     public int PageNumber { get; set; }

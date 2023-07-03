@@ -21,12 +21,8 @@ const Home = () => {
     const axiosApi = useAxiosApi();
 
     const test = async () => {
-        console.log("AuthencitacteD: ", authState);
         try {
-            console.log("fetching")
-
             const response = await axiosApi.get('/Users');
-            console.log(response)
             // Handle the response data
             setUsers(response.data);
         } catch (error) {
@@ -53,7 +49,7 @@ const Home = () => {
             <SectionHeading text={"New Trending Movies"} />
             <ProductionSlider />
             <SectionHeading text={"All Movies"} />
-            <ProductionList />
+            <ProductionList filters={{ pageNumber: 1, pageSize: 40 }} />
             <ScrollToTop />
         </div>
     );

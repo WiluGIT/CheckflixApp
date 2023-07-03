@@ -3,18 +3,19 @@ import { GetProductionsRequest, GetProductionsResponse, Production } from "@/typ
 import { UseInfiniteQueryOptions, UseQueryOptions, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios, { AxiosInstance } from "axios";
 import { getProductions } from "../services/production.service";
-import { PaginationResponse } from "@/types/requests";
+import { PaginationFilter, PaginationResponse } from "@/types/requests";
 import { productions } from "@/mock/productionMock";
 
 export const useGetProductionsQuery = (
-    { page = 0, size = 10 } = {},
+    params: PaginationFilter = { pageNumber: 1, pageSize: 10 },
+    enabledCondition: boolean = true,
     queryOptions: UseQueryOptions<PaginationResponse<GetProductionsResponse>> = {},
     axiosInstance?: AxiosInstance,
 ) => {
     const query = useQuery({
-        queryKey: ['users', { page, size }],
+        queryKey: ['productions', [{ ...params }]],
         queryFn: async () => {
-            const response = await getProductions({ pageNumber: page, pageSize: size, orderBy: 'releaseDate desc' }, axiosInstance);
+            const response = await getProductions(params, axiosInstance);
             const productionArray: Production[] = response.items;
 
             // for (const movie of productionArray) {
@@ -37,6 +38,7 @@ export const useGetProductionsQuery = (
         },
         keepPreviousData: true,
         ...queryOptions,
+        enabled: enabledCondition
     });
 
     const items = query.data?.items;
@@ -56,16 +58,17 @@ export const useGetProductionsQuery = (
 };
 
 export const useGetProductionsInfiniteQuery = (
-    { pageParam = 0, size = 40 } = {},
+    params: PaginationFilter = { pageNumber: 1, pageSize: 10 },
     queryOptions: UseInfiniteQueryOptions<PaginationResponse<GetProductionsResponse>> = {}
 ) => {
     const query = useInfiniteQuery({
-        queryKey: ['productions', 'infinite'],
+        queryKey: ['infinite', [{ ...params }]],
         getNextPageParam: (prevData: PaginationResponse<GetProductionsResponse>) => {
             return prevData.hasNextPage ? prevData.pageNumber + 1 : undefined;
         },
         queryFn: async ({ pageParam = 1 }) => {
-            return await getProductions({ pageNumber: pageParam, pageSize: size })
+            console.log("Fetching data for search term: ", params["AdvancedSearch.Keyword"]);
+            return await getProductions({ ...params, pageNumber: pageParam })
         },
         refetchOnMount: true,
         keepPreviousData: false,
@@ -76,7 +79,6 @@ export const useGetProductionsInfiniteQuery = (
         ...query,
     };
 };
-
 
 export const useFakeSearchProductionsQuery = (
     { page = 0, size = 5, searchTerm = '' } = {},
@@ -91,7 +93,6 @@ export const useFakeSearchProductionsQuery = (
             })
 
             const response = productions.filter(x => x.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())).slice(0, size);
-            console.log("Fetched response: ", response);
             return response
         },
         keepPreviousData: true,

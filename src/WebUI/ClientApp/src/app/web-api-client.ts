@@ -1021,6 +1021,173 @@ export class FollowingsClient implements IFollowingsClient {
     }
 }
 
+export interface IGenresClient {
+    /**
+     * Get all production genres.
+     */
+    getGenres(): Observable<FileResponse>;
+    /**
+     * Get all production genres.
+     * @param genreIds (optional) 
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @param orderBy (optional) 
+     * @param advancedSearch_Fields (optional) 
+     * @param advancedSearch_Keyword (optional) 
+     * @param keyword (optional) 
+     */
+    getGenreProductions(genreIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined, orderBy: string[] | null | undefined, advancedSearch_Fields: string[] | null | undefined, advancedSearch_Keyword: string | null | undefined, keyword: string | null | undefined): Observable<FileResponse>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class GenresClient implements IGenresClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    /**
+     * Get all production genres.
+     */
+    getGenres(): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Genres";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetGenres(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetGenres(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processGetGenres(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Get all production genres.
+     * @param genreIds (optional) 
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @param orderBy (optional) 
+     * @param advancedSearch_Fields (optional) 
+     * @param advancedSearch_Keyword (optional) 
+     * @param keyword (optional) 
+     */
+    getGenreProductions(genreIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined, orderBy: string[] | null | undefined, advancedSearch_Fields: string[] | null | undefined, advancedSearch_Keyword: string | null | undefined, keyword: string | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Genres/productions?";
+        if (genreIds !== undefined && genreIds !== null)
+            genreIds && genreIds.forEach(item => { url_ += "GenreIds=" + encodeURIComponent("" + item) + "&"; });
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            orderBy && orderBy.forEach(item => { url_ += "OrderBy=" + encodeURIComponent("" + item) + "&"; });
+        if (advancedSearch_Fields !== undefined && advancedSearch_Fields !== null)
+            advancedSearch_Fields && advancedSearch_Fields.forEach(item => { url_ += "AdvancedSearch.Fields=" + encodeURIComponent("" + item) + "&"; });
+        if (advancedSearch_Keyword !== undefined && advancedSearch_Keyword !== null)
+            url_ += "AdvancedSearch.Keyword=" + encodeURIComponent("" + advancedSearch_Keyword) + "&";
+        if (keyword !== undefined && keyword !== null)
+            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetGenreProductions(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetGenreProductions(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processGetGenreProductions(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface IPersonalClient {
     /**
      * Get profile details of currently logged in user.

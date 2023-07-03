@@ -8,6 +8,7 @@ import { IconType } from "react-icons";
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "@/context/AuthContextProvider";
+import { logo, logoWhite } from "@/assets";
 
 type NavItemsType = {
     label: string;
@@ -25,9 +26,9 @@ const navItems: NavItemsType[] = [
         hideProtected: false
     },
     {
-        label: "New",
+        label: "News",
         icon: FaFire,
-        path: "/new",
+        path: "/news",
         hideProtected: false
     },
     {
@@ -62,6 +63,12 @@ const SideBar = () => {
 
     return (
         <nav className="min-w-[90px] m-0 flex flex-col bg-[#202225] text-white shadow-lg fixed h-full">
+            <NavLink to={'/'}>
+                <div className="flex w-full h-[90px] py-1 px-2 mb-2 mt-2">
+                    <img src={logoWhite} />
+                </div>
+            </NavLink>
+
             {authState.isAuthenticated && (
                 <div className="avatar flex flex-col justify-center items-center">
                     <div className="rounded-box w-12 ring ring-primary ring-offset-base-100 ring-offset-2 mt-5">

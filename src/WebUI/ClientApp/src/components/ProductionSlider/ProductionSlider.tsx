@@ -36,8 +36,9 @@ const SliderPrevArrow = (props: HTMLProps<HTMLElement>) => {
 const ProductionSlider = () => {
     const axiosApi = useAxiosApi();
     const { data, isSuccess } = useGetProductionsQuery({
-        page: 1,
-        size: 21,
+        pageNumber: 1,
+        pageSize: 21,
+        orderBy: 'releaseDate desc'
     });
 
     const settings = {
