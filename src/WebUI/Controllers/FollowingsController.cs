@@ -1,6 +1,7 @@
 ﻿using CheckflixApp.Application.Followings.Commands.FollowUser;
 using CheckflixApp.Application.Followings.Commands.UnfollowUser;
 using CheckflixApp.Application.Followings.Queries.GetUserFollowingsCount;
+using CheckflixApp.Application.Followings.Queries.SearchUsers;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.WebUI.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,13 @@ public class FollowingsController : ApiControllerBase
     [OpenApiOperation("Get logged in user followings count.", "")]
     public async Task<IActionResult> GetUserFollowings() =>
         await Result.From(new GetFollowingsCountQuery())
+        .Bind(query => Mediator.Send(query))
+        .Match(response => Ok(response), errors => Problem(errors));
+
+    [HttpGet("users")]
+    [OpenApiOperation("Get logged in user followings count.", "")]
+    public async Task<IActionResult> UsersWithFollowing([FromQuery] SearchUsersQuery query) =>
+        await Result.From(query)
         .Bind(query => Mediator.Send(query))
         .Match(response => Ok(response), errors => Problem(errors));
 }

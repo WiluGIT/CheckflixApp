@@ -1,4 +1,6 @@
-﻿using CheckflixApp.Domain.Entities;
+﻿using CheckflixApp.Application.Followings.Common;
+using CheckflixApp.Application.Identity.Common;
+using CheckflixApp.Domain.Entities;
 
 namespace CheckflixApp.Application.Common.Interfaces;
 
@@ -42,4 +44,10 @@ public interface IFollowedPeopleRepository
     /// </summary>
     /// <param name="friendship">The FollowedPeople to be removed from the database.</param>
     void Remove(FollowedPeople followedPeople);
+
+    /// <summary>
+    /// Searches for users with following information.
+    /// </summary>
+    /// <param name="friendship">The UserDto with following information.</param>
+    Task<List<UserWithFollowingDto>> SearchUsersWithFollowingAsync(string searchQuery, string userId, int count);
 }

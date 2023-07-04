@@ -31,5 +31,5 @@ public interface IGenreRepository
     /// Gets all productions with specified genres.
     /// </summary>
     /// <returns>The collection of productions with genres.</returns>
-    Task<List<ProductionDto>> GetGenresProductions(GenresFilter filter);
+    Task<PaginatedList<ProductionDto>> GetGenresProductions(GenresFilter filter);
 }

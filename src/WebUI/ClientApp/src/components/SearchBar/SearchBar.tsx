@@ -64,7 +64,7 @@ const SearchBar = () => {
                     <div className='relative w-[27px] min-w-[27px] h-[40px] mr-4'>
                         <img src="https://image.tmdb.org/t/p/w500/vgpXmVaVyUL7GGiDeiK1mKEKzcX.jpg" className="rounded-lg shadow-lg" />
                     </div>
-                    <span>{el.title}</span>
+                    <span className='line-clamp-2'>{el.title}</span>
                 </a>
             ))}
             <NavLink to={{ pathname: '/search', search: `?${createSearchParams({ query: searchTerm })}` }}>
@@ -82,7 +82,7 @@ const SearchBar = () => {
                         type='text'
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className='h-full w-full overflow-hidden border-none outline-none bg-[initial] pl-4' placeholder='Search TV & Movies or People'
+                        className='h-full w-full overflow-hidden border-none outline-none bg-[initial] pl-4' placeholder='Search TV & Movies'
                         onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
                     />

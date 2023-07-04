@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CheckflixApp.Application.Common.Interfaces;
+using CheckflixApp.Application.Common.Mappings;
 using CheckflixApp.Application.Common.Models;
 using CheckflixApp.Application.Common.Specification;
 using CheckflixApp.Application.Genres.Common;
@@ -46,10 +43,32 @@ internal sealed class GenreRepository : GenericRepository<Genre>, IGenreReposito
         return genreIds.Count == existingGenres.Count;
     }
 
-    public async Task<List<ProductionDto>> GetGenresProductions(GenresFilter filter)
+    public async Task<PaginatedList<ProductionDto>> GetGenresProductions(GenresFilter filter)
     {
-        var productions = await (
-            from p in DbContext.Set<Production>()
+        if (!filter.GenreIds.Any())
+        {
+            return await (
+                from p in DbContext.Set<Production>().WithSpecification(new EntitiesByPaginationWithOrderFilterSpec<Production>(filter))
+                join pg in DbContext.Set<ProductionGenre>() on p.Id equals pg.ProductionId
+                join g in DbContext.Set<Genre>() on pg.GenreId equals g.Id
+                group new { p, g, pg } by p into grouped
+                select new ProductionDto
+                {
+                    ProductionId = grouped.Key.Id,
+                    Title = grouped.Key.Title,
+                    TmdbId = grouped.Key.TmdbId,
+                    ImdbId = grouped.Key.ImdbId,
+                    Overview = grouped.Key.Overview,
+                    Director = grouped.Key.Director,
+                    Keywords = grouped.Key.Keywords,
+                    ReleaseDate = grouped.Key.ReleaseDate,
+                    Genres = grouped.Select(pg => pg.g.Name).ToList()
+                }
+            ).PaginatedListAsync(filter.PageNumber, filter.PageSize);
+        }
+
+        return await (
+            from p in DbContext.Set<Production>().WithSpecification(new EntitiesByPaginationWithOrderFilterSpec<Production>(filter))
             join pg in DbContext.Set<ProductionGenre>() on p.Id equals pg.ProductionId
             join g in DbContext.Set<Genre>() on pg.GenreId equals g.Id
             where filter.GenreIds.Contains(g.Id)
@@ -66,7 +85,8 @@ internal sealed class GenreRepository : GenericRepository<Genre>, IGenreReposito
                 ReleaseDate = grouped.Key.ReleaseDate,
                 Genres = grouped.Select(pg => pg.g.Name).ToList()
             }
-        ).ToListAsync();
+        ).PaginatedListAsync(filter.PageNumber, filter.PageSize);
+
 
         //var productions = await DbContext.Set<Production>()
         //    .Join(
@@ -90,7 +110,5 @@ internal sealed class GenreRepository : GenericRepository<Genre>, IGenreReposito
         //        Genres = g.Select(pg => pg.Genre.Name).ToList()
         //    })
         //.ToListAsync();
-
-        return productions;
     }
 }

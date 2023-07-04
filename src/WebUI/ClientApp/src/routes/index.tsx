@@ -9,6 +9,7 @@ import AuthRedirect from '@/pages/Login/AuthRedirect';
 import Search from '@/pages/Search/Search';
 import News from '@/pages/News/News';
 import Genres from '@/pages/Genres/Genres';
+import People from '@/pages/People/People';
 
 
 // const NotFound = lazy(() => import('@/pages/404'));
@@ -50,6 +51,10 @@ const routeList: RouteObject[] = [
     {
         path: "genres",
         element: <WrapperRouteComponent auth={false}><Genres /></WrapperRouteComponent>,
+    },
+    {
+        path: "people",
+        element: <WrapperRouteComponent auth={false}><People /></WrapperRouteComponent>,
     },
 ];
 

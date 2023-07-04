@@ -46,8 +46,6 @@ internal sealed class ProductionRepository : GenericRepository<Production>, IPro
                           select genre.Name).ToArray()
             }).PaginatedListAsync(filter.PageNumber, filter.PageSize);
 
-
-
     public new async Task<Production?> GetByIdAsync(int id) => 
         await DbContext.Set<Production>()
             .Include(x => x.ProductionGenres)
