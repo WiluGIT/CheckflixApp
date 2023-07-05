@@ -1,4 +1,5 @@
-﻿using CheckflixApp.Application.Common.Interfaces;
+﻿using CheckflixApp.Application.ApplicationUserProductions.Common;
+using CheckflixApp.Application.Common.Interfaces;
 using CheckflixApp.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,18 +19,45 @@ internal sealed class ApplicationUserProductionRepository : GenericRepository<Ap
     {
     }
 
-    public async Task<List<Production>> GetUserProductions(string userId)
-    {
-        var productions = await (from applicationUserProduction in DbContext.Set<ApplicationUserProduction>().AsNoTracking()
-                                 join production in DbContext.Set<Production>().AsNoTracking()
-                                    on applicationUserProduction.ProductionId equals production.Id
-                                 where applicationUserProduction.ApplicationUserId.Equals(userId)
-                                 select production).ToListAsync();
-
-        return productions;
-    }
-
     public async Task<ApplicationUserProduction?> GetByIdAsync(string userId, int productionId) =>
         await DbContext.Set<ApplicationUserProduction>()
         .FirstOrDefaultAsync(x => x.ApplicationUserId.Equals(userId) && x.ProductionId.Equals(productionId));
+
+    public async Task<UserCollectionsDto> GetUserProductions(string userId)
+        => new UserCollectionsDto
+        {
+            Favourites = await (from p in DbContext.Set<Production>()
+                                join up in DbContext.Set<ApplicationUserProduction>() on p.Id equals up.ProductionId
+                                where up.ApplicationUserId == userId && up.Favourites == true
+                                select new ProductionBasicDto
+                                {
+                                    ProductionId = p.Id,
+                                    ReleaseDate = p.ReleaseDate,
+                                    ImdbId = p.ImdbId,
+                                    Title = p.Title,
+                                    TmdbId = p.TmdbId
+                                }).ToListAsync(),
+            ToWatch = await (from p in DbContext.Set<Production>()
+                             join up in DbContext.Set<ApplicationUserProduction>() on p.Id equals up.ProductionId
+                             where up.ApplicationUserId == userId && up.ToWatch == true
+                             select new ProductionBasicDto
+                             {
+                                 ProductionId = p.Id,
+                                 ReleaseDate = p.ReleaseDate,
+                                 ImdbId = p.ImdbId,
+                                 Title = p.Title,
+                                 TmdbId = p.TmdbId
+                             }).ToListAsync(),
+            Watched = await (from p in DbContext.Set<Production>()
+                             join up in DbContext.Set<ApplicationUserProduction>() on p.Id equals up.ProductionId
+                             where up.ApplicationUserId == userId && up.Watched == true
+                             select new ProductionBasicDto
+                             {
+                                 ProductionId = p.Id,
+                                 ReleaseDate = p.ReleaseDate,
+                                 ImdbId = p.ImdbId,
+                                 Title = p.Title,
+                                 TmdbId = p.TmdbId
+                             }).ToListAsync(),
+        };
 }

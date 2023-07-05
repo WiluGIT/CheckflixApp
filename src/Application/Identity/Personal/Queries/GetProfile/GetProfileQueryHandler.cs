@@ -25,7 +25,7 @@ public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, Result<Us
     {
         var userId = _currentUserService.UserId ?? string.Empty;
 
-        var userProfile = await _userService.GetAsync(userId, cancellationToken);
+        var userProfile = await _userService.GetAsync(query.UserId, cancellationToken);
 
         if (userProfile == null)
         {

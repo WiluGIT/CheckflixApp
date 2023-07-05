@@ -13,8 +13,8 @@ public class ApplicationUserProductionsController : ApiControllerBase
 {
     [HttpGet]
     [OpenApiOperation("Get collection of user productions.", "")]
-    public async Task<IActionResult> GetUserProductions() =>
-        await Result.From(new GetUserProductionsQuery())
+    public async Task<IActionResult> GetUserProductions([FromQuery] GetUserProductionsQuery query) =>
+        await Result.From(query)
         .Bind(query => Mediator.Send(query))
         .Match(response => Ok(response), errors => Problem(errors));
 

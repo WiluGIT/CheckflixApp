@@ -1,4 +1,6 @@
-﻿using CheckflixApp.Domain.Entities;
+﻿using CheckflixApp.Application.Followings.Common;
+using CheckflixApp.Application.Identity.Common;
+using CheckflixApp.Domain.Entities;
 
 namespace CheckflixApp.Application.Common.Interfaces;
 
@@ -12,7 +14,14 @@ public interface IFollowedPeopleRepository
     /// </summary>
     /// <param name="userId">The user identifier.</param>
     /// <returns>Collection of followings for specified users.</returns>
-    Task<IReadOnlyCollection<FollowedPeople>> GetUserFollowingsByIdAsync(string userId);
+    Task<List<UserWithFollowingDto>> GetUserFollowingsByIdAsync(string userId);
+
+    /// <summary>
+    /// Gets the user followers with the specified identifier.
+    /// </summary>
+    /// <param name="userId">The user identifier.</param>
+    /// <returns>Collection of followers for specified users.</returns>
+    Task<List<UserWithFollowingDto>> GetUserFollowersByIdAsync(string userId);
 
     /// <summary>
     /// Gets the user following with the specified observer and target identifier.
@@ -42,4 +51,10 @@ public interface IFollowedPeopleRepository
     /// </summary>
     /// <param name="friendship">The FollowedPeople to be removed from the database.</param>
     void Remove(FollowedPeople followedPeople);
+
+    /// <summary>
+    /// Searches for users with following information.
+    /// </summary>
+    /// <param name="friendship">The UserDto with following information.</param>
+    Task<List<UserWithFollowingDto>> SearchUsersWithFollowingAsync(string searchQuery, string userId, int count);
 }

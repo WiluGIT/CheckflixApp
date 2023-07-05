@@ -6,4 +6,4 @@ using MediatR;
 namespace CheckflixApp.Application.Followings.Queries.GetUserFollowingsCount;
 
 [Authorize]
-public record GetFollowingsCountQuery() : IRequest<Result<UserFollowingsCountDto>>;
+public record GetFollowingsCountQuery(string UserId) : IRequest<Result<UserFollowingsCountDto>>;

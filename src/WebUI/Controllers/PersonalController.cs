@@ -14,8 +14,8 @@ public class PersonalController : ApiControllerBase
 {
     [HttpGet("profile")]
     [OpenApiOperation("Get profile details of currently logged in user.", "")]
-    public async Task<IActionResult> GetProfileAsync(CancellationToken cancellationToken) =>
-        await Result.From(new GetProfileQuery())
+    public async Task<IActionResult> GetProfileAsync([FromQuery] GetProfileQuery query, CancellationToken cancellationToken) =>
+        await Result.From(query)
         .Bind(query => Mediator.Send(query))
         .Match(response => Ok(response), errors => Problem(errors));
 

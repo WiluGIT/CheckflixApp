@@ -11,6 +11,12 @@ public static class SpecificationBuilderExtensions
             .SearchByKeyword(filter.Keyword)
             .AdvancedSearch(filter.AdvancedSearch);
 
+    public static ISpecificationBuilder<T> SearchByWithOrder<T>(this ISpecificationBuilder<T> query, PaginationFilter filter) =>
+        query
+            .SearchByKeyword(filter.Keyword)
+            .AdvancedSearch(filter.AdvancedSearch)
+            .OrderBy(filter.OrderBy);
+
     public static ISpecificationBuilder<T> PaginateBy<T>(this ISpecificationBuilder<T> query, PaginationFilter filter)
     {
         if (filter.PageNumber <= 0)

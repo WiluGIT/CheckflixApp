@@ -21,12 +21,8 @@ const Home = () => {
     const axiosApi = useAxiosApi();
 
     const test = async () => {
-        console.log("AuthencitacteD: ", authState);
         try {
-            console.log("fetching")
-
             const response = await axiosApi.get('/Users');
-            console.log(response)
             // Handle the response data
             setUsers(response.data);
         } catch (error) {
@@ -36,7 +32,7 @@ const Home = () => {
 
     return (
         <div className="home">
-            Home page
+            {/* Home page
             <div>
                 {users?.map((el) => (
                     <div key={el.id} className="text-white">
@@ -48,12 +44,12 @@ const Home = () => {
             </div>
             <button onClick={() => test()}>Authstate</button>
             <button onClick={() => refresh()}>Refresh</button>
-            <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div>
+            <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div> */}
             <HeroSlider />
             <SectionHeading text={"New Trending Movies"} />
             <ProductionSlider />
             <SectionHeading text={"All Movies"} />
-            <ProductionList />
+            <ProductionList filters={{ pageNumber: 1, pageSize: 40 }} />
             <ScrollToTop />
         </div>
     );

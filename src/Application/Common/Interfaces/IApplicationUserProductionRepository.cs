@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CheckflixApp.Application.ApplicationUserProductions.Common;
 using CheckflixApp.Application.Common.Models;
+using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Domain.Entities;
 
 namespace CheckflixApp.Application.Common.Interfaces;
@@ -17,7 +19,7 @@ public interface IApplicationUserProductionRepository
     /// Gets application user productions.
     /// </summary>
     /// <returns>The collection of system application user productions.</returns>
-    Task<List<Production>> GetUserProductions(string userId);
+    Task<UserCollectionsDto> GetUserProductions(string userId);
 
     /// <summary>
     /// Inserts the specified ApplicationUserProduction to the database.

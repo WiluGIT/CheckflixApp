@@ -12,21 +12,17 @@ namespace CheckflixApp.Application.Followings.Queries.GetFollowingsCount;
 public class GetFollowingsCountQueryHandler : IRequestHandler<GetFollowingsCountQuery, Result<UserFollowingsCountDto>>
 {
     private readonly IUserService _userService;
-    private readonly ICurrentUserService _currentUserService;
     private readonly IStringLocalizer<GetFollowingsCountQueryHandler> _localizer;
 
-    public GetFollowingsCountQueryHandler(IUserService userService, ICurrentUserService currentUserService, IStringLocalizer<GetFollowingsCountQueryHandler> localizer)
+    public GetFollowingsCountQueryHandler(IUserService userService, IStringLocalizer<GetFollowingsCountQueryHandler> localizer)
     {
         _userService = userService;
-        _currentUserService = currentUserService;
         _localizer = localizer;
     }
 
     public async Task<Result<UserFollowingsCountDto>> Handle(GetFollowingsCountQuery query, CancellationToken cancellationToken)
     {
-        var userId = _currentUserService.UserId ?? string.Empty;
-
-        var followingCount = await _userService.GetFollowingCountAsync(userId, cancellationToken);
+        var followingCount = await _userService.GetFollowingCountAsync(query.UserId, cancellationToken);
 
         if (followingCount == null)
         {
