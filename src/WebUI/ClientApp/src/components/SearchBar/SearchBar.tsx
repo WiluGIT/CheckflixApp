@@ -77,7 +77,7 @@ const SearchBar = () => {
     return (
         <form onSubmit={(e) => handleInputSubmit(e)} className={`bg-search-gradient text-white border border-solid border-zinc-300/50 rounded-lg max-h-11 w-[300px] mt-9 relative rounded-b-none border-b-0 pt-[1px] ${hasMinLengthAndFocus() && "before:content-[''] before:h-[1px] before:left-0 before:absolute before:bottom-0 before:w-full before:z-50 before:bg-zinc-100/50"}`}>
             <div className="flex w-full h-[42px] items-center">
-                <div className='grow'>
+                <div className='grow mt-[1px]'>
                     <input
                         type='text'
                         value={searchTerm}
@@ -87,10 +87,10 @@ const SearchBar = () => {
                         onBlur={handleInputBlur}
                     />
                 </div>
-                {hasMinLength() && <div onClick={() => handleInputClear()} className='h-5 cursor-pointer text-xl -mr-1 z-50'>
+                {hasMinLength() && <div onClick={() => handleInputClear()} className='h-5 cursor-pointer text-xl -mr-1 z-50 mt-[1px]'>
                     <IoMdClose />
                 </div>}
-                <div className='h-6 mx-3 cursor-pointer text-2xl' onClick={(e) => handleInputSubmit(e)}>
+                <div className='h-6 mx-3 cursor-pointer text-2xl  mt-[1px]' onClick={(e) => handleInputSubmit(e)}>
                     <AiOutlineSearch />
                 </div>
             </div>

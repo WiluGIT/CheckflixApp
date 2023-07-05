@@ -1,4 +1,5 @@
 //import { useAuthContext } from "@/hooks/useAuthContext";
+import { useGetProductionsQuery } from "@/api/queries/production.query";
 import HeroSlider from "@/components/HeroSlider/HeroSlider";
 import ProductionList from "@/components/ProductionList/ProductionList";
 import ProductionSlider from "@/components/ProductionSlider/ProductionSlider";
@@ -8,6 +9,7 @@ import AuthContext from "@/context/AuthContextProvider";
 import useAxiosApi from "@/hooks/useAxiosApi";
 import useRefreshToken from "@/hooks/useRefreshToken";
 import { useContext, useState } from "react";
+import { Settings } from "react-slick";
 
 type User = {
     id: string;
@@ -19,7 +21,49 @@ const Home = () => {
     const [users, setUsers] = useState<User[]>();
     const refresh = useRefreshToken();
     const axiosApi = useAxiosApi();
-
+    const { data, isSuccess } = useGetProductionsQuery({
+        pageNumber: 1,
+        pageSize: 21,
+        orderBy: 'releaseDate desc'
+    });
+    const settings: Settings = {
+        className: "slider variable-width",
+        infinite: false,
+        slidesToShow: 1,
+        slidesToScroll: 2,
+        variableWidth: true,
+        initialSlide: 0,
+        responsive: [
+            {
+                breakpoint: 1550,
+                settings: {
+                    slidesToShow: 5,
+                    slidesToScroll: 5,
+                }
+            },
+            {
+                breakpoint: 1285,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                }
+            },
+            {
+                breakpoint: 850,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2
+                }
+            },
+            {
+                breakpoint: 630,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
+    };
     const test = async () => {
         try {
             const response = await axiosApi.get('/Users');
@@ -47,7 +91,7 @@ const Home = () => {
             <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div> */}
             <HeroSlider />
             <SectionHeading text={"New Trending Movies"} />
-            <ProductionSlider />
+            <ProductionSlider data={data?.items || []} settings={settings} />
             <SectionHeading text={"All Movies"} />
             <ProductionList filters={{ pageNumber: 1, pageSize: 40 }} />
             <ScrollToTop />

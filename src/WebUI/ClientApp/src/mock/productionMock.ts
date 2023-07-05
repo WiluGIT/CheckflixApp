@@ -1,4 +1,4 @@
-import { Production } from "@/types/production"
+import { BasicProduction, Production } from "@/types/production"
 
 const productions: Production[] = [
     {
@@ -344,4 +344,98 @@ const productions: Production[] = [
     }
 ]
 
-export { productions }
+const basicProductionMock: BasicProduction[] = [
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    }
+    ,
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    },
+    {
+        productionId: 0,
+        tmdbId: "0",
+        imdbId: "-",
+        title: "0",
+        releaseDate: new Date(),
+        poster: "0",
+        isMock: true,
+    }
+];
+
+export { productions, basicProductionMock }

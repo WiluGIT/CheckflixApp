@@ -1,5 +1,5 @@
 import { ServerError } from "@/types/api";
-import { GetProductionsRequest, GetProductionsResponse, Production } from "@/types/production";
+import { BasicProduction, GetProductionsRequest, GetProductionsResponse, Production } from "@/types/production";
 import { UseInfiniteQueryOptions, UseQueryOptions, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios, { AxiosInstance } from "axios";
 import { getProductions } from "../services/production.service";
@@ -9,7 +9,7 @@ import { productions } from "@/mock/productionMock";
 export const useGetProductionsQuery = (
     params: PaginationFilter = { pageNumber: 1, pageSize: 10 },
     enabledCondition: boolean = true,
-    queryOptions: UseQueryOptions<PaginationResponse<GetProductionsResponse>> = {},
+    queryOptions: UseQueryOptions<PaginationResponse<BasicProduction>> = {},
     axiosInstance?: AxiosInstance,
 ) => {
     const query = useQuery({
@@ -67,7 +67,6 @@ export const useGetProductionsInfiniteQuery = (
             return prevData.hasNextPage ? prevData.pageNumber + 1 : undefined;
         },
         queryFn: async ({ pageParam = 1 }) => {
-            console.log("Fetching data for search term: ", params["AdvancedSearch.Keyword"]);
             return await getProductions({ ...params, pageNumber: pageParam })
         },
         refetchOnMount: true,

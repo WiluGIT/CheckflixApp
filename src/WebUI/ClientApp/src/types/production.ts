@@ -33,5 +33,7 @@ export interface BasicProduction {
     imdbId: string;
     title: string;
     releaseDate: Date;
+    poster?: string;
+    isMock?: boolean;
 }
 

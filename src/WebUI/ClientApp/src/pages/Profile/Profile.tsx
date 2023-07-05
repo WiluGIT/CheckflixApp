@@ -3,13 +3,15 @@ import { useGetProfileQuery } from "@/api/queries/personal.query";
 import { useGetUserCollectionsQuery } from "@/api/queries/userProductions.query";
 import FollowingCard from "@/components/FollowingCard/FollowingCard";
 import FollowingModal from "@/components/Modal/FollowingModal";
-import Modal from "@/components/Modal/Modal";
 import ProductionSlider from "@/components/ProductionSlider/ProductionSlider";
 import SectionHeading from "@/components/SectionHeading/SectionHeading";
+import useAxiosApi from "@/hooks/useAxiosApi";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { Settings } from "react-slick";
 
 const Profile = () => {
+    const axiosApi = useAxiosApi();
     const { userId } = useParams();
     const [openFollowingModal, setOpenFollowingModal] = useState(false);
     const [openFollowersModal, setOpenFollowersModal] = useState(false);
@@ -24,6 +26,15 @@ const Profile = () => {
     const refetchData = () => {
         refetchFollowingCount();
         refetchFollowing();
+    };
+
+    const settings: Settings = {
+        className: "slider variable-width",
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 2,
+        variableWidth: true,
+        initialSlide: 0,
     };
 
     return (
@@ -47,11 +58,11 @@ const Profile = () => {
             </div>
             <div className="divider mt-10"></div>
             <SectionHeading text={"Favourite"} />
-            <ProductionSlider />
+            <ProductionSlider data={collectionsData?.favourites || []} settings={settings} />
             <SectionHeading text={"Watched"} />
-            <ProductionSlider />
+            <ProductionSlider data={collectionsData?.watched || []} settings={settings} />
             <SectionHeading text={"To Watch"} />
-            <ProductionSlider />
+            <ProductionSlider data={collectionsData?.toWatch || []} settings={settings} />
             <FollowingModal open={openFollowingModal} onClose={handleFollowingToggle} enableClickOutside={true} data={followingData} isFollowing={true} refetch={refetchData} />
             <FollowingModal open={openFollowersModal} onClose={handleFollowersToggle} enableClickOutside={true} data={followersData} />
         </div>
