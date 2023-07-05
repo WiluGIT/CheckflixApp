@@ -1,4 +1,5 @@
-﻿using CheckflixApp.Application.Common.Security;
+﻿using CheckflixApp.Application.ApplicationUserProductions.Common;
+using CheckflixApp.Application.Common.Security;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using CheckflixApp.Domain.Entities;
 using MediatR;
@@ -6,4 +7,4 @@ using MediatR;
 namespace CheckflixApp.Application.ApplicationUserProductions.Queries.GetUserProductionsQuery;
 
 [Authorize]
-public record GetUserProductionsQuery() : IRequest<Result<List<Production>>>;
+public record GetUserProductionsQuery(string UserId) : IRequest<Result<UserCollectionsDto>>;

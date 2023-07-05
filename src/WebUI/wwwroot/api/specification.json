@@ -421,6 +421,17 @@
         ],
         "summary": "Get collection of user productions.",
         "operationId": "ApplicationUserProductions_GetUserProductions",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -586,7 +597,18 @@
           "Followings"
         ],
         "summary": "Get logged in user followings count.",
-        "operationId": "Followings_GetUserFollowings",
+        "operationId": "Followings_GetUserFollowingsCount",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -627,6 +649,72 @@
               "format": "int32"
             },
             "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Followings/followers": {
+      "get": {
+        "tags": [
+          "Followings"
+        ],
+        "summary": "Get logged in user followings count.",
+        "operationId": "Followings_GetUserFollowers",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Followings/following": {
+      "get": {
+        "tags": [
+          "Followings"
+        ],
+        "summary": "Get logged in user followings count.",
+        "operationId": "Followings_GetUserFollowing",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
           }
         ],
         "responses": {
@@ -769,124 +857,6 @@
         }
       }
     },
-    "/api/Genres/test": {
-      "get": {
-        "tags": [
-          "Genres"
-        ],
-        "summary": "Get all production genres.",
-        "operationId": "Genres_GetGenreProductionstest",
-        "parameters": [
-          {
-            "name": "genreIds",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "nullable": true,
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "x-position": 1
-          },
-          {
-            "name": "GenreIds",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "nullable": true,
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            },
-            "x-position": 2
-          },
-          {
-            "name": "PageNumber",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 3
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 4
-          },
-          {
-            "name": "OrderBy",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "nullable": true,
-              "items": {
-                "type": "string"
-              }
-            },
-            "x-position": 5
-          },
-          {
-            "name": "AdvancedSearch.Fields",
-            "in": "query",
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "nullable": true,
-              "items": {
-                "type": "string"
-              }
-            },
-            "x-position": 6
-          },
-          {
-            "name": "AdvancedSearch.Keyword",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 7
-          },
-          {
-            "name": "Keyword",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 8
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Personal/profile": {
       "get": {
         "tags": [
@@ -894,6 +864,17 @@
         ],
         "summary": "Get profile details of currently logged in user.",
         "operationId": "Personal_GetProfile",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -1539,39 +1520,6 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Users/search": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Get list of all users.",
-        "operationId": "Users_SearchUsers",
-        "parameters": [
-          {
-            "name": "query",
-            "in": "query",
             "schema": {
               "type": "string",
               "nullable": true

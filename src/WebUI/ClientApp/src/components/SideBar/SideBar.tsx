@@ -71,10 +71,13 @@ const SideBar = () => {
 
             {authState.isAuthenticated && (
                 <div className="avatar flex flex-col justify-center items-center">
-                    <div className="rounded-box w-12 ring ring-primary ring-offset-base-100 ring-offset-2 mt-5">
-                        <img src="http://daisyui.com/tailwind-css-component-profile-3@56w.png" />
-                    </div>
-                    {/* <span>{authState.user?.email}</span> */}
+                    <NavLink to={`/profile/${authState.user?.id}`}>
+                        {({ isActive }) => {
+                            return <div className={`transition-all duration-300 ease-linear ${isActive ? "ring-primary" : "ring-accent"} w-14 hover:ring-primary rounded-box ring  ring-offset-base-100 ring-offset-2 mt-5 overflow-hidden`}>
+                                <img src="http://daisyui.com/tailwind-css-component-profile-3@56w.png" />
+                            </div>
+                        }}
+                    </NavLink>
                     <div className="w-[90%] h-10 text-7xl">
                         <div className="divider"><SlArrowUp /></div>
                     </div>

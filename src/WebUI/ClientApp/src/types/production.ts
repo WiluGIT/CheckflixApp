@@ -27,3 +27,11 @@ export interface Production {
     genres: string[];
 }
 
+export interface BasicProduction {
+    productionId: number;
+    tmdbId: string;
+    imdbId: string;
+    title: string;
+    releaseDate: Date;
+}
+

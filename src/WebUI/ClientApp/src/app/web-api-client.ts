@@ -619,8 +619,9 @@ export class TodoListsClient implements ITodoListsClient {
 export interface IApplicationUserProductionsClient {
     /**
      * Get collection of user productions.
+     * @param userId (optional) 
      */
-    getUserProductions(): Observable<FileResponse>;
+    getUserProductions(userId: string | null | undefined): Observable<FileResponse>;
     /**
      * Create application user production.
      */
@@ -646,9 +647,12 @@ export class ApplicationUserProductionsClient implements IApplicationUserProduct
 
     /**
      * Get collection of user productions.
+     * @param userId (optional) 
      */
-    getUserProductions(): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/ApplicationUserProductions";
+    getUserProductions(userId: string | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/ApplicationUserProductions?";
+        if (userId !== undefined && userId !== null)
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -832,14 +836,25 @@ export interface IFollowingsClient {
     unfollowUser(userId: string | null): Observable<FileResponse>;
     /**
      * Get logged in user followings count.
+     * @param userId (optional) 
      */
-    getUserFollowings(): Observable<FileResponse>;
+    getUserFollowingsCount(userId: string | null | undefined): Observable<FileResponse>;
     /**
      * Get logged in user followings count.
      * @param searchTerm (optional) 
      * @param count (optional) 
      */
     usersWithFollowing(searchTerm: string | null | undefined, count: number | undefined): Observable<FileResponse>;
+    /**
+     * Get logged in user followings count.
+     * @param userId (optional) 
+     */
+    getUserFollowers(userId: string | null | undefined): Observable<FileResponse>;
+    /**
+     * Get logged in user followings count.
+     * @param userId (optional) 
+     */
+    getUserFollowing(userId: string | null | undefined): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -973,9 +988,12 @@ export class FollowingsClient implements IFollowingsClient {
 
     /**
      * Get logged in user followings count.
+     * @param userId (optional) 
      */
-    getUserFollowings(): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Followings/follow-count";
+    getUserFollowingsCount(userId: string | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Followings/follow-count?";
+        if (userId !== undefined && userId !== null)
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -987,11 +1005,11 @@ export class FollowingsClient implements IFollowingsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetUserFollowings(response_);
+            return this.processGetUserFollowingsCount(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetUserFollowings(response_ as any);
+                    return this.processGetUserFollowingsCount(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse>;
                 }
@@ -1000,7 +1018,7 @@ export class FollowingsClient implements IFollowingsClient {
         }));
     }
 
-    protected processGetUserFollowings(response: HttpResponseBase): Observable<FileResponse> {
+    protected processGetUserFollowingsCount(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1088,6 +1106,122 @@ export class FollowingsClient implements IFollowingsClient {
         }
         return _observableOf(null as any);
     }
+
+    /**
+     * Get logged in user followings count.
+     * @param userId (optional) 
+     */
+    getUserFollowers(userId: string | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Followings/followers?";
+        if (userId !== undefined && userId !== null)
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserFollowers(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserFollowers(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processGetUserFollowers(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    /**
+     * Get logged in user followings count.
+     * @param userId (optional) 
+     */
+    getUserFollowing(userId: string | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Followings/following?";
+        if (userId !== undefined && userId !== null)
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserFollowing(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserFollowing(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processGetUserFollowing(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 export interface IGenresClient {
@@ -1106,18 +1240,6 @@ export interface IGenresClient {
      * @param keyword (optional) 
      */
     getGenreProductions(genreIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined, orderBy: string[] | null | undefined, advancedSearch_Fields: string[] | null | undefined, advancedSearch_Keyword: string | null | undefined, keyword: string | null | undefined): Observable<FileResponse>;
-    /**
-     * Get all production genres.
-     * @param genreIds (optional) 
-     * @param genreIds (optional) 
-     * @param pageNumber (optional) 
-     * @param pageSize (optional) 
-     * @param orderBy (optional) 
-     * @param advancedSearch_Fields (optional) 
-     * @param advancedSearch_Keyword (optional) 
-     * @param keyword (optional) 
-     */
-    getGenreProductionstest(genreIds: number[] | null | undefined, genreIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined, orderBy: string[] | null | undefined, advancedSearch_Fields: string[] | null | undefined, advancedSearch_Keyword: string | null | undefined, keyword: string | null | undefined): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -1267,96 +1389,14 @@ export class GenresClient implements IGenresClient {
         }
         return _observableOf(null as any);
     }
-
-    /**
-     * Get all production genres.
-     * @param genreIds (optional) 
-     * @param genreIds (optional) 
-     * @param pageNumber (optional) 
-     * @param pageSize (optional) 
-     * @param orderBy (optional) 
-     * @param advancedSearch_Fields (optional) 
-     * @param advancedSearch_Keyword (optional) 
-     * @param keyword (optional) 
-     */
-    getGenreProductionstest(genreIds: number[] | null | undefined, genreIds: number[] | null | undefined, pageNumber: number | undefined, pageSize: number | undefined, orderBy: string[] | null | undefined, advancedSearch_Fields: string[] | null | undefined, advancedSearch_Keyword: string | null | undefined, keyword: string | null | undefined): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Genres/test?";
-        if (genreIds !== undefined && genreIds !== null)
-            genreIds && genreIds.forEach(item => { url_ += "genreIds=" + encodeURIComponent("" + item) + "&"; });
-        if (genreIds !== undefined && genreIds !== null)
-            genreIds && genreIds.forEach(item => { url_ += "GenreIds=" + encodeURIComponent("" + item) + "&"; });
-        if (pageNumber === null)
-            throw new Error("The parameter 'pageNumber' cannot be null.");
-        else if (pageNumber !== undefined)
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === null)
-            throw new Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (orderBy !== undefined && orderBy !== null)
-            orderBy && orderBy.forEach(item => { url_ += "OrderBy=" + encodeURIComponent("" + item) + "&"; });
-        if (advancedSearch_Fields !== undefined && advancedSearch_Fields !== null)
-            advancedSearch_Fields && advancedSearch_Fields.forEach(item => { url_ += "AdvancedSearch.Fields=" + encodeURIComponent("" + item) + "&"; });
-        if (advancedSearch_Keyword !== undefined && advancedSearch_Keyword !== null)
-            url_ += "AdvancedSearch.Keyword=" + encodeURIComponent("" + advancedSearch_Keyword) + "&";
-        if (keyword !== undefined && keyword !== null)
-            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/octet-stream"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetGenreProductionstest(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetGenreProductionstest(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
-        }));
-    }
-
-    protected processGetGenreProductionstest(response: HttpResponseBase): Observable<FileResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
 }
 
 export interface IPersonalClient {
     /**
      * Get profile details of currently logged in user.
+     * @param userId (optional) 
      */
-    getProfile(): Observable<FileResponse>;
+    getProfile(userId: string | null | undefined): Observable<FileResponse>;
     /**
      * Update profile details of currently logged in user.
      * @param phoneNumber (optional) 
@@ -1390,9 +1430,12 @@ export class PersonalClient implements IPersonalClient {
 
     /**
      * Get profile details of currently logged in user.
+     * @param userId (optional) 
      */
-    getProfile(): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Personal/profile";
+    getProfile(userId: string | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Personal/profile?";
+        if (userId !== undefined && userId !== null)
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -2465,11 +2508,6 @@ export interface IUsersClient {
      */
     getById(id: string | null): Observable<FileResponse>;
     /**
-     * Get list of all users.
-     * @param query (optional) 
-     */
-    searchUsers(query: string | null | undefined): Observable<FileResponse>;
-    /**
      * Get a user's roles.
      */
     getRoles(id: string | null): Observable<FileResponse>;
@@ -2666,64 +2704,6 @@ export class UsersClient implements IUsersClient {
     }
 
     protected processGetById(response: HttpResponseBase): Observable<FileResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    /**
-     * Get list of all users.
-     * @param query (optional) 
-     */
-    searchUsers(query: string | null | undefined): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Users/search?";
-        if (query !== undefined && query !== null)
-            url_ += "query=" + encodeURIComponent("" + query) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/octet-stream"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSearchUsers(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSearchUsers(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
-        }));
-    }
-
-    protected processSearchUsers(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :

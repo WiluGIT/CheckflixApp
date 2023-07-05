@@ -1,4 +1,5 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
+﻿using System;
+using Ardalis.Specification.EntityFrameworkCore;
 using AutoMapper;
 using CheckflixApp.Application.Common.FileStorage;
 using CheckflixApp.Application.Common.Interfaces;
@@ -77,17 +78,12 @@ internal partial class UserService : IUserService
                 { 
                     Id = x.Id,
                     Email= x.Email,
-                    EmailConfirmed= x.EmailConfirmed,
-                    ImageUrl= x.ImageUrl,
-                    IsActive = x.IsActive,
-                    PhoneNumber = x.PhoneNumber,
                     UserName= x.UserName,
                 })
                 .ToListAsync();
 
     public async Task<UserFollowingsCountDto?> GetFollowingCountAsync(string userId, CancellationToken cancellationToken)
-    {
-        var userFollowingsCountDto = await _userManager.Users
+        => await _userManager.Users
             .Include(x => x.Followers)
             .Include(x => x.Following)
             .AsNoTracking()
@@ -99,9 +95,6 @@ internal partial class UserService : IUserService
             })
             .FirstOrDefaultAsync(cancellationToken);
 
-        return userFollowingsCountDto;
-    }
-
     public async Task<UserDetailsDto?> GetAsync(string userId, CancellationToken cancellationToken) =>
         await _userManager.Users
             .AsNoTracking()
@@ -110,10 +103,7 @@ internal partial class UserService : IUserService
             {
                 Id = x.Id,
                 Email = x.Email,
-                EmailConfirmed = x.EmailConfirmed,
                 ImageUrl = x.ImageUrl,
-                IsActive = x.IsActive,
-                PhoneNumber = x.PhoneNumber,
                 UserName = x.UserName,
             })
             .FirstOrDefaultAsync(cancellationToken);
@@ -131,10 +121,7 @@ internal partial class UserService : IUserService
             {
                 Id = x.Id,
                 Email = x.Email,
-                EmailConfirmed = x.EmailConfirmed,
                 ImageUrl = x.ImageUrl,
-                IsActive = x.IsActive,
-                PhoneNumber = x.PhoneNumber,
                 UserName = x.UserName,
             })
             .ToListAsync(cancellationToken);

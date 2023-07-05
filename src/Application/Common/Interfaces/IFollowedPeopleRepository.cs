@@ -14,7 +14,14 @@ public interface IFollowedPeopleRepository
     /// </summary>
     /// <param name="userId">The user identifier.</param>
     /// <returns>Collection of followings for specified users.</returns>
-    Task<IReadOnlyCollection<FollowedPeople>> GetUserFollowingsByIdAsync(string userId);
+    Task<List<UserWithFollowingDto>> GetUserFollowingsByIdAsync(string userId);
+
+    /// <summary>
+    /// Gets the user followers with the specified identifier.
+    /// </summary>
+    /// <param name="userId">The user identifier.</param>
+    /// <returns>Collection of followers for specified users.</returns>
+    Task<List<UserWithFollowingDto>> GetUserFollowersByIdAsync(string userId);
 
     /// <summary>
     /// Gets the user following with the specified observer and target identifier.

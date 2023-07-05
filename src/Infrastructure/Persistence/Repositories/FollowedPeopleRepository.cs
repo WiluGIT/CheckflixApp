@@ -2,6 +2,7 @@
 using CheckflixApp.Application.Followings.Common;
 using CheckflixApp.Domain.Entities;
 using CheckflixApp.Infrastructure.Identity;
+using MailKit.Search;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,11 +24,29 @@ internal sealed class FollowedPeopleRepository : GenericRepository<FollowedPeopl
         _userManager = userManager;
     }
 
-    public async Task<IReadOnlyCollection<FollowedPeople>> GetUserFollowingsByIdAsync(string userId) =>
-        await DbContext.Set<FollowedPeople>()
-            .AsNoTracking()
-            .Where(x => x.ObserverId.Equals(userId))
-            .ToListAsync();
+    public async Task<List<UserWithFollowingDto>> GetUserFollowingsByIdAsync(string userId)
+        => await (
+                from au in _userManager.Users
+                where au.Followers.Any(x => x.ObserverId == userId)
+                select au)
+                .Select(au => new UserWithFollowingDto
+                {
+                    Id = au.Id,
+                    UserName = au.UserName ?? string.Empty,
+                    IsFollowing = true
+                }).ToListAsync();
+
+    public async Task<List<UserWithFollowingDto>> GetUserFollowersByIdAsync(string userId)
+    => await (
+            from au in _userManager.Users
+            where au.Following.Any(x => x.TargetId == userId)
+            select au)
+            .Select(au => new UserWithFollowingDto
+            {
+                Id = au.Id,
+                UserName = au.UserName ?? string.Empty,
+                IsFollowing = false
+            }).ToListAsync();
 
     public async Task<FollowedPeople?> GetFollowing(string observerId, string targetId) =>
         await DbContext.Set<FollowedPeople>()

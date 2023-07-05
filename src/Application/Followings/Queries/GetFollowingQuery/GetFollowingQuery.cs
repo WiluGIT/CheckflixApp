@@ -3,7 +3,7 @@ using CheckflixApp.Application.Followings.Common;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using MediatR;
 
-namespace CheckflixApp.Application.Followings.Queries.GetUserFollowingsCount;
+namespace CheckflixApp.Application.Followings.Queries.GetFollowingQuery;
 
 [Authorize]
-public record GetFollowingsCountQuery(string UserId) : IRequest<Result<UserFollowingsCountDto>>;
+public record GetFollowingQuery(string UserId) : IRequest<Result<List<UserWithFollowingDto>>>;
