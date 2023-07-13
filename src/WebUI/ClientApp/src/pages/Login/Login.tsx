@@ -3,12 +3,14 @@ import AuthContext from "@/context/AuthContextProvider";
 import { formatServerError } from "@/lib/helpers";
 import { loginSchema } from "@/lib/validation";
 import { ServerError, ServerResponse } from "@/types/api";
-import { LoginRequest, LoginResponse } from "@/types/auth";
+import { LoginRequest, LoginResponse, UserData } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { BsDiscord } from 'react-icons/bs';
+import { GetProfileQueryRequest } from "@/types/profile";
+import { getProfile } from "@/api/services/personal.service";
 
 type LoginInputs = {
     email: string,
@@ -26,8 +28,26 @@ const Login = () => {
         isLoading,
         mutateAsync,
     } = useLoginMutation({
-        onSuccess: (response: LoginResponse) => {
-            globalLogInDispatch(response);
+        onSuccess: async (response: LoginResponse) => {
+            const params: GetProfileQueryRequest = {
+                accessToken: response.token
+            };
+
+            await getProfile(params)
+                .then((data) => {
+                    const userData: UserData = {
+                        accessToken: response.token,
+                        id: data?.id || '',
+                        userName: data?.userName || '',
+                        email: data?.email || '',
+                        imageUrl: data?.imageUrl || '',
+                        roles: data?.roles || []
+                    };
+                    globalLogInDispatch(userData);
+                })
+                .catch((error: ServerError) => {
+                    toast.error(formatServerError(error), { theme: 'colored' });
+                });
         },
         onError: (error: ServerError) => {
             toast.error(formatServerError(error), { theme: 'colored' });

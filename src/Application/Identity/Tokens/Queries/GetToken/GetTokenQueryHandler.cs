@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace CheckflixApp.Application.Identity.Tokens.Queries.GetToken;
-public class GetTokenQueryHandler : IRequestHandler<GetTokenQuery, Result<UserInfoDto>>
+public class GetTokenQueryHandler : IRequestHandler<GetTokenQuery, Result<AccessTokenDto>>
 {
     private readonly ITokenService _tokenService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -31,7 +31,7 @@ public class GetTokenQueryHandler : IRequestHandler<GetTokenQuery, Result<UserIn
         _localizer = localizer;
     }
 
-    public async Task<Result<UserInfoDto>> Handle(GetTokenQuery query, CancellationToken cancellationToken)
+    public async Task<Result<AccessTokenDto>> Handle(GetTokenQuery query, CancellationToken cancellationToken)
     {
         var ipAddress = _httpContextAccessor.HttpContext.Request.Headers.ContainsKey("X-Forwarded-For")
             ? _httpContextAccessor.HttpContext.Request.Headers["X-Forwarded-For"].ToString()
@@ -51,11 +51,8 @@ public class GetTokenQueryHandler : IRequestHandler<GetTokenQuery, Result<UserIn
             return tokenResult.Errors;
         }
 
-        var userInfo = _mapper.Map<UserInfoDto>(user);
-        userInfo.AccessToken = tokenResult.Value.Token;
-
         _tokenService.SetRefreshTokenHttpOnlyCookie(tokenResult.Value.RefreshToken, tokenResult.Value.RefreshTokenExpiryTime);
 
-        return userInfo;
+        return new AccessTokenDto(tokenResult.Value.Token);
     }
 }

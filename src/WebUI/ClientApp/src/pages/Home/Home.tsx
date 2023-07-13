@@ -89,6 +89,7 @@ const Home = () => {
             <button onClick={() => test()}>Authstate</button>
             <button onClick={() => refresh()}>Refresh</button>
             <div>User Data: {JSON.stringify(authState.isAuthenticated)}</div> */}
+            {/* {JSON.stringify(data)} */}
             <HeroSlider />
             <SectionHeading text={"New Trending Movies"} />
             <ProductionSlider data={data?.items || []} settings={settings} />

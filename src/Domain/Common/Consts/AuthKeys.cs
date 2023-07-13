@@ -13,4 +13,5 @@ public static class AuthKeys
     public const string RedirectUri = "redirect_uri";
     public const string Scope = "scope";
     public const string AuthorizationCode = "authorization_code";
+    public const string Roles = "Roles";
 }

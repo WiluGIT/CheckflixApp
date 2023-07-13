@@ -1,5 +1,6 @@
 export interface GetProfileQueryRequest {
-    userId: string;
+    userId?: string;
+    accessToken?: string;
 }
 
 export interface GetProfileQueryResponse {
@@ -7,4 +8,5 @@ export interface GetProfileQueryResponse {
     userName: string;
     email: string;
     imageUrl: string;
+    roles: string[];
 }

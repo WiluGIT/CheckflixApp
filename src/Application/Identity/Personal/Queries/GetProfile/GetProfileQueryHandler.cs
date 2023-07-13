@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace CheckflixApp.Application.Identity.Personal.Queries.GetProfile;
 
-public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, Result<UserDetailsDto>>
+public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, Result<UserDetailsWithRolesDto>>
 {
     private readonly IUserService _userService;
     private readonly ICurrentUserService _currentUserService;
@@ -21,11 +21,11 @@ public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, Result<Us
         _localizer = localizer;
     }
 
-    public async Task<Result<UserDetailsDto>> Handle(GetProfileQuery query, CancellationToken cancellationToken)
+    public async Task<Result<UserDetailsWithRolesDto>> Handle(GetProfileQuery query, CancellationToken cancellationToken)
     {
-        var userId = _currentUserService.UserId ?? string.Empty;
+        var userId = query.UserId ?? _currentUserService.UserId ?? string.Empty;
 
-        var userProfile = await _userService.GetAsync(query.UserId, cancellationToken);
+        var userProfile = await _userService.GetWithRolesAsync(userId, cancellationToken);
 
         if (userProfile == null)
         {

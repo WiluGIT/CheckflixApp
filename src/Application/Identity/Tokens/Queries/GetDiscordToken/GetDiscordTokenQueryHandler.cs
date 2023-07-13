@@ -71,9 +71,6 @@ public class GetDiscordTokenQueryHandler : IRequestHandler<GetDiscordTokenQuery,
 
         var queryParams = new Dictionary<string, string?>()
         {
-            { AuthKeys.Id, user.Id },
-            { AuthKeys.UserName, user?.UserName ?? string.Empty },
-            { AuthKeys.Email, user?.Email ?? string.Empty },
             { AuthKeys.AccessToken, tokenResult.Value.Token },
         };
 

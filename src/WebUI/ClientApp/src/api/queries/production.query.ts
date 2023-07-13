@@ -16,7 +16,7 @@ export const useGetProductionsQuery = (
         queryKey: ['productions', [{ ...params }]],
         queryFn: async () => {
             const response = await getProductions(params, axiosInstance);
-            const productionArray: Production[] = response.items;
+            // const productionArray: any = response.items;
 
             // for (const movie of productionArray) {
             //     const response = await fetch(`https://api.themoviedb.org/3/movie/${movie.tmdbId}?api_key=61a4454e6812a635ebe4b24f2af2c479`, {

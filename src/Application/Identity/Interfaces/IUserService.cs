@@ -22,7 +22,8 @@ public interface IUserService
     Task<int> GetCountAsync(CancellationToken cancellationToken);
     Task<UserFollowingsCountDto?> GetFollowingCountAsync(string userId, CancellationToken cancellationToken);
     Task<UserDetailsDto?> GetAsync(string userId, CancellationToken cancellationToken);
-    Task<Result<List<UserRoleDto>>> GetRolesAsync(string userId, CancellationToken cancellationToken);    
+    Task<UserDetailsWithRolesDto?> GetWithRolesAsync(string userId, CancellationToken cancellationToken);
+    Task<Result<List<UserRoleDto>>> GetRolesAsync(string userId, CancellationToken cancellationToken);
     Task<Result<string>> AssignRolesAsync(string userId, UserRolesRequest request, CancellationToken cancellationToken);
     Task<Result> ToggleUserStatusAsync(ToggleUserStatusCommand command, CancellationToken cancellationToken);
     Task<Result<string>> GetOrCreateFromPrincipalAsync(ClaimsPrincipal principal);

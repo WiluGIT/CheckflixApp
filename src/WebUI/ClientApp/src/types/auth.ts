@@ -4,10 +4,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    accessToken: string;
-    email: string;
-    id: string;
-    userName: string;
+    token: string;
 }
 
 export interface RefreshTokenRequest {
@@ -43,6 +40,8 @@ export type UserData = {
     id: string;
     userName: string;
     email: string;
+    imageUrl: string;
+    roles: string[];
 };
 
 export type AuthProviderProps = {

@@ -108,6 +108,25 @@ internal partial class UserService : IUserService
             })
             .FirstOrDefaultAsync(cancellationToken);
 
+    public async Task<UserDetailsWithRolesDto?> GetWithRolesAsync(string userId, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        return new UserDetailsWithRolesDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            ImageUrl = user.ImageUrl,
+            UserName = user.UserName,
+            Roles = await _userManager.GetRolesAsync(user)
+        };
+    }
+
     public async Task<IdentityUser?> GetUserByEmailAsync(string email) =>
         await _userManager.FindByEmailAsync(email.Trim().Normalize());
 

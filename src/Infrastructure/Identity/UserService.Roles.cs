@@ -1,5 +1,4 @@
-﻿using CheckflixApp.Application.Common.Exceptions;
-using CheckflixApp.Application.Identity.Common;
+﻿using CheckflixApp.Application.Identity.Common;
 using CheckflixApp.Domain.Common.Primitives;
 using CheckflixApp.Domain.Common.Primitives.Result;
 using Microsoft.EntityFrameworkCore;

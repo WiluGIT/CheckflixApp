@@ -1,5 +1,7 @@
+import { getProfile } from "@/api/services/personal.service";
 import AuthContext from "@/context/AuthContextProvider";
 import { UserData } from "@/types/auth";
+import { GetProfileQueryRequest } from "@/types/profile";
 import { useContext, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -8,14 +10,25 @@ const AuthRedirect = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
-        const userData: UserData = {
-            accessToken: searchParams.get("AccessToken") || '',
-            id: searchParams.get("Id") || '',
-            userName: searchParams.get("UserName") || '',
-            email: searchParams.get("Email") || ''
-        };
+        const getProfileData = async () => {
+            const params: GetProfileQueryRequest = {
+                accessToken: searchParams.get("AccessToken") || ''
+            };
 
-        globalLogInDispatch(userData);
+            const data = await getProfile(params);
+            const userData: UserData = {
+                accessToken: searchParams.get("AccessToken") || '',
+                id: data?.id || '',
+                userName: data?.userName || '',
+                email: data?.email || '',
+                imageUrl: data?.imageUrl || '',
+                roles: data?.roles || []
+            };
+
+            globalLogInDispatch(userData);
+        }
+
+        getProfileData();
     }, [globalLogInDispatch, searchParams]);
 
     return (
