@@ -7,12 +7,22 @@ import {
     useReactTable,
     PaginationState,
 } from "@tanstack/react-table";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { productionColumnDefs } from "./ProductionColumnDefs";
 import Pagination from "./Pagination";
 import { useGetProductionsQuery } from "@/api/queries/production.query";
+import useDebounce from "@/hooks/useDebounce";
+import useAxiosApi from "@/hooks/useAxiosApi";
+import ProductionModal from "../Modal/ProductionModal";
+
 const Table = () => {
-    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const axiosApi = useAxiosApi();
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [openProductionModal, setOpenProductionModal] = useState(false);
+    const handleModalToggle = () => { setOpenProductionModal((prev) => !prev); }
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
     const [{ pageIndex, pageSize }, setPagination] =
         React.useState<PaginationState>({
             pageIndex: 0,
@@ -24,11 +34,12 @@ const Table = () => {
             pageSize,
         }),
         [pageIndex, pageSize]
-    )
-
+    );
     const fetchDataOptions = {
         pageNumber: pageIndex + 1,
         pageSize: pageSize,
+        'AdvancedSearch.Fields': ['title'],
+        'AdvancedSearch.Keyword': debouncedSearchTerm
     }
 
     const { data, isLoading, isFetching, isFetched } = useGetProductionsQuery(fetchDataOptions, { staleTime: (15 * 1000) });
@@ -50,6 +61,19 @@ const Table = () => {
     const rows = table.getRowModel().rows;
     return (
         <div className="overflow-auto">
+            <div className="flex justify-between gap-5">
+                <div className={`bg-people-search-gradient text-white border border-solid border-zinc-300/50 rounded-lg max-h-11 w-[300px] relative  pt-[1px]`}>
+                    <div className="flex w-full h-[42px] items-center">
+                        <input
+                            type='text'
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className='h-full w-full overflow-hidden border-none outline-none bg-[initial] px-4' placeholder='Search Productions'
+                        />
+                    </div>
+                </div >
+                <button className="btn btn-primary" onClick={() => handleModalToggle()}>Create</button>
+            </div>
             <table className="table table-zebra my-4 w-full">
                 <thead>
                     <tr>
@@ -98,6 +122,7 @@ const Table = () => {
                 </tbody>
             </table>
             <Pagination table={table} />
+            <ProductionModal open={openProductionModal} onClose={handleModalToggle} enableClickOutside={true} />
         </div>
     );
 };

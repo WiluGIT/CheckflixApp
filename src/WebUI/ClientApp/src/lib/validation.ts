@@ -20,3 +20,13 @@ export const registerSchema = z.object({
     message: "Passwords don't match",
     path: ["confirmPassword"],
 });
+
+export const productionSchema = z.object({
+    tmdbId: z.string().nonempty(),
+    imdbId: z.string().nonempty(),
+    title: z.string().nonempty(),
+    overview: z.string().nonempty(),
+    director: z.string().nonempty(),
+    keywords: z.string().nonempty(),
+    releaseDate: z.date(),
+});

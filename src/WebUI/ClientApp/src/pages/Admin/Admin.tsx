@@ -4,7 +4,7 @@ const Admin = () => {
     return (
         <div className="admin">
             Admin page
-            <div className="flex justify-center items-center text-white">
+            <div className="flex justify-center items-center text-white my-5">
                 <div className="card flex-1 shadow-2xl bg-base-100 overflow-auto">
                     <div className="card-body">
                         <Table />

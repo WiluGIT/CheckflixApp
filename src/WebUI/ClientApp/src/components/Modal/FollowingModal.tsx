@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import cn from "classnames";
 import Modal, { ModalPropsType } from "./Modal";
 import { GetFollowingResponse } from "@/types/following";
 import { useUnFollowMutation } from "@/api/queries/followings.query";
