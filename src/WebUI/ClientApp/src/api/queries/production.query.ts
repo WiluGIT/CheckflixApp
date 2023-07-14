@@ -8,7 +8,6 @@ import { productions } from "@/mock/productionMock";
 
 export const useGetProductionsQuery = (
     params: PaginationFilter = { pageNumber: 1, pageSize: 10 },
-    enabledCondition: boolean = true,
     queryOptions: UseQueryOptions<PaginationResponse<BasicProduction>> = {},
     axiosInstance?: AxiosInstance,
 ) => {
@@ -37,8 +36,7 @@ export const useGetProductionsQuery = (
             return response
         },
         keepPreviousData: true,
-        ...queryOptions,
-        enabled: enabledCondition
+        ...queryOptions
     });
 
     const items = query.data?.items;

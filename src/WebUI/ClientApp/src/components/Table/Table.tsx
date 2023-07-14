@@ -2,42 +2,49 @@ import {
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
-    // 1. add necessary import
     getPaginationRowModel,
     SortingState,
     useReactTable,
+    PaginationState,
 } from "@tanstack/react-table";
 import React, { useEffect } from "react";
 import { productionColumnDefs } from "./ProductionColumnDefs";
-
-//import { Person } from "../types/Person";
 import Pagination from "./Pagination";
-import { Production } from "@/types/production";
-import { productions } from "@/mock/productionMock";
+import { useGetProductionsQuery } from "@/api/queries/production.query";
 const Table = () => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
-    const table = useReactTable({
-        columns: productionColumnDefs,
-        data: productions as Production[],
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        //2.  add getPaginationRowModel
-        //getPaginationRowModel: getPaginationRowModel(),
-        state: {
-            sorting,
-        },
-        onSortingChange: setSorting,
-    });
+    const [{ pageIndex, pageSize }, setPagination] =
+        React.useState<PaginationState>({
+            pageIndex: 0,
+            pageSize: 10,
+        })
+    const pagination = React.useMemo(
+        () => ({
+            pageIndex,
+            pageSize,
+        }),
+        [pageIndex, pageSize]
+    )
 
-    useEffect(() => {
-        console.log("Page changed: ", table.getState().pagination.pageIndex);
-
-    }, [table.getState().pagination.pageIndex])
-
-    const handlePagination = (page: any) => {
-        console.log("Page changed: ", page);
-
+    const fetchDataOptions = {
+        pageNumber: pageIndex + 1,
+        pageSize: pageSize,
     }
+
+    const { data, isLoading, isFetching, isFetched } = useGetProductionsQuery(fetchDataOptions, { staleTime: (15 * 1000) });
+
+    const table = useReactTable({
+        data: data?.items ?? [],
+        columns: productionColumnDefs,
+        pageCount: data?.totalPages ?? -1,
+        state: {
+            pagination,
+        },
+        onPaginationChange: setPagination,
+        getCoreRowModel: getCoreRowModel(),
+        manualPagination: true,
+        debugTable: true,
+    })
 
     const headers = table.getFlatHeaders();
     const rows = table.getRowModel().rows;

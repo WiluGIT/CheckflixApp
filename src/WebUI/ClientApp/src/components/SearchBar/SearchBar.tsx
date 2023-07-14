@@ -16,8 +16,9 @@ const SearchBar = () => {
         pageSize: 5,
         'AdvancedSearch.Fields': ['title', 'director'],
         'AdvancedSearch.Keyword': debouncedSearchTerm
-    },
-        debouncedSearchTerm != ''
+    }, {
+        enabled: debouncedSearchTerm != ''
+    }
     );
 
     const navigate = useNavigate();

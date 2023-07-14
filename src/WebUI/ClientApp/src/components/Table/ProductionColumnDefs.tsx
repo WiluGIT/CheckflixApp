@@ -1,14 +1,14 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 // import { Person } from "../types/Person";
-import { Production } from "@/types/production";
+import { BasicProduction, Production } from "@/types/production";
 
-const columnHelper = createColumnHelper<Production>();
+const columnHelper = createColumnHelper<BasicProduction>();
 
-export const productionColumnDefs: ColumnDef<Production, any>[] = [
+export const productionColumnDefs: ColumnDef<BasicProduction, any>[] = [
     columnHelper.accessor((row) => row.productionId, {
         id: "productionId",
         cell: (info) => info.getValue(),
-        footer: (info) => info.column.id,
+        header: () => <span>Id</span>,
     }),
     columnHelper.accessor((row) => row.tmdbId, {
         id: "tmdbId",
@@ -30,14 +30,4 @@ export const productionColumnDefs: ColumnDef<Production, any>[] = [
         cell: (info) => <span>{info.getValue().toString()}</span>,
         header: () => <span>Release Date</span>,
     }),
-    // columnHelper.accessor((row) => row.countryCode, {
-    //     id: "countryCode",
-    //     cell: (info) => <span>{info.getValue()}</span>,
-    //     header: () => <span>Country Code</span>,
-    // }),
-    // columnHelper.accessor((row) => row.city, {
-    //     id: "city",
-    //     cell: (info) => <span>{info.getValue()}</span>,
-    //     header: () => <span>City</span>,
-    // }),
 ];

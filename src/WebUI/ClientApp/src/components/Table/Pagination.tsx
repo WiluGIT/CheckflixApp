@@ -1,15 +1,11 @@
 import { Table } from "@tanstack/react-table";
-import React from "react";
 
 type Props = {
-    // table returned from useTable hook.
     table: Table<any>;
 };
 
 const Pagination = ({ table }: Props) => {
-    // pagination state
     const state = table.getState().pagination;
-    //last page helper function
     const goLastPage = () => table.setPageIndex(table.getPageCount() - 1);
     return (
         <div className="my-2">
@@ -62,7 +58,7 @@ const Pagination = ({ table }: Props) => {
                         defaultValue={state.pageIndex + 1}
                         type="number"
                         onChange={(e) => {
-                            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                            const page = e.target.value ? Number(e.target.value) - 1 : 1;
                             table.setPageIndex(page);
                         }}
                         className="input input-bordered w-20 input-sm mx-2"
